@@ -15,7 +15,6 @@ const Weather = () => {
   const [nameRegion, setNameRegion] = useState("");
   const [precipitationIn, setPrecipitationIn] = useState(0);
   const [humidity, setHumidity] = useState(0);
-  const [isDay, setIsDay] = useState(true);
   const [aqi, setAqi] = useState("1 - 50");
   const [iconSrc, setIconSrc] = useState("");
 
@@ -59,14 +58,13 @@ const Weather = () => {
           return response.json();
         })
         .then((data) => {
-          console.log(data.current);
+          //   console.log(data.current);
           setTemp(data.current.temp_c);
           setCondition(data.current.condition.text);
           setWindSpeed(data.current.wind_mph);
           setNameRegion(`${data.location.name}, ${data.location.region}`);
           setPrecipitationIn(data.current.precip_in);
           setHumidity(data.current.humidity);
-          setIsDay(data.current.is_day === 1);
 
           const us_epa_index = data.current.air_quality["us-epa-index"];
 
@@ -98,7 +96,7 @@ const Weather = () => {
   useEffect(() => {
     if (iconMapping !== [] && condition !== "") {
       setIconSrc(`/assets/${iconMapping[condition]}.png`);
-      console.log(iconSrc);
+      //   console.log(iconSrc);
     }
   }, [iconMapping, condition]);
 
@@ -116,10 +114,10 @@ const Weather = () => {
         </div>
 
         <p className="pr-2">
-          Wind Speed: <p className="font-bold">{windSpeed}mph</p>
+          Wind Speed: <p className="font-bold">{windSpeed} mph</p>
         </p>
         <p className="pr-2">
-          Preciptation: <p className="font-bold">{precipitationIn}in</p>
+          Preciptation: <p className="font-bold">{precipitationIn} in</p>
         </p>
         <p className="pr-2">
           Humidity: <p className="font-bold">{humidity}</p>

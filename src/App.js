@@ -4,11 +4,12 @@ import Clock from "./components/Clock";
 import HelpfulLinks from "./components/HelpfulLinks";
 import Weather from "./components/Weather";
 import Socials from "./components/Socials";
+import Todo from "./components/Todo";
 
 function App() {
   return (
     <>
-      {/* Top Right Text */}
+      {/* new_tab() title */}
       <div className="absolute z-20 top-0 left-0 bg-neutral-900 rounded-xl m-3">
         <h1 className="text-neutral-500 font-bold p-4 text-3xl">new_tab()</h1>
       </div>
@@ -23,6 +24,11 @@ function App() {
         {/* Weather */}
         <div className="bg-neutral-900 rounded-xl px-2.5 mx-3 mt-1">
           <Weather />
+        </div>
+
+        {/* ToDo List */}
+        <div className="bg-neutral-900 rounded-xl mx-3 mt-1">
+          <Todo />
         </div>
       </div>
 
