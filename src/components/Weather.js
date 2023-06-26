@@ -50,7 +50,7 @@ const Weather = () => {
 
   // Get the weather for the user's location
   useEffect(() => {
-    if (currentPos != "") {
+    if (currentPos !== "") {
       fetch(
         `http://api.weatherapi.com/v1/current.json?key=${WEATHERAPI_API_KEY}&q=${currentPos}&aqi=yes`
       )
@@ -87,6 +87,8 @@ const Weather = () => {
             case 6:
               setAqi("301 - 500 \uD83D\uDD34");
               break;
+            default:
+              console.log("Not a valid AQI");
           }
         });
     }
@@ -102,14 +104,17 @@ const Weather = () => {
 
   return (
     <div className="flex flex-col px-5 py-3">
+      {/* Header and weather text */}
       <div className="flex flex-col justify-center text-neutral-500">
         <h1 className="font-bold text-lg pr-3">{nameRegion}</h1>
         <p className="text-sm">{condition}</p>
       </div>
 
+      {/* Stats row */}
       <div className="flex flex-row text-neutral-500 items-center">
+        {/* Icon and temp */}
         <div className="flex flex-row items-center pr-4">
-          <img src={iconSrc} />
+          <img src={iconSrc} alt={condition} />
           <p className="pl-2 font-bold text-xl">{temp}°C</p>
         </div>
 
