@@ -118,16 +118,16 @@ const Weather = () => {
           <p className="pl-2 font-bold text-xl">{temp}°C</p>
         </div>
 
-        <p className="pr-2 text-lg">
+        <p className="pr-2 text-md">
           Wind Speed: <p className="font-bold">{windSpeed} mph</p>
         </p>
-        <p className="pr-2 text-lg">
+        <p className="pr-2 text-md">
           Preciptation: <p className="font-bold">{precipitationIn} in</p>
         </p>
-        <p className="pr-2 text-lg">
+        <p className="pr-2 text-md">
           Humidity: <p className="font-bold">{humidity}</p>
         </p>
-        <p className="text-lg">
+        <p className="text-md">
           AQI: <p className="font-bold">{aqi}</p>
         </p>
       </div>
