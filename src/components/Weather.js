@@ -113,21 +113,21 @@ const Weather = () => {
       {/* Stats row */}
       <div className="flex flex-row text-neutral-500 items-center">
         {/* Icon and temp */}
-        <div className="flex flex-row items-center pr-4">
+        <div className="flex flex-row items-center justify-between pr-4">
           <img src={iconSrc} alt={condition} />
           <p className="pl-2 font-bold text-xl">{temp}°C</p>
         </div>
 
-        <p className="pr-2">
+        <p className="pr-2 text-lg">
           Wind Speed: <p className="font-bold">{windSpeed} mph</p>
         </p>
-        <p className="pr-2">
+        <p className="pr-2 text-lg">
           Preciptation: <p className="font-bold">{precipitationIn} in</p>
         </p>
-        <p className="pr-2">
+        <p className="pr-2 text-lg">
           Humidity: <p className="font-bold">{humidity}</p>
         </p>
-        <p className="">
+        <p className="text-lg">
           AQI: <p className="font-bold">{aqi}</p>
         </p>
       </div>
