@@ -3,6 +3,7 @@
 ![image](https://github.com/geraldyywang/new-tab/assets/96800313/56c18642-5d48-4c5a-8821-791bc9285866)
 
 [Live demo](https://geraldtab.netlify.app/)
+
 [![Netlify Status](https://api.netlify.com/api/v1/badges/9b348492-d6d6-418f-9e2b-819e0072681b/deploy-status)](https://app.netlify.com/sites/geraldtab/deploys)
 
 # How to Use
