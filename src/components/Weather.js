@@ -1,16 +1,4 @@
 import { useEffect, useState } from "react";
-import {
-  TiWeatherCloudy,
-  TiWeatherDownpour,
-  TiWeatherPartlySunny,
-  TiWeatherNight,
-  TiWeatherShower,
-  TiWeatherSnow,
-  TiWeatherStormy,
-  TiWeatherSunny,
-  TiWeatherWindy,
-  TiWeatherWindyCloudy,
-} from "react-icons/ti";
 import WEATHERAPI_API_KEY from "../apikeys";
 import WEATHER_CONDITIONS_RAW from "./weatherConditions";
 
@@ -84,22 +72,22 @@ const Weather = () => {
 
           switch (us_epa_index) {
             case 1:
-              setAqi("0 - 50");
+              setAqi("0 - 50 \uD83D\uDFE2");
               break;
             case 2:
-              setAqi("51 - 100");
+              setAqi("51 - 100 \uD83D\uDFE1");
               break;
             case 3:
-              setAqi("101 - 150");
+              setAqi("101 - 150 \uD83D\uDFE0");
               break;
             case 4:
-              setAqi("151 - 200");
+              setAqi("151 - 200 \uD83D\uDFE0");
               break;
             case 5:
-              setAqi("201 - 300");
+              setAqi("201 - 300 \uD83D\uDD34");
               break;
             case 6:
-              setAqi("301 - 500");
+              setAqi("301 - 500 \uD83D\uDD34");
               break;
           }
         });
@@ -137,7 +125,7 @@ const Weather = () => {
           Humidity: <p className="font-bold">{humidity}</p>
         </p>
         <p className="">
-          AQI: <p className="font-bold">{aqi} &#128308;</p>
+          AQI: <p className="font-bold">{aqi}</p>
         </p>
       </div>
     </div>

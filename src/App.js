@@ -21,7 +21,7 @@ function App() {
         </div>
 
         {/* Weather */}
-        <div className="bg-neutral-900 rounded-xl mx-3 mt-1">
+        <div className="bg-neutral-900 rounded-xl px-2.5 mx-3 mt-1">
           <Weather />
         </div>
       </div>
