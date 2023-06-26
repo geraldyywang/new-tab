@@ -9,13 +9,13 @@ const Weather = () => {
   const [currentPos, setCurrentPos] = useState("");
 
   // Stores weather data from API call
-  const [temp, setTemp] = useState(20.7);
+  const [temp, setTemp] = useState(0);
   const [condition, setCondition] = useState("");
   const [windSpeed, setWindSpeed] = useState(0);
   const [nameRegion, setNameRegion] = useState("");
   const [precipitationIn, setPrecipitationIn] = useState(0);
   const [humidity, setHumidity] = useState(0);
-  const [aqi, setAqi] = useState("1 - 50");
+  const [aqi, setAqi] = useState("");
   const [iconSrc, setIconSrc] = useState("");
 
   const getUserLocation = () => {
