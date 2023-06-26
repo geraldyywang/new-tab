@@ -101,7 +101,7 @@ const Weather = () => {
   }, [iconMapping, condition]);
 
   return (
-    <div className="flex flex-col px-5 py-3 max-w-xl">
+    <div className="flex flex-col px-5 py-3">
       <div className="flex flex-col justify-center text-neutral-500">
         <h1 className="font-bold text-lg pr-3">{nameRegion}</h1>
         <p className="text-sm">{condition}</p>
@@ -110,7 +110,7 @@ const Weather = () => {
       <div className="flex flex-row text-neutral-500 items-center">
         <div className="flex flex-row items-center pr-4">
           <img src={iconSrc} />
-          <p className="pl-2 font-bold text-2xl">{temp}°C</p>
+          <p className="pl-2 font-bold text-xl">{temp}°C</p>
         </div>
 
         <p className="pr-2">

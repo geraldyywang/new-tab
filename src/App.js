@@ -16,19 +16,21 @@ function App() {
 
       {/* Main Screen */}
       <div className="flex flex-col min-h-screen justify-center items-center bg-stone-800 ">
-        {/* Clock */}
-        <div className="bg-neutral-900 rounded-xl mx-3">
-          <Clock />
-        </div>
+        <div className="max-w-xl">
+          {/* Clock */}
+          <div className="bg-neutral-900 rounded-xl mx-3">
+            <Clock />
+          </div>
 
-        {/* Weather */}
-        <div className="bg-neutral-900 rounded-xl px-2.5 mx-3 mt-1">
-          <Weather />
-        </div>
+          {/* Weather */}
+          <div className="bg-neutral-900 rounded-xl px-2.5 mx-3 mt-1">
+            <Weather />
+          </div>
 
-        {/* ToDo List */}
-        <div className="bg-neutral-900 rounded-xl mx-3 mt-1">
-          <Todo />
+          {/* ToDo List */}
+          <div className="bg-neutral-900 rounded-xl mx-3 mt-1">
+            {/* <Todo /> */}
+          </div>
         </div>
       </div>
 

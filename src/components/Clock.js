@@ -18,7 +18,7 @@ const Clock = () => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center px-5 py-5 max-w-xl">
+    <div className="flex flex-col justify-center items-center px-5 py-5">
       <p className="font-bold text-7xl text-neutral-500">
         {time.toLocaleString("en-US")}
       </p>
