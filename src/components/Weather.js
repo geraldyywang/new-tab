@@ -81,7 +81,7 @@ const Weather = () => {
           setIsDay(data.current.is_day === 1);
 
           const us_epa_index = data.current.air_quality["us-epa-index"];
-          console.log(us_epa_index);
+
           switch (us_epa_index) {
             case 1:
               setAqi("0 - 50");
@@ -102,21 +102,28 @@ const Weather = () => {
               setAqi("301 - 500");
               break;
           }
-
-          console.log(condition);
-          setIconSrc(`../../assets/${iconMapping[condition]}.png`);
-          console.log(iconSrc);
         });
     }
   }, [currentPos]);
 
+  // Guarantee loading for icon
+  useEffect(() => {
+    if (iconMapping !== [] && condition !== "") {
+      setIconSrc(`/assets/${iconMapping[condition]}.png`);
+      console.log(iconSrc);
+    }
+  }, [iconMapping, condition]);
+
   return (
     <div className="flex flex-col px-5 py-3 max-w-xl">
-      <h1 className=" text-neutral-500 font-bold text-lg">{nameRegion}</h1>
+      <div className="flex flex-col justify-center text-neutral-500">
+        <h1 className="font-bold text-lg pr-3">{nameRegion}</h1>
+        <p className="text-sm">{condition}</p>
+      </div>
+
       <div className="flex flex-row text-neutral-500 items-center">
         <div className="flex flex-row items-center pr-4">
-          <img src="C:/Code/new-tab/assets/230.png" />
-          <TiWeatherCloudy className="h-16 w-16" />
+          <img src={iconSrc} />
           <p className="pl-2 font-bold text-2xl">{temp}°C</p>
         </div>
 
