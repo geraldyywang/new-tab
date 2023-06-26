@@ -2,10 +2,13 @@
 
 ![image](https://github.com/geraldyywang/new-tab/assets/96800313/56c18642-5d48-4c5a-8821-791bc9285866)
 
+[Live demo](https://geraldtab.netlify.app/)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/9b348492-d6d6-418f-9e2b-819e0072681b/deploy-status)](https://app.netlify.com/sites/geraldtab/deploys)
+
 # How to Use
 
 1. In "src/components/HelpfulLinks.js" and "src/components/Socials.js", add or remove desired links
-2. Sign up and generate an API key from [WeatherAPI](https://www.weatherapi.com/) and paste it in "src/apikeys.js"
+2. Sign up and generate an API key from [WeatherAPI](https://www.weatherapi.com/) and paste it in "src/apikeys.js" as a string **OR** create a .env file in "/" and paste **REACT_APP_WEATHERAPI_KEY='*insert key here*'**
 3. Run **npm run build** to make a production build
 4. (For Chrome) go to [extensions](chrome://extensions), click "Developer Mode". Click "Load Unpacked" and select the build folder
 5. Click "Update" and enjoy!
