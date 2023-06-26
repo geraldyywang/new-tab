@@ -4,7 +4,7 @@ import Clock from "./components/Clock";
 import HelpfulLinks from "./components/HelpfulLinks";
 import Weather from "./components/Weather";
 import Socials from "./components/Socials";
-import Todo from "./components/Todo";
+// import Todo from "./components/Todo";
 
 function App() {
   return (
@@ -28,9 +28,9 @@ function App() {
           </div>
 
           {/* ToDo List */}
-          <div className="bg-neutral-900 rounded-xl mx-3 mt-1">
-            {/* <Todo /> */}
-          </div>
+          {/* <div className="bg-neutral-900 rounded-xl mx-3 mt-1"> */}
+          {/* <Todo /> */}
+          {/* </div> */}
         </div>
       </div>
 
