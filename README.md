@@ -1,4 +1,14 @@
-# Getting Started with Create React App
+# new_tab(), a new tab extension for browsers!
+
+![image](https://github.com/geraldyywang/new-tab/assets/96800313/56c18642-5d48-4c5a-8821-791bc9285866)
+
+# How to Use
+
+1. In "src/components/HelpfulLinks.js" and "src/components/Socials.js", add or remove desired links
+2. Sign up and generate an API key from [WeatherAPI](https://www.weatherapi.com/) and paste it in "src/apikeys.js"
+3. Run **npm run build** to make a production build
+4. (For Chrome) go to [extensions](chrome://extensions), click "Developer Mode". Click "Load Unpacked" and select the build folder
+5. Click "Update" and enjoy!
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
