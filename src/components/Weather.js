@@ -114,7 +114,7 @@ const Weather = () => {
       <div className="flex flex-row text-neutral-500 items-center">
         {/* Icon and temp */}
         <div className="flex flex-row items-center justify-between pr-4">
-          <img src={iconSrc} alt={condition} />
+          <img src={iconSrc} alt={condition} width={40} height={40} />
           <p className="pl-2 font-bold text-xl">{temp}°C</p>
         </div>
 
