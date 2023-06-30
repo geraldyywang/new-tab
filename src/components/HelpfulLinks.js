@@ -1,6 +1,12 @@
-import { SiGmail, SiMicrosoftoutlook, SiNotion } from "react-icons/si";
+import {
+  SiGmail,
+  SiMicrosoftoutlook,
+  SiNotion,
+  SiOpenai,
+} from "react-icons/si";
 import { GiAcorn, GiFruitTree } from "react-icons/gi";
 import { FaGoogleDrive, FaYoutube } from "react-icons/fa";
+import { RiBardFill } from "react-icons/ri";
 
 const HelpfulLinks = () => {
   return (
@@ -50,6 +56,20 @@ const HelpfulLinks = () => {
         className="my-4 hover:text-neutral-600"
       >
         <FaYoutube />
+      </a>
+
+      <a
+        href="https://chat.openai.com/"
+        className="my-4 hover:text-neutral-600"
+      >
+        <SiOpenai />
+      </a>
+
+      <a
+        href="https://bard.google.com/"
+        className="my-4 hover:text-neutral-600"
+      >
+        <RiBardFill />
       </a>
     </div>
   );
