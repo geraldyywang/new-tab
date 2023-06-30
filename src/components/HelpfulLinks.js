@@ -25,7 +25,7 @@ const HelpfulLinks = () => {
       </a>
 
       <a
-        href="https://outlook.office365.com/mail/"
+        href="https://outlook.office.com/mail/"
         className="my-4 hover:text-neutral-600"
       >
         <SiMicrosoftoutlook />
