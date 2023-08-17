@@ -11,9 +11,10 @@
 1. In "src/components/HelpfulLinks.js" and "src/components/Socials.js", add or remove desired links
 2. Sign up and generate an API key from [WeatherAPI](https://www.weatherapi.com/)
 3. Create a .env file in your base project folder ("/") and paste **REACT_APP_WEATHERAPI_API_KEY = "*api key here*"**
-4. Run **npm run build** to make a production build
-5. (For Chrome) go to [extensions](chrome://extensions), click "Developer Mode". Click "Load Unpacked" and select the build folder
-6. Click "Update" and enjoy!
+4. Follow instructions in Weather.js file regarding the fetch call
+5. Run **npm run build** to make a production build
+6. (For Chrome) go to [extensions](chrome://extensions), click "Developer Mode". Click "Load Unpacked" and select the build folder
+7. Click "Update" and enjoy!
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
