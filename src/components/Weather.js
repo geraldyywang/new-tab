@@ -50,7 +50,7 @@ const Weather = () => {
 
   // Get the weather for the user's location
   useEffect(() => {
-    if (currentPos !== "") {
+    if (currentPos !== "" && data === "") {
       // Change to `http://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_WEATHERAPI_API_KEY}&q=${currentPos}&aqi=yes`
       // for local build and personal usage (might also have to change resdata.data to resdata on line 63)
       fetch(`/.netlify/functions/getWeather?currentPos=${currentPos}`)
@@ -62,7 +62,7 @@ const Weather = () => {
           console.log(data);
         });
     }
-  }, [currentPos]);
+  }, [currentPos, data]);
 
   // Set up rest of weather states
   useEffect(() => {
