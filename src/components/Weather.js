@@ -59,7 +59,6 @@ const Weather = () => {
         })
         .then((resdata) => {
           setData(resdata.data);
-          console.log(data);
         });
     }
   }, [currentPos, data]);
