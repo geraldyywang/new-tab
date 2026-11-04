@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
-import { useSettings } from "../../lib/storage";
+import { DEFAULT_SIDEBAR_LINKS, DEFAULT_SOCIAL_LINKS } from "../../lib/links";
+import { saveLinks, useSettings } from "../../lib/storage";
 import { iconButtonClass } from "../ui/styles";
 import ApiKeySection from "./ApiKeySection";
+import LinksEditor from "./LinksEditor";
 
 interface SettingsDialogProps {
   open: boolean;
@@ -23,7 +25,14 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
       if (isDirty) sections.add(id);
       else sections.delete(id);
     };
-    return { sections, report: { apiKey: reporter("apiKey") } };
+    return {
+      sections,
+      report: {
+        apiKey: reporter("apiKey"),
+        sidebarLinks: reporter("sidebarLinks"),
+        socialLinks: reporter("socialLinks"),
+      },
+    };
   });
 
   // Sync the native dialog with the `open` prop (no React state set here)
@@ -102,6 +111,22 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
                 savedKey={settings.weatherApiKey}
                 backend={settings.backend}
                 onDirtyChange={dirty.report.apiKey}
+              />
+              <LinksEditor
+                title="Sidebar links"
+                description="Shown in the bar on the right."
+                links={settings.sidebarLinks}
+                defaults={DEFAULT_SIDEBAR_LINKS}
+                onSave={(links) => saveLinks("sidebarLinks", links)}
+                onDirtyChange={dirty.report.sidebarLinks}
+              />
+              <LinksEditor
+                title="Social links"
+                description="Shown in the bar at the bottom left."
+                links={settings.socialLinks}
+                defaults={DEFAULT_SOCIAL_LINKS}
+                onSave={(links) => saveLinks("socialLinks", links)}
+                onDirtyChange={dirty.report.socialLinks}
               />
             </div>
           ) : (
