@@ -1,11 +1,13 @@
+import {fireEvent, render, screen} from '@testing-library/react';
 import {useEffect} from 'react';
-import {afterEach, describe, expect, it} from 'vitest';
+import {afterEach, describe, expect, it, vi} from 'vitest';
 import {
   SETTINGS_SECTIONS,
   sortSections,
   type SettingsSection,
   type SettingsSectionProps,
 } from './sections';
+import {SettingsDialog} from './SettingsDialog';
 
 function FakeSection({title, onDirtyChange}: SettingsSectionProps) {
   useEffect(() => () => onDirtyChange(false), [onDirtyChange]);
@@ -50,5 +52,38 @@ describe('SETTINGS_SECTIONS', () => {
       'Sidebar links',
       'Social links',
     ]);
+  });
+});
+
+describe('SettingsDialog with a custom registry', () => {
+  it('renders each section with its title, in order', () => {
+    render(
+      <SettingsDialog
+        open
+        onClose={() => {}}
+        sections={sortSections([fake('two', 2), fake('one', 1)])}
+      />,
+    );
+    expect(
+      screen.getAllByRole('heading', {level: 3}).map(h => h.textContent),
+    ).toEqual(['Title one', 'Title two']);
+  });
+
+  it('asks before closing when any section reports unsaved edits', () => {
+    const confirm = vi.fn().mockReturnValue(true);
+    vi.stubGlobal('confirm', confirm);
+    const onClose = vi.fn();
+    render(
+      <SettingsDialog
+        open
+        onClose={onClose}
+        sections={sortSections([fake('one', 1), fake('two', 2)])}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', {name: 'Edit Title two'}));
+    fireEvent.click(screen.getByRole('button', {name: 'Close settings'}));
+    expect(confirm).toHaveBeenCalledWith('Discard unsaved changes?');
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
