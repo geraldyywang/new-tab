@@ -1,10 +1,8 @@
 import {useState, type FormEvent} from 'react';
 import {FiEye, FiEyeOff} from 'react-icons/fi';
-import {
-  saveWeatherApiKey,
-  SettingsWriteError,
-  type StorageBackendKind,
-} from '../../settings/storage';
+import {SettingsWriteError} from '../../settings/slices';
+import type {StorageBackendKind} from '../../settings/storageBackends';
+import {saveWeatherApiKey} from './settings';
 import {WEATHERAPI_SIGNUP_URL} from './weatherApi';
 import {Button, IconButton} from '../../ui/Button';
 import * as ui from '../../ui/styles';
@@ -14,6 +12,7 @@ import {useKeyTester} from './useKeyTester';
 import {useReportDirty, useSyncedDraft} from '../../settings/useSyncedDraft';
 
 interface ApiKeySectionProps {
+  title?: string;
   savedKey: string;
   backend: StorageBackendKind;
   onDirtyChange?: (dirty: boolean) => void;
@@ -28,6 +27,7 @@ function keyEquals(a: string, b: string) {
  * key.
  */
 export function ApiKeySection({
+  title = 'Weather API key',
   savedKey,
   backend,
   onDirtyChange,
@@ -75,7 +75,7 @@ export function ApiKeySection({
   return (
     <section aria-labelledby="settings-api-key-title">
       <h3 id="settings-api-key-title" className={ui.sectionTitleClass}>
-        Weather API key
+        {title}
       </h3>
       <p className="mt-1 text-sm text-fg-subtle">
         Get a free key at{' '}

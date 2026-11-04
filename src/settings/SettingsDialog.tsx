@@ -1,45 +1,46 @@
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import {FiX} from 'react-icons/fi';
-import {
-  DEFAULT_SIDEBAR_LINKS,
-  DEFAULT_SOCIAL_LINKS,
-} from '../features/links/links';
-import {saveLinks, useSettings} from './storage';
+import {SETTINGS_SECTIONS, type SettingsSection} from './sections';
+import {useSlicesLoaded} from './useSlicesLoaded';
 import {IconButton} from '../ui/Button';
 import {surfaceAttributes} from '../ui/styles';
-import {ApiKeySection} from '../features/weather/ApiKeySection';
-import {LinksEditor} from '../features/links/LinksEditor';
 
 interface SettingsDialogProps {
   open: boolean;
   onClose: () => void;
+  /** Sections to show, already sorted; defaults to the registry. */
+  sections?: readonly SettingsSection[];
 }
 
 /** Modal settings dialog. Asks before discarding unsaved edits on close. */
-export function SettingsDialog({open, onClose}: SettingsDialogProps) {
+export function SettingsDialog({
+  open,
+  onClose,
+  sections = SETTINGS_SECTIONS,
+}: SettingsDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
   const pointerDownOnBackdrop = useRef(false);
-  const settings = useSettings();
+  const slices = useMemo(() => sections.flatMap(s => s.slices), [sections]);
+  const loaded = useSlicesLoaded(slices);
 
   // Ids of sections with unsaved edits, plus stable per-section callbacks
   // for useReportDirty. Only read in event handlers, so not React state.
   const [dirty] = useState(() => {
     const sections = new Set<string>();
-    function reporter(id: string) {
-      return (isDirty: boolean) => {
-        if (isDirty) sections.add(id);
-        else sections.delete(id);
-      };
+    const reporters = new Map<string, (isDirty: boolean) => void>();
+    function report(id: string) {
+      let reporter = reporters.get(id);
+      if (!reporter) {
+        reporter = isDirty => {
+          if (isDirty) sections.add(id);
+          else sections.delete(id);
+        };
+        reporters.set(id, reporter);
+      }
+      return reporter;
     }
-    return {
-      sections,
-      report: {
-        apiKey: reporter('apiKey'),
-        sidebarLinks: reporter('sidebarLinks'),
-        socialLinks: reporter('socialLinks'),
-      },
-    };
+    return {sections, report};
   });
 
   // Sync the native dialog with the `open` prop (no React state set here)
@@ -127,29 +128,15 @@ export function SettingsDialog({open, onClose}: SettingsDialogProps) {
             </IconButton>
           </div>
 
-          {settings.loaded ? (
+          {loaded ? (
             <div className="mt-4 flex flex-col gap-8">
-              <ApiKeySection
-                savedKey={settings.weatherApiKey}
-                backend={settings.backend}
-                onDirtyChange={dirty.report.apiKey}
-              />
-              <LinksEditor
-                title="Sidebar links"
-                description="Shown in the bar on the right."
-                links={settings.sidebarLinks}
-                defaults={DEFAULT_SIDEBAR_LINKS}
-                onSave={links => saveLinks('sidebarLinks', links)}
-                onDirtyChange={dirty.report.sidebarLinks}
-              />
-              <LinksEditor
-                title="Social links"
-                description="Shown in the bar at the bottom left."
-                links={settings.socialLinks}
-                defaults={DEFAULT_SOCIAL_LINKS}
-                onSave={links => saveLinks('socialLinks', links)}
-                onDirtyChange={dirty.report.socialLinks}
-              />
+              {sections.map(section => (
+                <section.Component
+                  key={section.id}
+                  title={section.title}
+                  onDirtyChange={dirty.report(section.id)}
+                />
+              ))}
             </div>
           ) : (
             <p className="mt-4 text-sm text-fg-subtle">Loading settings…</p>

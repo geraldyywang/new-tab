@@ -48,17 +48,20 @@ After a rebuild, click the reload icon on the extension's card in
 
 ## Settings and sync
 
-| Setting        | Stored as       |
-| -------------- | --------------- |
-| WeatherAPI key | `weatherApiKey` |
-| Sidebar links  | `sidebarLinks`  |
-| Social links   | `socialLinks`   |
+| Setting        | Key              | Area                  |
+| -------------- | ---------------- | --------------------- |
+| WeatherAPI key | `weather.apiKey` | `chrome.storage.sync` |
+| Sidebar links  | `links.sidebar`  | `chrome.storage.sync` |
+| Social links   | `links.social`   | `chrome.storage.sync` |
 
-- In the extension, settings live in `chrome.storage.sync`, one item per
-  setting (each must fit Chrome's 8 KB per-item limit). Unset lists use the
-  defaults.
+- Each setting is a slice owned by its feature, one item per slice (each must
+  fit Chrome's 8 KB per-item limit; bigger slices can be chunked). Unset or
+  invalid values use the defaults. See [docs/storage.md](docs/storage.md) for
+  the sync budget, chunking and how to add a setting.
 - On the dev server (`npm run dev`) they live in `localStorage` instead, under
-  keys prefixed with `new-tab:`.
+  keys prefixed with `new-tab:` (`new-tab-local:` for device-only settings).
+- 2.2 does not read settings saved by 2.1; re-enter the API key and links
+  after upgrading.
 - Settings sync between computers only when Chrome is signed in, sync is on
   with **Extensions** included, and the extension has the same ID on each.
   Otherwise they stay on this device.
@@ -103,7 +106,7 @@ src/
     clock/        Clock
     weather/      Weather card, WeatherAPI client, API key settings section
     links/        Sidebar, social bar, link icons, links editor
-  settings/       Settings dialog, storage (chrome.storage.sync / localStorage)
+  settings/       Settings dialog, section registry, slices and storage
   ui/             Shared primitives: Card, Button, IconButton, TextInput
   theme/          Semantic colour tokens and the guard test
   test/           Vitest setup and mocks

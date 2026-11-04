@@ -28,7 +28,7 @@ function respond(status: number, body: unknown) {
 
 function setKey(key: string) {
   return window.localStorage.setItem(
-    'new-tab:weatherApiKey',
+    'new-tab:weather.apiKey',
     JSON.stringify(key),
   );
 }

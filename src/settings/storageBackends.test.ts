@@ -1,9 +1,9 @@
 import {afterEach, describe, expect, it, vi} from 'vitest';
 import {installChromeStorageMock} from '../test/chromeStorageMock';
 import {
-  chromeSyncBackend,
+  chromeBackend,
   createBackend,
-  hasChromeSync,
+  hasChromeStorage,
   LOCAL_STORAGE_PREFIX,
   localStorageBackend,
 } from './storageBackends';
@@ -11,49 +11,59 @@ import {
 afterEach(() => window.localStorage.clear());
 
 describe('backend selection', () => {
-  it('uses chrome.storage.sync when it exists', () => {
+  it('uses chrome.storage when it exists', () => {
     installChromeStorageMock();
-    expect(hasChromeSync()).toBe(true);
-    expect(createBackend().kind).toBe('chrome-sync');
+    expect(hasChromeStorage('sync')).toBe(true);
+    expect(createBackend('sync').kind).toBe('chrome-sync');
+    expect(createBackend('local').kind).toBe('chrome-local');
   });
 
   it('falls back to localStorage without the chrome global', () => {
-    expect(hasChromeSync()).toBe(false);
-    expect(createBackend().kind).toBe('local-storage');
+    expect(hasChromeStorage('sync')).toBe(false);
+    expect(createBackend('sync').kind).toBe('local-storage');
+    expect(createBackend('local').kind).toBe('local-storage');
   });
 
   it('falls back to localStorage on a regular web page in Chrome', () => {
     // Chrome exposes `chrome` to pages, but without `storage`
     vi.stubGlobal('chrome', {runtime: {}});
-    expect(createBackend().kind).toBe('local-storage');
+    expect(createBackend('sync').kind).toBe('local-storage');
   });
 });
 
-describe('chromeSyncBackend', () => {
-  it('reads, writes and removes our keys', async () => {
+describe('chromeBackend', () => {
+  it('reads, writes and removes only the asked-for keys', async () => {
     const mock = installChromeStorageMock();
     mock.data.set('unrelated', 1);
-    const backend = chromeSyncBackend();
+    const backend = chromeBackend('sync');
 
-    await backend.set('weatherApiKey', 'abc');
-    expect(await backend.get()).toEqual({weatherApiKey: 'abc'});
+    await backend.set({a: 'abc', b: 2});
+    expect(await backend.get(['a', 'missing'])).toEqual({a: 'abc'});
 
-    await backend.remove('weatherApiKey');
-    expect(await backend.get()).toEqual({});
+    await backend.remove(['a', 'b']);
+    expect(await backend.get(['a', 'b'])).toEqual({});
     expect(mock.data.get('unrelated')).toBe(1);
   });
 
-  it('notifies only for changes to our keys in the sync area', async () => {
+  it('keeps the sync and local areas apart', async () => {
+    const mock = installChromeStorageMock();
+    await chromeBackend('local').set({a: 'here'});
+    expect(mock.localData.get('a')).toBe('here');
+    expect(mock.data.has('a')).toBe(false);
+    expect(await chromeBackend('sync').get(['a'])).toEqual({});
+  });
+
+  it('reports changed keys for its own area only', async () => {
     const mock = installChromeStorageMock();
     const onChange = vi.fn();
-    const unsubscribe = chromeSyncBackend().subscribe(onChange);
+    const unsubscribe = chromeBackend('local').subscribe(onChange);
 
-    mock.externalSet({unrelated: 1});
+    mock.externalSet({other: 1}, 'sync');
     await new Promise(r => setTimeout(r, 5));
     expect(onChange).not.toHaveBeenCalled();
 
-    mock.externalSet({socialLinks: []});
-    await vi.waitFor(() => expect(onChange).toHaveBeenCalledTimes(1));
+    mock.externalSet({x: 1, y: 2}, 'local');
+    await vi.waitFor(() => expect(onChange).toHaveBeenCalledWith(['x', 'y']));
 
     unsubscribe();
     expect(mock.listenerCount()).toBe(0);
@@ -61,42 +71,49 @@ describe('chromeSyncBackend', () => {
 });
 
 describe('localStorageBackend', () => {
-  it('stores JSON under a prefix', async () => {
-    const backend = localStorageBackend();
-    await backend.set('sidebarLinks', [{id: 'a'}]);
+  it('stores JSON under a per-area prefix', async () => {
+    const backend = localStorageBackend('sync');
+    await backend.set({links: [{id: 'a'}]});
     expect(
-      window.localStorage.getItem(`${LOCAL_STORAGE_PREFIX}sidebarLinks`),
+      window.localStorage.getItem(`${LOCAL_STORAGE_PREFIX.sync}links`),
     ).toBe('[{"id":"a"}]');
-    expect(await backend.get()).toEqual({sidebarLinks: [{id: 'a'}]});
+    expect(await backend.get(['links'])).toEqual({links: [{id: 'a'}]});
+    expect(await localStorageBackend('local').get(['links'])).toEqual({});
 
-    await backend.remove('sidebarLinks');
-    expect(await backend.get()).toEqual({});
+    await backend.remove(['links']);
+    expect(await backend.get(['links'])).toEqual({});
+  });
+
+  it('uses distinct prefixes for the two areas', () => {
+    expect(LOCAL_STORAGE_PREFIX.local).not.toBe(LOCAL_STORAGE_PREFIX.sync);
+    expect(
+      LOCAL_STORAGE_PREFIX.local.startsWith(LOCAL_STORAGE_PREFIX.sync),
+    ).toBe(false);
   });
 
   it('skips items with corrupt JSON', async () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
-    window.localStorage.setItem(
-      `${LOCAL_STORAGE_PREFIX}weatherApiKey`,
-      '{oops',
-    );
-    window.localStorage.setItem(`${LOCAL_STORAGE_PREFIX}socialLinks`, '[]');
-    expect(await localStorageBackend().get()).toEqual({socialLinks: []});
+    window.localStorage.setItem(`${LOCAL_STORAGE_PREFIX.sync}a`, '{oops');
+    window.localStorage.setItem(`${LOCAL_STORAGE_PREFIX.sync}b`, '[]');
+    expect(await localStorageBackend('sync').get(['a', 'b'])).toEqual({b: []});
   });
 
-  it('notifies on storage events for our prefix or a full clear', () => {
+  it('notifies on storage events for its prefix or a full clear', () => {
     const onChange = vi.fn();
-    const unsubscribe = localStorageBackend().subscribe(onChange);
+    const unsubscribe = localStorageBackend('sync').subscribe(onChange);
 
     window.dispatchEvent(new StorageEvent('storage', {key: 'other'}));
+    window.dispatchEvent(
+      new StorageEvent('storage', {key: `${LOCAL_STORAGE_PREFIX.local}a`}),
+    );
     expect(onChange).not.toHaveBeenCalled();
 
     window.dispatchEvent(
-      new StorageEvent('storage', {
-        key: `${LOCAL_STORAGE_PREFIX}socialLinks`,
-      }),
+      new StorageEvent('storage', {key: `${LOCAL_STORAGE_PREFIX.sync}links`}),
     );
+    expect(onChange).toHaveBeenLastCalledWith(['links']);
     window.dispatchEvent(new StorageEvent('storage', {key: null}));
-    expect(onChange).toHaveBeenCalledTimes(2);
+    expect(onChange).toHaveBeenLastCalledWith(null);
 
     unsubscribe();
     window.dispatchEvent(new StorageEvent('storage', {key: null}));

@@ -1,5 +1,6 @@
 import {useEffect, useState, type ReactNode} from 'react';
-import {useSettings} from '../../settings/storage';
+import {useSlice} from '../../settings/slices';
+import {weatherApiKeySlice} from './settings';
 import {
   classifyWeatherApiError,
   currentWeatherUrl,
@@ -221,7 +222,7 @@ function WeatherReport({
 
 /** Current weather for the user's location, or a prompt to add an API key. */
 export function Weather({onOpenSettings}: WeatherProps) {
-  const {loaded, weatherApiKey} = useSettings();
+  const {loaded, value: weatherApiKey} = useSlice(weatherApiKeySlice);
   if (!loaded) return null;
   if (!weatherApiKey) return <MissingKey onOpenSettings={onOpenSettings} />;
   return (

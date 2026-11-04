@@ -1,4 +1,5 @@
-import {useSettings} from '../../settings/storage';
+import {useSlice} from '../../settings/slices';
+import {sidebarLinksSlice} from './settings';
 import {LinkIcon} from './LinkIcon';
 import {Card} from '../../ui/Card';
 
@@ -6,7 +7,7 @@ import {Card} from '../../ui/Card';
  * Quick-access sidebar on the right; links are edited in the settings panel.
  */
 export function HelpfulLinks() {
-  const {loaded, sidebarLinks} = useSettings();
+  const {loaded, value: sidebarLinks} = useSlice(sidebarLinksSlice);
 
   return (
     <Card
