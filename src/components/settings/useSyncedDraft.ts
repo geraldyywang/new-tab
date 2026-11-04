@@ -1,4 +1,4 @@
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import {useEffect, useState, type Dispatch, type SetStateAction} from 'react';
 
 export interface SyncedDraft<T> {
   draft: T;

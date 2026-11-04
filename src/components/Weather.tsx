@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { useSettings } from "../lib/storage";
+import {useEffect, useState, type ReactNode} from 'react';
+import {useSettings} from '../lib/storage';
 import {
   classifyWeatherApiError,
   currentWeatherUrl,
@@ -7,9 +7,9 @@ import {
   isWeatherApiResponse,
   WEATHERAPI_SIGNUP_URL,
   type WeatherApiResponse,
-} from "../lib/weatherApi";
-import { buttonClass } from "./ui/styles";
-import WEATHER_CONDITIONS_RAW from "./weatherConditions";
+} from '../lib/weatherApi';
+import {buttonClass} from './ui/styles';
+import WEATHER_CONDITIONS_RAW from './weatherConditions';
 
 interface WeatherData {
   place: string;
@@ -23,74 +23,74 @@ interface WeatherData {
 }
 
 type WeatherState =
-  | { status: "locating" }
-  | { status: "loading" }
-  | { status: "ready"; data: WeatherData }
-  | { status: "error"; message: string; keyProblem?: boolean };
+  | {status: 'locating'}
+  | {status: 'loading'}
+  | {status: 'ready'; data: WeatherData}
+  | {status: 'error'; message: string; keyProblem?: boolean};
 
 // Condition code -> icon number, built once
 const ICON_BY_CODE = new Map(
-  WEATHER_CONDITIONS_RAW.map((c) => [c.code, c.icon] as const),
+  WEATHER_CONDITIONS_RAW.map(c => [c.code, c.icon] as const),
 );
 
 // US EPA index -> display string
 const AQI_LABELS: Record<number, string> = {
-  1: "0 - 50 \u{1F7E2}",
-  2: "51 - 100 \u{1F7E1}",
-  3: "101 - 150 \u{1F7E0}",
-  4: "151 - 200 \u{1F7E0}",
-  5: "201 - 300 \u{1F534}",
-  6: "301 - 500 \u{1F534}",
+  1: '0 - 50 \u{1F7E2}',
+  2: '51 - 100 \u{1F7E1}',
+  3: '101 - 150 \u{1F7E0}',
+  4: '151 - 200 \u{1F7E0}',
+  5: '201 - 300 \u{1F534}',
+  6: '301 - 500 \u{1F534}',
 };
 
 const toWeatherData = ({
   location,
   current,
 }: WeatherApiResponse): WeatherData => {
-  const epa = current.air_quality?.["us-epa-index"];
+  const epa = current.air_quality?.['us-epa-index'];
   return {
-    place: [location.name, location.region].filter(Boolean).join(", "),
+    place: [location.name, location.region].filter(Boolean).join(', '),
     condition: current.condition.text,
     iconCode: ICON_BY_CODE.get(current.condition.code),
     tempC: current.temp_c,
     windMph: current.wind_mph,
     precipIn: current.precip_in,
     humidity: current.humidity,
-    aqi: (epa !== undefined && AQI_LABELS[epa]) || "N/A",
+    aqi: (epa !== undefined && AQI_LABELS[epa]) || 'N/A',
   };
 };
 
 const geolocationErrorMessage = (err: GeolocationPositionError): string => {
   switch (err.code) {
     case err.PERMISSION_DENIED:
-      return "Location access denied — allow it to see local weather.";
+      return 'Location access denied — allow it to see local weather.';
     case err.POSITION_UNAVAILABLE:
-      return "Your location is unavailable right now.";
+      return 'Your location is unavailable right now.';
     case err.TIMEOUT:
-      return "Timed out while getting your location.";
+      return 'Timed out while getting your location.';
     default:
-      return "Could not get your location.";
+      return 'Could not get your location.';
   }
 };
 
-const Stat = ({ label, children }: { label: string; children: ReactNode }) => (
+const Stat = ({label, children}: {label: string; children: ReactNode}) => (
   <div className="pr-2 text-base">
     {label}: <span className="block font-bold">{children}</span>
   </div>
 );
 
-const geolocationSupported = () => "geolocation" in navigator;
+const geolocationSupported = () => 'geolocation' in navigator;
 
 const initialState = (): WeatherState =>
   geolocationSupported()
-    ? { status: "locating" }
-    : { status: "error", message: "Geolocation is not supported." };
+    ? {status: 'locating'}
+    : {status: 'error', message: 'Geolocation is not supported.'};
 
 interface WeatherProps {
   onOpenSettings: () => void;
 }
 
-const MissingKey = ({ onOpenSettings }: WeatherProps) => (
+const MissingKey = ({onOpenSettings}: WeatherProps) => (
   <div className="px-5 py-3 text-sm text-neutral-500">
     <p>Add your free WeatherAPI key to see local weather</p>
     <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -113,7 +113,7 @@ const MissingKey = ({ onOpenSettings }: WeatherProps) => (
 const WeatherReport = ({
   apiKey,
   onOpenSettings,
-}: WeatherProps & { apiKey: string }) => {
+}: WeatherProps & {apiKey: string}) => {
   const [state, setState] = useState<WeatherState>(initialState);
 
   useEffect(() => {
@@ -123,49 +123,49 @@ const WeatherReport = ({
 
     const fetchWeather = async (pos: GeolocationPosition) => {
       if (controller.signal.aborted) return;
-      setState({ status: "loading" });
+      setState({status: 'loading'});
 
       const query = `${pos.coords.latitude},${pos.coords.longitude}`;
-      const url = currentWeatherUrl(apiKey, query, { aqi: true });
+      const url = currentWeatherUrl(apiKey, query, {aqi: true});
 
       try {
-        const res = await fetch(url, { signal: controller.signal });
+        const res = await fetch(url, {signal: controller.signal});
         if (!res.ok) {
           const problem = await classifyWeatherApiError(res);
-          if (problem.kind === "other") throw new Error(`HTTP ${res.status}`);
+          if (problem.kind === 'other') throw new Error(`HTTP ${res.status}`);
           setState({
-            status: "error",
+            status: 'error',
             message: describeWeatherApiProblem(problem),
             // Only a missing/invalid key is fixable in settings
-            keyProblem: problem.kind === "key",
+            keyProblem: problem.kind === 'key',
           });
           return;
         }
         const json: unknown = await res.json();
         if (!isWeatherApiResponse(json)) {
-          throw new Error("Unexpected weather response");
+          throw new Error('Unexpected weather response');
         }
-        setState({ status: "ready", data: toWeatherData(json) });
+        setState({status: 'ready', data: toWeatherData(json)});
       } catch (err) {
         if (controller.signal.aborted) return;
         console.error(err);
-        setState({ status: "error", message: "Could not load the weather." });
+        setState({status: 'error', message: 'Could not load the weather.'});
       }
     };
 
     navigator.geolocation.getCurrentPosition(
-      (pos) => void fetchWeather(pos),
-      (err) => {
+      pos => void fetchWeather(pos),
+      err => {
         if (controller.signal.aborted) return;
-        setState({ status: "error", message: geolocationErrorMessage(err) });
+        setState({status: 'error', message: geolocationErrorMessage(err)});
       },
-      { maximumAge: 10 * 60 * 1000, timeout: 15_000 },
+      {maximumAge: 10 * 60 * 1000, timeout: 15_000},
     );
 
     return () => controller.abort();
   }, [apiKey]);
 
-  if (state.status === "error" && state.keyProblem) {
+  if (state.status === 'error' && state.keyProblem) {
     return (
       <div className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm text-neutral-500">
         <p>{state.message}</p>
@@ -176,17 +176,17 @@ const WeatherReport = ({
     );
   }
 
-  if (state.status !== "ready") {
+  if (state.status !== 'ready') {
     const message =
-      state.status === "error"
+      state.status === 'error'
         ? state.message
-        : state.status === "locating"
-          ? "Finding your location…"
-          : "Loading weather…";
+        : state.status === 'locating'
+          ? 'Finding your location…'
+          : 'Loading weather…';
     return <p className="px-5 py-3 text-sm text-neutral-500">{message}</p>;
   }
 
-  const { data } = state;
+  const {data} = state;
 
   return (
     <div className="flex flex-col px-5 py-3">
@@ -219,8 +219,8 @@ const WeatherReport = ({
   );
 };
 
-const Weather = ({ onOpenSettings }: WeatherProps) => {
-  const { loaded, weatherApiKey } = useSettings();
+const Weather = ({onOpenSettings}: WeatherProps) => {
+  const {loaded, weatherApiKey} = useSettings();
   if (!loaded) return null;
   if (!weatherApiKey) return <MissingKey onOpenSettings={onOpenSettings} />;
   return (

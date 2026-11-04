@@ -1,13 +1,13 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
+import {defineConfig} from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   // Relative asset paths so the build works under chrome-extension://<id>/
-  base: "./",
+  base: './',
   build: {
-    outDir: "dist",
+    outDir: 'dist',
     emptyOutDir: true,
   },
 });

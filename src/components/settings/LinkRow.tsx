@@ -1,11 +1,11 @@
-import { FiArrowDown, FiArrowUp, FiTrash2 } from "react-icons/fi";
+import {FiArrowDown, FiArrowUp, FiTrash2} from 'react-icons/fi';
 import {
   MAX_LABEL_LENGTH,
   MAX_URL_LENGTH,
   type StoredLink,
-} from "../../lib/links";
-import * as ui from "../ui/styles";
-import type { LinkField } from "./linksDraft";
+} from '../../lib/links';
+import * as ui from '../ui/styles';
+import type {LinkField} from './linksDraft';
 
 interface LinkRowProps {
   row: StoredLink;
@@ -22,24 +22,24 @@ interface LinkRowProps {
 
 const FIELDS: Record<
   LinkField,
-  { label: string; placeholder: string; maxLength: number }
+  {label: string; placeholder: string; maxLength: number}
 > = {
-  label: { label: "Label", placeholder: "Label", maxLength: MAX_LABEL_LENGTH },
+  label: {label: 'Label', placeholder: 'Label', maxLength: MAX_LABEL_LENGTH},
   url: {
-    label: "URL",
-    placeholder: "https://example.com/",
+    label: 'URL',
+    placeholder: 'https://example.com/',
     maxLength: MAX_URL_LENGTH,
   },
 };
 
 const LinkRow = (props: LinkRowProps) => {
-  const { row, index, count, idPrefix, errorFor } = props;
+  const {row, index, count, idPrefix, errorFor} = props;
   const name = row.label.trim() || `link ${index + 1}`;
 
   const field = (key: LinkField) => {
     const id = `${idPrefix}-${row.id}-${key}`;
     const error = errorFor(key);
-    const { label, placeholder, maxLength } = FIELDS[key];
+    const {label, placeholder, maxLength} = FIELDS[key];
     return (
       <div>
         <label htmlFor={id} className="sr-only">
@@ -47,13 +47,13 @@ const LinkRow = (props: LinkRowProps) => {
         </label>
         <input
           id={id}
-          type={key === "url" ? "url" : "text"}
-          inputMode={key === "url" ? "url" : undefined}
-          spellCheck={key === "url" ? false : undefined}
+          type={key === 'url' ? 'url' : 'text'}
+          inputMode={key === 'url' ? 'url' : undefined}
+          spellCheck={key === 'url' ? false : undefined}
           value={row[key]}
           maxLength={maxLength}
           placeholder={placeholder}
-          onChange={(e) => props.onChange(key, e.target.value)}
+          onChange={e => props.onChange(key, e.target.value)}
           onBlur={() => props.onBlur(key)}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
@@ -74,8 +74,8 @@ const LinkRow = (props: LinkRowProps) => {
   return (
     <li className="flex items-start gap-2">
       <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-        {field("label")}
-        {field("url")}
+        {field('label')}
+        {field('url')}
       </div>
       <div className="flex shrink-0 items-center">
         <button

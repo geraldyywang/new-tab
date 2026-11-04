@@ -11,41 +11,41 @@ const MAX_ID_LENGTH = 64;
 
 export const DEFAULT_SIDEBAR_LINKS: readonly StoredLink[] = [
   {
-    id: "default-gmail",
-    label: "Gmail",
-    url: "https://mail.google.com/mail/u/0/#inbox",
+    id: 'default-gmail',
+    label: 'Gmail',
+    url: 'https://mail.google.com/mail/u/0/#inbox',
   },
   {
-    id: "default-calendar",
-    label: "Google Calendar",
-    url: "https://calendar.google.com/",
+    id: 'default-calendar',
+    label: 'Google Calendar',
+    url: 'https://calendar.google.com/',
   },
   {
-    id: "default-drive",
-    label: "Google Drive",
-    url: "https://drive.google.com/drive/u/0/my-drive",
+    id: 'default-drive',
+    label: 'Google Drive',
+    url: 'https://drive.google.com/drive/u/0/my-drive',
   },
-  { id: "default-youtube", label: "YouTube", url: "https://www.youtube.com/" },
-  { id: "default-claude", label: "Claude", url: "https://claude.ai/" },
-  { id: "default-chatgpt", label: "ChatGPT", url: "https://chatgpt.com/" },
-  { id: "default-gemini", label: "Gemini", url: "https://gemini.google.com/" },
-  { id: "default-notion", label: "Notion", url: "https://www.notion.so/" },
+  {id: 'default-youtube', label: 'YouTube', url: 'https://www.youtube.com/'},
+  {id: 'default-claude', label: 'Claude', url: 'https://claude.ai/'},
+  {id: 'default-chatgpt', label: 'ChatGPT', url: 'https://chatgpt.com/'},
+  {id: 'default-gemini', label: 'Gemini', url: 'https://gemini.google.com/'},
+  {id: 'default-notion', label: 'Notion', url: 'https://www.notion.so/'},
 ];
 
 export const DEFAULT_SOCIAL_LINKS: readonly StoredLink[] = [
-  { id: "default-github", label: "GitHub", url: "https://github.com/" },
+  {id: 'default-github', label: 'GitHub', url: 'https://github.com/'},
   {
-    id: "default-linkedin",
-    label: "LinkedIn",
-    url: "https://www.linkedin.com/feed/",
+    id: 'default-linkedin',
+    label: 'LinkedIn',
+    url: 'https://www.linkedin.com/feed/',
   },
   {
-    id: "default-instagram",
-    label: "Instagram",
-    url: "https://www.instagram.com/",
+    id: 'default-instagram',
+    label: 'Instagram',
+    url: 'https://www.instagram.com/',
   },
-  { id: "default-x", label: "X", url: "https://x.com/" },
-  { id: "default-reddit", label: "Reddit", url: "https://www.reddit.com/" },
+  {id: 'default-x', label: 'X', url: 'https://x.com/'},
+  {id: 'default-reddit', label: 'Reddit', url: 'https://www.reddit.com/'},
 ];
 
 /** Parses `input` and returns it only if it is an absolute http(s) URL. */
@@ -53,7 +53,7 @@ export const parseHttpUrl = (input: string): URL | null => {
   if (input.length > MAX_URL_LENGTH) return null;
   try {
     const url = new URL(input);
-    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
     if (!url.hostname) return null;
     return url;
   } catch {
@@ -77,7 +77,7 @@ export const normalizeUrlInput = (input: string): string => {
 };
 
 export const newLinkId = (): string => {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
     return crypto.randomUUID();
   }
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
@@ -95,11 +95,11 @@ export const sanitizeLinks = (value: unknown): StoredLink[] | null => {
   const links: StoredLink[] = [];
 
   for (const item of value.slice(0, MAX_LINKS)) {
-    if (typeof item !== "object" || item === null) continue;
-    const { id, label, url } = item as Record<string, unknown>;
-    if (typeof id !== "string" || !id || id.length > MAX_ID_LENGTH) continue;
+    if (typeof item !== 'object' || item === null) continue;
+    const {id, label, url} = item as Record<string, unknown>;
+    if (typeof id !== 'string' || !id || id.length > MAX_ID_LENGTH) continue;
     if (seen.has(id)) continue;
-    if (typeof label !== "string" || typeof url !== "string") continue;
+    if (typeof label !== 'string' || typeof url !== 'string') continue;
 
     const parsed = parseHttpUrl(url);
     if (!parsed) continue;

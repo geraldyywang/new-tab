@@ -5,13 +5,13 @@
  */
 
 export const SETTING_KEYS = [
-  "weatherApiKey",
-  "sidebarLinks",
-  "socialLinks",
+  'weatherApiKey',
+  'sidebarLinks',
+  'socialLinks',
 ] as const;
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
-export type StorageBackendKind = "chrome-sync" | "local-storage";
+export type StorageBackendKind = 'chrome-sync' | 'local-storage';
 
 export type RawSettings = Partial<Record<SettingKey, unknown>>;
 
@@ -25,19 +25,19 @@ export interface StorageBackend {
 }
 
 export const hasChromeSync = (): boolean =>
-  typeof chrome !== "undefined" && Boolean(chrome.storage?.sync);
+  typeof chrome !== 'undefined' && Boolean(chrome.storage?.sync);
 
 export const chromeSyncBackend = (): StorageBackend => ({
-  kind: "chrome-sync",
+  kind: 'chrome-sync',
   get: () => chrome.storage.sync.get<RawSettings>([...SETTING_KEYS]),
-  set: (key, value) => chrome.storage.sync.set({ [key]: value }),
-  remove: (key) => chrome.storage.sync.remove(key),
-  subscribe: (onChange) => {
+  set: (key, value) => chrome.storage.sync.set({[key]: value}),
+  remove: key => chrome.storage.sync.remove(key),
+  subscribe: onChange => {
     const listener = (
       changes: Record<string, chrome.storage.StorageChange>,
       areaName: chrome.storage.AreaName,
     ) => {
-      if (areaName === "sync" && SETTING_KEYS.some((key) => key in changes)) {
+      if (areaName === 'sync' && SETTING_KEYS.some(key => key in changes)) {
         onChange();
       }
     };
@@ -46,10 +46,10 @@ export const chromeSyncBackend = (): StorageBackend => ({
   },
 });
 
-export const LOCAL_STORAGE_PREFIX = "new-tab:";
+export const LOCAL_STORAGE_PREFIX = 'new-tab:';
 
 export const localStorageBackend = (): StorageBackend => ({
-  kind: "local-storage",
+  kind: 'local-storage',
   get: async () => {
     const result: RawSettings = {};
     for (const key of SETTING_KEYS) {
@@ -69,18 +69,18 @@ export const localStorageBackend = (): StorageBackend => ({
       JSON.stringify(value),
     );
   },
-  remove: async (key) => {
+  remove: async key => {
     window.localStorage.removeItem(LOCAL_STORAGE_PREFIX + key);
   },
-  subscribe: (onChange) => {
+  subscribe: onChange => {
     // Only fired for changes made in *other* tabs on the same origin
     const listener = (event: StorageEvent) => {
       if (event.key === null || event.key.startsWith(LOCAL_STORAGE_PREFIX)) {
         onChange();
       }
     };
-    window.addEventListener("storage", listener);
-    return () => window.removeEventListener("storage", listener);
+    window.addEventListener('storage', listener);
+    return () => window.removeEventListener('storage', listener);
   },
 });
 

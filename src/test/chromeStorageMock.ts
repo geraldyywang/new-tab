@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import {vi} from 'vitest';
 
 type ChangeListener = (
   changes: Record<string, chrome.storage.StorageChange>,
@@ -39,13 +39,13 @@ export const installChromeStorageMock = (): ChromeStorageMock => {
   let nextWriteError: string | null = null;
 
   const emit = (changes: Record<string, chrome.storage.StorageChange>) => {
-    setTimeout(() => listeners.forEach((l) => l(changes, "sync")), 0);
+    setTimeout(() => listeners.forEach(l => l(changes, 'sync')), 0);
   };
 
   const applySet = (items: Record<string, unknown>) => {
     const changes: Record<string, chrome.storage.StorageChange> = {};
     for (const [key, value] of Object.entries(items)) {
-      changes[key] = { oldValue: data.get(key), newValue: copy(value) };
+      changes[key] = {oldValue: data.get(key), newValue: copy(value)};
       data.set(key, copy(value));
     }
     emit(changes);
@@ -55,7 +55,7 @@ export const installChromeStorageMock = (): ChromeStorageMock => {
     const changes: Record<string, chrome.storage.StorageChange> = {};
     for (const key of keys) {
       if (!data.has(key)) continue;
-      changes[key] = { oldValue: data.get(key) };
+      changes[key] = {oldValue: data.get(key)};
       data.delete(key);
     }
     if (Object.keys(changes).length > 0) emit(changes);
@@ -71,8 +71,8 @@ export const installChromeStorageMock = (): ChromeStorageMock => {
   const mock: ChromeStorageMock = {
     data,
     externalSet: applySet,
-    externalRemove: (key) => applyRemove([key]),
-    failNextWrite: (message) => {
+    externalRemove: key => applyRemove([key]),
+    failNextWrite: message => {
       nextWriteError = message;
     },
     deferGets: false,
@@ -89,7 +89,7 @@ export const installChromeStorageMock = (): ChromeStorageMock => {
         if (data.has(key)) result[key] = copy(data.get(key));
       }
       if (!mock.deferGets) return Promise.resolve(result);
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         mock.pendingGets.push(() => resolve(result));
       });
     },
@@ -98,7 +98,7 @@ export const installChromeStorageMock = (): ChromeStorageMock => {
       for (const [key, value] of Object.entries(items)) {
         const bytes = key.length + JSON.stringify(value).length;
         if (bytes > MOCK_QUOTA_BYTES_PER_ITEM) {
-          throw new Error("QUOTA_BYTES_PER_ITEM quota exceeded");
+          throw new Error('QUOTA_BYTES_PER_ITEM quota exceeded');
         }
       }
       applySet(items);
@@ -109,7 +109,7 @@ export const installChromeStorageMock = (): ChromeStorageMock => {
     },
   };
 
-  vi.stubGlobal("chrome", {
+  vi.stubGlobal('chrome', {
     runtime: {},
     storage: {
       sync,

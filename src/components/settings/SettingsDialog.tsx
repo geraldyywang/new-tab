@@ -1,17 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { FiX } from "react-icons/fi";
-import { DEFAULT_SIDEBAR_LINKS, DEFAULT_SOCIAL_LINKS } from "../../lib/links";
-import { saveLinks, useSettings } from "../../lib/storage";
-import { iconButtonClass } from "../ui/styles";
-import ApiKeySection from "./ApiKeySection";
-import LinksEditor from "./LinksEditor";
+import {useEffect, useRef, useState} from 'react';
+import {FiX} from 'react-icons/fi';
+import {DEFAULT_SIDEBAR_LINKS, DEFAULT_SOCIAL_LINKS} from '../../lib/links';
+import {saveLinks, useSettings} from '../../lib/storage';
+import {iconButtonClass} from '../ui/styles';
+import ApiKeySection from './ApiKeySection';
+import LinksEditor from './LinksEditor';
 
 interface SettingsDialogProps {
   open: boolean;
   onClose: () => void;
 }
 
-const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
+const SettingsDialog = ({open, onClose}: SettingsDialogProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
   const pointerDownOnBackdrop = useRef(false);
@@ -28,9 +28,9 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
     return {
       sections,
       report: {
-        apiKey: reporter("apiKey"),
-        sidebarLinks: reporter("sidebarLinks"),
-        socialLinks: reporter("socialLinks"),
+        apiKey: reporter('apiKey'),
+        sidebarLinks: reporter('sidebarLinks'),
+        socialLinks: reporter('socialLinks'),
       },
     };
   });
@@ -51,7 +51,7 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
   }, [open]);
 
   const confirmDiscard = () =>
-    dirty.sections.size === 0 || window.confirm("Discard unsaved changes?");
+    dirty.sections.size === 0 || window.confirm('Discard unsaved changes?');
 
   // Close button and backdrop click
   const requestClose = () => {
@@ -73,21 +73,21 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
       // Chrome may skip `cancel` (or make it non-cancelable) on repeated Esc,
       // so with unsaved edits handle Esc here: a canceled keydown never
       // becomes a close request
-      onKeyDown={(e) => {
-        if (e.key !== "Escape" || dirty.sections.size === 0) return;
+      onKeyDown={e => {
+        if (e.key !== 'Escape' || dirty.sections.size === 0) return;
         e.preventDefault();
         requestClose();
       }}
       // Fallback for other close requests; keep the dialog open if asked to
-      onCancel={(e) => {
+      onCancel={e => {
         if (!confirmDiscard()) e.preventDefault();
       }}
       onClose={handleClose}
       // Close on backdrop click, but not when a text selection drag ends there
-      onPointerDown={(e) => {
+      onPointerDown={e => {
         pointerDownOnBackdrop.current = e.target === e.currentTarget;
       }}
-      onClick={(e) => {
+      onClick={e => {
         if (pointerDownOnBackdrop.current && e.target === e.currentTarget) {
           requestClose();
         }
@@ -127,7 +127,7 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
                 description="Shown in the bar on the right."
                 links={settings.sidebarLinks}
                 defaults={DEFAULT_SIDEBAR_LINKS}
-                onSave={(links) => saveLinks("sidebarLinks", links)}
+                onSave={links => saveLinks('sidebarLinks', links)}
                 onDirtyChange={dirty.report.sidebarLinks}
               />
               <LinksEditor
@@ -135,7 +135,7 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
                 description="Shown in the bar at the bottom left."
                 links={settings.socialLinks}
                 defaults={DEFAULT_SOCIAL_LINKS}
-                onSave={(links) => saveLinks("socialLinks", links)}
+                onSave={links => saveLinks('socialLinks', links)}
                 onDirtyChange={dirty.report.socialLinks}
               />
             </div>

@@ -1,25 +1,25 @@
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from 'react';
 import {
   describeWeatherApiProblem,
   testWeatherApiKey,
   type KeyTestResult,
-} from "../../lib/weatherApi";
-import type { StatusMessage } from "../ui/styles";
+} from '../../lib/weatherApi';
+import type {StatusMessage} from '../ui/styles';
 
 export const keyTestStatus = (result: KeyTestResult): StatusMessage => {
-  if (result.kind === "ok") return { tone: "ok", text: "OK — the key works." };
-  if (result.kind === "network") {
+  if (result.kind === 'ok') return {tone: 'ok', text: 'OK — the key works.'};
+  if (result.kind === 'network') {
     return {
-      tone: "error",
+      tone: 'error',
       text: "Network error — couldn't reach WeatherAPI.",
     };
   }
-  const { problem } = result;
+  const {problem} = result;
   const text =
-    problem.kind === "key"
-      ? `Invalid key${problem.detail ? `: ${problem.detail}` : "."}`
+    problem.kind === 'key'
+      ? `Invalid key${problem.detail ? `: ${problem.detail}` : '.'}`
       : describeWeatherApiProblem(problem);
-  return { tone: "error", text };
+  return {tone: 'error', text};
 };
 
 /** Runs one key test at a time; aborts it on unmount. */
@@ -44,5 +44,5 @@ export const useKeyTester = () => {
     }
   };
 
-  return { testing, run };
+  return {testing, run};
 };

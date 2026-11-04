@@ -1,15 +1,15 @@
-import { useState, type FormEvent } from "react";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import {useState, type FormEvent} from 'react';
+import {FiEye, FiEyeOff} from 'react-icons/fi';
 import {
   saveWeatherApiKey,
   SettingsWriteError,
   type StorageBackendKind,
-} from "../../lib/storage";
-import { WEATHERAPI_SIGNUP_URL } from "../../lib/weatherApi";
-import * as ui from "../ui/styles";
-import ConflictNotice from "./ConflictNotice";
-import { useKeyTester } from "./useKeyTester";
-import { useReportDirty, useSyncedDraft } from "./useSyncedDraft";
+} from '../../lib/storage';
+import {WEATHERAPI_SIGNUP_URL} from '../../lib/weatherApi';
+import * as ui from '../ui/styles';
+import ConflictNotice from './ConflictNotice';
+import {useKeyTester} from './useKeyTester';
+import {useReportDirty, useSyncedDraft} from './useSyncedDraft';
 
 interface ApiKeySectionProps {
   savedKey: string;
@@ -24,7 +24,7 @@ const ApiKeySection = ({
   backend,
   onDirtyChange,
 }: ApiKeySectionProps) => {
-  const { draft, setDraft, dirty, conflict, reload } = useSyncedDraft(
+  const {draft, setDraft, dirty, conflict, reload} = useSyncedDraft(
     savedKey,
     keyEquals,
   );
@@ -35,10 +35,10 @@ const ApiKeySection = ({
   useReportDirty(dirty, onDirtyChange);
 
   const trimmed = draft.trim();
-  const busy: "save" | "test" | null = saving
-    ? "save"
+  const busy: 'save' | 'test' | null = saving
+    ? 'save'
     : tester.testing
-      ? "test"
+      ? 'test'
       : null;
 
   const persist = async (value: string) => {
@@ -47,11 +47,11 @@ const ApiKeySection = ({
     setDraft(value);
     try {
       await saveWeatherApiKey(value);
-      setStatus({ tone: "ok", text: value ? "Key saved." : "Key cleared." });
+      setStatus({tone: 'ok', text: value ? 'Key saved.' : 'Key cleared.'});
     } catch (err) {
       const text =
-        err instanceof SettingsWriteError ? err.message : "Could not save.";
-      setStatus({ tone: "error", text });
+        err instanceof SettingsWriteError ? err.message : 'Could not save.';
+      setStatus({tone: 'error', text});
     } finally {
       setSaving(false);
     }
@@ -59,7 +59,7 @@ const ApiKeySection = ({
 
   const handleTest = async () => {
     if (busy || !trimmed) return;
-    setStatus({ tone: "info", text: "Testing…" });
+    setStatus({tone: 'info', text: 'Testing…'});
     const result = await tester.run(trimmed);
     if (result) setStatus(result);
   };
@@ -70,7 +70,7 @@ const ApiKeySection = ({
         Weather API key
       </h3>
       <p className="mt-1 text-sm text-neutral-500">
-        Get a free key at{" "}
+        Get a free key at{' '}
         <a
           href={WEATHERAPI_SIGNUP_URL}
           target="_blank"
@@ -95,9 +95,9 @@ const ApiKeySection = ({
         <div className="flex items-center gap-2">
           <input
             id="settings-api-key"
-            type={visible ? "text" : "password"}
+            type={visible ? 'text' : 'password'}
             value={draft}
-            onChange={(e) => setDraft(e.target.value)}
+            onChange={e => setDraft(e.target.value)}
             placeholder="Paste your WeatherAPI key"
             autoComplete="off"
             spellCheck={false}
@@ -105,10 +105,10 @@ const ApiKeySection = ({
           />
           <button
             type="button"
-            onClick={() => setVisible((v) => !v)}
-            aria-label={visible ? "Hide API key" : "Show API key"}
+            onClick={() => setVisible(v => !v)}
+            aria-label={visible ? 'Hide API key' : 'Show API key'}
             aria-pressed={visible}
-            title={visible ? "Hide key" : "Show key"}
+            title={visible ? 'Hide key' : 'Show key'}
             className={ui.iconButtonClass}
           >
             {visible ? <FiEyeOff aria-hidden /> : <FiEye aria-hidden />}
@@ -123,7 +123,7 @@ const ApiKeySection = ({
             disabled={busy !== null || !dirty}
             className={ui.buttonClass}
           >
-            {busy === "save" ? "Saving…" : "Save"}
+            {busy === 'save' ? 'Saving…' : 'Save'}
           </button>
           <button
             type="button"
@@ -131,11 +131,11 @@ const ApiKeySection = ({
             disabled={busy !== null || !trimmed}
             className={ui.buttonClass}
           >
-            {busy === "test" ? "Testing…" : "Test"}
+            {busy === 'test' ? 'Testing…' : 'Test'}
           </button>
           <button
             type="button"
-            onClick={() => void persist("")}
+            onClick={() => void persist('')}
             disabled={busy !== null || (!savedKey && !draft)}
             className={ui.buttonClass}
           >
@@ -144,7 +144,7 @@ const ApiKeySection = ({
           <p
             role="status"
             aria-live="polite"
-            className={`text-sm ${status ? ui.statusClass[status.tone] : ""}`}
+            className={`text-sm ${status ? ui.statusClass[status.tone] : ''}`}
           >
             {status?.text}
           </p>
@@ -154,7 +154,7 @@ const ApiKeySection = ({
       <p className="mt-3 text-xs text-neutral-500">
         Stored in Chrome sync (your Google account) when signed in; otherwise
         only on this device.
-        {backend === "local-storage" &&
+        {backend === 'local-storage' &&
           " Dev mode: saved in this browser's localStorage."}
       </p>
     </section>

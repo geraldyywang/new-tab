@@ -1,19 +1,19 @@
-import { useSyncExternalStore } from "react";
+import {useSyncExternalStore} from 'react';
 import {
   DEFAULT_SIDEBAR_LINKS,
   DEFAULT_SOCIAL_LINKS,
   sanitizeLinks,
   type StoredLink,
-} from "./links";
+} from './links';
 import {
   createBackend,
   type RawSettings,
   type SettingKey,
   type StorageBackendKind,
-} from "./storageBackends";
+} from './storageBackends';
 
-export type { StorageBackendKind } from "./storageBackends";
-export type LinkListKey = Extract<SettingKey, "sidebarLinks" | "socialLinks">;
+export type {StorageBackendKind} from './storageBackends';
+export type LinkListKey = Extract<SettingKey, 'sidebarLinks' | 'socialLinks'>;
 
 export interface SettingsSnapshot {
   /** False until the first read from storage has finished. */
@@ -26,9 +26,9 @@ export interface SettingsSnapshot {
 
 /** A write was rejected (quota exceeded, storage unavailable, ...). */
 export class SettingsWriteError extends Error {
-  constructor(message: string, options?: { cause?: unknown }) {
+  constructor(message: string, options?: {cause?: unknown}) {
     super(message, options);
-    this.name = "SettingsWriteError";
+    this.name = 'SettingsWriteError';
   }
 }
 
@@ -42,7 +42,7 @@ const parseSettings = (raw: RawSettings): SettingsSnapshot => ({
   loaded: true,
   backend: backend.kind,
   weatherApiKey:
-    typeof raw.weatherApiKey === "string" ? raw.weatherApiKey.trim() : "",
+    typeof raw.weatherApiKey === 'string' ? raw.weatherApiKey.trim() : '',
   sidebarLinks: sanitizeLinks(raw.sidebarLinks) ?? DEFAULT_SIDEBAR_LINKS,
   socialLinks: sanitizeLinks(raw.socialLinks) ?? DEFAULT_SOCIAL_LINKS,
 });
@@ -52,7 +52,7 @@ const parseSettings = (raw: RawSettings): SettingsSnapshot => ({
 let snapshot: SettingsSnapshot = {
   loaded: false,
   backend: backend.kind,
-  weatherApiKey: "",
+  weatherApiKey: '',
   sidebarLinks: DEFAULT_SIDEBAR_LINKS,
   socialLinks: DEFAULT_SOCIAL_LINKS,
 };
@@ -66,12 +66,12 @@ const refresh = async () => {
   try {
     raw = await backend.get();
   } catch (err) {
-    console.error("Could not read settings", err);
+    console.error('Could not read settings', err);
   }
   // A newer read started while this one was in flight; let it win
   if (seq !== readSeq) return;
   snapshot = parseSettings(raw);
-  listeners.forEach((listener) => listener());
+  listeners.forEach(listener => listener());
 };
 
 export const subscribeSettings = (listener: () => void) => {
@@ -95,16 +95,16 @@ export const getSettingsSnapshot = () => snapshot;
 
 export const describeWriteError = (err: unknown): string => {
   const message = err instanceof Error ? err.message : String(err);
-  if (message.includes("QUOTA_BYTES_PER_ITEM")) {
+  if (message.includes('QUOTA_BYTES_PER_ITEM')) {
     return "That's too much data for one setting (Chrome sync allows 8 KB). Remove some links and try again.";
   }
-  if (message.includes("QUOTA_BYTES")) {
-    return "Chrome sync storage is full for this extension.";
+  if (message.includes('QUOTA_BYTES')) {
+    return 'Chrome sync storage is full for this extension.';
   }
-  if (message.includes("MAX_WRITE_OPERATIONS")) {
-    return "Too many saves in a short time. Wait a minute and try again.";
+  if (message.includes('MAX_WRITE_OPERATIONS')) {
+    return 'Too many saves in a short time. Wait a minute and try again.';
   }
-  if (err instanceof DOMException && err.name === "QuotaExceededError") {
+  if (err instanceof DOMException && err.name === 'QuotaExceededError') {
     return "This browser's storage is full.";
   }
   return `Could not save settings: ${message}`;
@@ -124,14 +124,14 @@ const writeSetting = async (key: SettingKey, value: unknown) => {
     if (value === undefined) await backend.remove(key);
     else await backend.set(key, value);
   } catch (err) {
-    throw new SettingsWriteError(describeWriteError(err), { cause: err });
+    throw new SettingsWriteError(describeWriteError(err), {cause: err});
   }
   await refresh();
 };
 
 /** Saves the WeatherAPI key; an empty string removes it. */
 export const saveWeatherApiKey = (key: string) =>
-  writeSetting("weatherApiKey", key.trim() || undefined);
+  writeSetting('weatherApiKey', key.trim() || undefined);
 
 /** Saves a link list; `null` removes it so the defaults are used. */
 export const saveLinks = (which: LinkListKey, links: StoredLink[] | null) =>
