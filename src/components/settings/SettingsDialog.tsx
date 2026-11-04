@@ -11,6 +11,7 @@ interface SettingsDialogProps {
   onClose: () => void;
 }
 
+/** Modal settings dialog. Asks before discarding unsaved edits on close. */
 export function SettingsDialog({open, onClose}: SettingsDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);

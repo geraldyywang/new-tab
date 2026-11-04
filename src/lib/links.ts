@@ -1,14 +1,19 @@
+/** A user-editable link as kept in settings. */
 export interface StoredLink {
   id: string;
   label: string;
   url: string;
 }
 
+/** Most links kept per list. */
 export const MAX_LINKS = 50;
+/** Longest label kept, in characters. */
 export const MAX_LABEL_LENGTH = 100;
+/** Longest URL accepted, in characters. */
 export const MAX_URL_LENGTH = 2048;
 const MAX_ID_LENGTH = 64;
 
+/** Sidebar links used until the user saves their own. */
 export const DEFAULT_SIDEBAR_LINKS: readonly StoredLink[] = [
   {
     id: 'default-gmail',
@@ -32,6 +37,7 @@ export const DEFAULT_SIDEBAR_LINKS: readonly StoredLink[] = [
   {id: 'default-notion', label: 'Notion', url: 'https://www.notion.so/'},
 ];
 
+/** Social links used until the user saves their own. */
 export const DEFAULT_SOCIAL_LINKS: readonly StoredLink[] = [
   {id: 'default-github', label: 'GitHub', url: 'https://github.com/'},
   {
@@ -76,6 +82,7 @@ export function normalizeUrlInput(input: string): string {
   return `https://${trimmed}`;
 }
 
+/** A new random id for a link row. */
 export function newLinkId(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
     return crypto.randomUUID();

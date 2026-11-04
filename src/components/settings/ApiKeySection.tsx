@@ -21,6 +21,10 @@ function keyEquals(a: string, b: string) {
   return a.trim() === b.trim();
 }
 
+/**
+ * Settings section for entering, testing, saving and clearing the WeatherAPI
+ * key.
+ */
 export function ApiKeySection({
   savedKey,
   backend,

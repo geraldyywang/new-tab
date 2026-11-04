@@ -35,6 +35,10 @@ function SiteFavicon({link}: {link: StoredLink}) {
   );
 }
 
+/**
+ * Icon link to a site: a bundled brand icon if there is one, else the site's
+ * favicon, else its first letter.
+ */
 export function LinkIcon({link, className = ''}: LinkIconProps) {
   const icon = siteIconElement(link.url);
   return (

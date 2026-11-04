@@ -223,6 +223,7 @@ function WeatherReport({
   );
 }
 
+/** Current weather for the user's location, or a prompt to add an API key. */
 export function Weather({onOpenSettings}: WeatherProps) {
   const {loaded, weatherApiKey} = useSettings();
   if (!loaded) return null;

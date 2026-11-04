@@ -6,6 +6,7 @@ import {
 } from '../../lib/weatherApi';
 import type {StatusMessage} from '../ui/styles';
 
+/** The status message to show for a key test result. */
 export function keyTestStatus(result: KeyTestResult): StatusMessage {
   if (result.kind === 'ok') return {tone: 'ok', text: 'OK — the key works.'};
   if (result.kind === 'network') {

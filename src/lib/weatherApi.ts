@@ -1,8 +1,9 @@
 // Small helpers for https://www.weatherapi.com/docs/
 
+/** Where users get a free WeatherAPI key. */
 export const WEATHERAPI_SIGNUP_URL = 'https://www.weatherapi.com/signup.aspx';
 
-// Subset of the current.json response we use
+/** The subset of the `current.json` response that we use. */
 export interface WeatherApiResponse {
   location: {name: string; region: string};
   current: {
@@ -35,6 +36,10 @@ export function isWeatherApiResponse(
   );
 }
 
+/**
+ * URL of WeatherAPI's current conditions for `query` (`lat,lon` or a place
+ * name), optionally with air quality.
+ */
 export function currentWeatherUrl(
   apiKey: string,
   query: string,
@@ -85,6 +90,7 @@ export async function classifyWeatherApiError(
   return {kind: 'other', status: res.status, code, detail};
 }
 
+/** A user-facing message for a failed WeatherAPI request. */
 export function describeWeatherApiProblem(problem: WeatherApiProblem) {
   switch (problem.kind) {
     case 'key':
@@ -98,6 +104,7 @@ export function describeWeatherApiProblem(problem: WeatherApiProblem) {
   }
 }
 
+/** Outcome of `testWeatherApiKey`. */
 export type KeyTestResult =
   | {kind: 'ok'}
   | {kind: 'network'}

@@ -1,7 +1,9 @@
 import {useSettings} from '../lib/storage';
 import {LinkIcon} from './LinkIcon';
 
-// Quick-access side bar; links are edited in the settings panel
+/**
+ * Quick-access sidebar on the right; links are edited in the settings panel.
+ */
 export function HelpfulLinks() {
   const {loaded, sidebarLinks} = useSettings();
 

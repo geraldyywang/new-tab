@@ -4,17 +4,22 @@
  * `localStorage` when running on the Vite dev server.
  */
 
+/** Every key the settings store reads and writes. */
 export const SETTING_KEYS = [
   'weatherApiKey',
   'sidebarLinks',
   'socialLinks',
 ] as const;
+/** A key in `SETTING_KEYS`. */
 export type SettingKey = (typeof SETTING_KEYS)[number];
 
+/** Which storage a backend uses. */
 export type StorageBackendKind = 'chrome-sync' | 'local-storage';
 
+/** Settings as read from storage, not yet validated. */
 export type RawSettings = Partial<Record<SettingKey, unknown>>;
 
+/** Async key/value access to one settings storage area. */
 export interface StorageBackend {
   kind: StorageBackendKind;
   get(): Promise<RawSettings>;
@@ -24,10 +29,14 @@ export interface StorageBackend {
   subscribe(onChange: () => void): () => void;
 }
 
+/**
+ * Whether `chrome.storage.sync` exists, i.e. we are running as an extension.
+ */
 export function hasChromeSync(): boolean {
   return typeof chrome !== 'undefined' && Boolean(chrome.storage?.sync);
 }
 
+/** Backend over `chrome.storage.sync`. */
 export function chromeSyncBackend(): StorageBackend {
   return {
     kind: 'chrome-sync',
@@ -49,8 +58,10 @@ export function chromeSyncBackend(): StorageBackend {
   };
 }
 
+/** Prefix for this app's `localStorage` keys. */
 export const LOCAL_STORAGE_PREFIX = 'new-tab:';
 
+/** Backend over `localStorage`, for the Vite dev server. */
 export function localStorageBackend(): StorageBackend {
   return {
     kind: 'local-storage',
@@ -89,6 +100,9 @@ export function localStorageBackend(): StorageBackend {
   };
 }
 
+/**
+ * The `chrome.storage.sync` backend when available, otherwise `localStorage`.
+ */
 export function createBackend(): StorageBackend {
   return hasChromeSync() ? chromeSyncBackend() : localStorageBackend();
 }

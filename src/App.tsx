@@ -6,6 +6,7 @@ import {Weather} from './components/Weather';
 import {Socials} from './components/Socials';
 import {SettingsDialog} from './components/settings/SettingsDialog';
 
+/** The new tab page. */
 export function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
 

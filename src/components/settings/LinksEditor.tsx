@@ -18,6 +18,7 @@ interface LinksEditorProps {
   onDirtyChange?: (dirty: boolean) => void;
 }
 
+/** Settings section for editing, reordering and saving one link list. */
 export function LinksEditor(props: LinksEditorProps) {
   const {title, description, links, defaults, onSave} = props;
   const baseId = useId();

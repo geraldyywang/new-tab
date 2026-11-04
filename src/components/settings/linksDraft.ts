@@ -11,9 +11,12 @@ import {
 } from '../../lib/links';
 import {useSyncedDraft} from './useSyncedDraft';
 
+/** An editable field of a link row. */
 export type LinkField = 'label' | 'url';
+/** Validation messages for a row, by field. */
 export type RowErrors = Partial<Record<LinkField, string>>;
 
+/** Validates one draft row; returns an empty object if it is valid. */
 export function validateRow(row: StoredLink): RowErrors {
   const errors: RowErrors = {};
   if (!row.label.trim()) errors.label = 'Enter a label.';
@@ -26,6 +29,7 @@ export function validateRow(row: StoredLink): RowErrors {
   return errors;
 }
 
+/** An edit that `linksReducer` applies to a draft link list. */
 export type LinksAction =
   | {type: 'update'; index: number; patch: Partial<Record<LinkField, string>>}
   | {type: 'move'; index: number; delta: -1 | 1}
@@ -33,6 +37,10 @@ export type LinksAction =
   | {type: 'add'; id: string}
   | {type: 'reset'; links: readonly StoredLink[]};
 
+/**
+ * Applies an edit to a draft link list. Moves past either end and adds beyond
+ * `MAX_LINKS` leave the list unchanged.
+ */
 export function linksReducer(
   rows: readonly StoredLink[],
   action: LinksAction,

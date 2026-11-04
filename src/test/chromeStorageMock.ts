@@ -5,8 +5,10 @@ type ChangeListener = (
   areaName: chrome.storage.AreaName,
 ) => void;
 
+/** Per-item size limit the mock enforces, like `chrome.storage.sync`. */
 export const MOCK_QUOTA_BYTES_PER_ITEM = 8192;
 
+/** Test handle returned by `installChromeStorageMock`. */
 export interface ChromeStorageMock {
   /** Raw contents of the in-memory sync area. */
   data: Map<string, unknown>;

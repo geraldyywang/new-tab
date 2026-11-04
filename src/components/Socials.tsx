@@ -1,7 +1,10 @@
 import {useSettings} from '../lib/storage';
 import {LinkIcon} from './LinkIcon';
 
-// Socials bottom-left bar; links are edited in the settings panel
+/**
+ * Social links bar at the bottom left; renders nothing when the list is empty.
+ * Links are edited in the settings panel.
+ */
 export function Socials() {
   const {loaded, socialLinks} = useSettings();
   if (!loaded || socialLinks.length === 0) return null;

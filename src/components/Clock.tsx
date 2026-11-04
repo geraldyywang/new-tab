@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 
+/** Large clock showing the local date and time, updated every second. */
 export function Clock() {
   const [time, setTime] = useState(() => new Date());
 

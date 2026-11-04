@@ -32,6 +32,9 @@ const FIELDS: Record<
   },
 };
 
+/**
+ * One row of a links editor: label and URL inputs plus move and remove buttons.
+ */
 export function LinkRow(props: LinkRowProps) {
   const {row, index, count, idPrefix, errorFor} = props;
   const name = row.label.trim() || `link ${index + 1}`;

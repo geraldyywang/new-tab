@@ -1,5 +1,6 @@
 import {useEffect, useState, type Dispatch, type SetStateAction} from 'react';
 
+/** State returned by `useSyncedDraft`. */
 export interface SyncedDraft<T> {
   draft: T;
   setDraft: Dispatch<SetStateAction<T>>;

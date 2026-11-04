@@ -1,3 +1,4 @@
+/** A WeatherAPI condition code with its day and night text and icon number. */
 export interface WeatherCondition {
   code: number;
   day: string;
@@ -5,6 +6,7 @@ export interface WeatherCondition {
   icon: number;
 }
 
+/** WeatherAPI's condition list. `icon` names the image in `public/assets/`. */
 export const WEATHER_CONDITIONS_RAW: WeatherCondition[] = [
   {
     code: 1000,

@@ -13,8 +13,11 @@ import {
 } from './storageBackends';
 
 export type {StorageBackendKind} from './storageBackends';
+
+/** Settings keys that hold a link list. */
 export type LinkListKey = Extract<SettingKey, 'sidebarLinks' | 'socialLinks'>;
 
+/** Current settings, validated, with defaults filled in. */
 export interface SettingsSnapshot {
   /** False until the first read from storage has finished. */
   loaded: boolean;
@@ -32,8 +35,10 @@ export class SettingsWriteError extends Error {
   }
 }
 
-// chrome.storage.sync.QUOTA_BYTES_PER_ITEM; also enforced in dev so behaviour
-// matches the extension. Each setting is its own item to stay under it.
+/**
+ * `chrome.storage.sync.QUOTA_BYTES_PER_ITEM`, also enforced in dev so behaviour
+ * matches the extension. Each setting is its own item to stay under it.
+ */
 export const QUOTA_BYTES_PER_ITEM = 8192;
 
 const backend = createBackend();
@@ -76,6 +81,10 @@ async function refresh() {
   listeners.forEach(listener => listener());
 }
 
+/**
+ * `useSyncExternalStore` subscribe: the first listener starts watching the
+ * backend and the last one to leave stops it.
+ */
 export function subscribeSettings(listener: () => void) {
   listeners.add(listener);
   if (!unsubscribeBackend) {
@@ -91,12 +100,14 @@ export function subscribeSettings(listener: () => void) {
   };
 }
 
+/** `useSyncExternalStore` snapshot: the latest settings. */
 export function getSettingsSnapshot() {
   return snapshot;
 }
 
 // --- Writes ----------------------------------------------------------------
 
+/** A user-facing message for a failed storage write. */
 export function describeWriteError(err: unknown): string {
   const message = err instanceof Error ? err.message : String(err);
   if (message.includes('QUOTA_BYTES_PER_ITEM')) {
@@ -143,6 +154,10 @@ export function saveLinks(which: LinkListKey, links: StoredLink[] | null) {
   return writeSetting(which, links ?? undefined);
 }
 
+/**
+ * Current settings; re-renders when they change here or on another tab or
+ * device.
+ */
 export function useSettings(): SettingsSnapshot {
   return useSyncExternalStore(subscribeSettings, getSettingsSnapshot);
 }
