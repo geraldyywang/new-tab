@@ -32,11 +32,11 @@ const FIELDS: Record<
   },
 };
 
-export const LinkRow = (props: LinkRowProps) => {
+export function LinkRow(props: LinkRowProps) {
   const {row, index, count, idPrefix, errorFor} = props;
   const name = row.label.trim() || `link ${index + 1}`;
 
-  const field = (key: LinkField) => {
+  function field(key: LinkField) {
     const id = `${idPrefix}-${row.id}-${key}`;
     const error = errorFor(key);
     const {label, placeholder, maxLength} = FIELDS[key];
@@ -69,7 +69,7 @@ export const LinkRow = (props: LinkRowProps) => {
         )}
       </div>
     );
-  };
+  }
 
   return (
     <li className="flex items-start gap-2">
@@ -110,4 +110,4 @@ export const LinkRow = (props: LinkRowProps) => {
       </div>
     </li>
   );
-};
+}

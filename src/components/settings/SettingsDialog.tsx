@@ -11,7 +11,7 @@ interface SettingsDialogProps {
   onClose: () => void;
 }
 
-export const SettingsDialog = ({open, onClose}: SettingsDialogProps) => {
+export function SettingsDialog({open, onClose}: SettingsDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
   const pointerDownOnBackdrop = useRef(false);
@@ -21,10 +21,12 @@ export const SettingsDialog = ({open, onClose}: SettingsDialogProps) => {
   // for useReportDirty. Only read in event handlers, so not React state.
   const [dirty] = useState(() => {
     const sections = new Set<string>();
-    const reporter = (id: string) => (isDirty: boolean) => {
-      if (isDirty) sections.add(id);
-      else sections.delete(id);
-    };
+    function reporter(id: string) {
+      return (isDirty: boolean) => {
+        if (isDirty) sections.add(id);
+        else sections.delete(id);
+      };
+    }
     return {
       sections,
       report: {
@@ -50,21 +52,24 @@ export const SettingsDialog = ({open, onClose}: SettingsDialogProps) => {
     }
   }, [open]);
 
-  const confirmDiscard = () =>
-    dirty.sections.size === 0 || window.confirm('Discard unsaved changes?');
+  function confirmDiscard() {
+    return (
+      dirty.sections.size === 0 || window.confirm('Discard unsaved changes?')
+    );
+  }
 
   // Close button and backdrop click
-  const requestClose = () => {
+  function requestClose() {
     if (confirmDiscard()) dialogRef.current?.close();
-  };
+  }
 
-  const handleClose = () => {
+  function handleClose() {
     // Sections unmount once closed; don't let stale flags outlive them
     dirty.sections.clear();
     onClose();
     restoreFocusRef.current?.focus();
     restoreFocusRef.current = null;
-  };
+  }
 
   return (
     <dialog
@@ -146,4 +151,4 @@ export const SettingsDialog = ({open, onClose}: SettingsDialogProps) => {
       )}
     </dialog>
   );
-};
+}

@@ -18,7 +18,7 @@ interface LinksEditorProps {
   onDirtyChange?: (dirty: boolean) => void;
 }
 
-export const LinksEditor = (props: LinksEditorProps) => {
+export function LinksEditor(props: LinksEditorProps) {
   const {title, description, links, defaults, onSave} = props;
   const baseId = useId();
   const draft = useLinksDraft(links, defaults);
@@ -27,12 +27,12 @@ export const LinksEditor = (props: LinksEditorProps) => {
   useReportDirty(draft.dirty, props.onDirtyChange);
 
   // Any edit clears the last "Saved." / error message
-  const edit = (change: () => void) => {
+  function edit(change: () => void) {
     change();
     setStatus(null);
-  };
+  }
 
-  const handleSave = async (event: FormEvent) => {
+  async function handleSave(event: FormEvent) {
     event.preventDefault();
     if (saving) return;
     const prepared = draft.prepareSave();
@@ -52,7 +52,7 @@ export const LinksEditor = (props: LinksEditorProps) => {
     } finally {
       setSaving(false);
     }
-  };
+  }
 
   const titleId = `${baseId}-title`;
 
@@ -140,4 +140,4 @@ export const LinksEditor = (props: LinksEditorProps) => {
       </form>
     </section>
   );
-};
+}

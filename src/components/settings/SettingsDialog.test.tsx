@@ -3,19 +3,22 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {pressEscape} from '../../test/dialogPolyfill';
 import {SettingsDialog} from './SettingsDialog';
 
-const dialog = () => document.querySelector('dialog') as HTMLDialogElement;
+function dialog() {
+  return document.querySelector('dialog') as HTMLDialogElement;
+}
 
-const renderOpenDialog = async () => {
+async function renderOpenDialog() {
   const onClose = vi.fn();
   render(<SettingsDialog open onClose={onClose} />);
   await screen.findByLabelText('WeatherAPI key');
   return onClose;
-};
+}
 
-const makeDirty = () =>
-  fireEvent.change(screen.getByLabelText('WeatherAPI key'), {
+function makeDirty() {
+  return fireEvent.change(screen.getByLabelText('WeatherAPI key'), {
     target: {value: 'unsaved'},
   });
+}
 
 let confirmSpy: ReturnType<typeof vi.fn>;
 

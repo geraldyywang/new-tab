@@ -2,10 +2,14 @@ import {fireEvent, render, screen, waitFor} from '@testing-library/react';
 import {afterEach, describe, expect, it, vi} from 'vitest';
 import {ApiKeySection} from './ApiKeySection';
 
-const input = () => screen.getByLabelText<HTMLInputElement>('WeatherAPI key');
-const button = (name: string) => screen.getByRole('button', {name});
+function input() {
+  return screen.getByLabelText<HTMLInputElement>('WeatherAPI key');
+}
+function button(name: string) {
+  return screen.getByRole('button', {name});
+}
 
-const renderSection = (savedKey = '', onDirtyChange = vi.fn()) => {
+function renderSection(savedKey = '', onDirtyChange = vi.fn()) {
   const utils = render(
     <ApiKeySection
       savedKey={savedKey}
@@ -13,16 +17,17 @@ const renderSection = (savedKey = '', onDirtyChange = vi.fn()) => {
       onDirtyChange={onDirtyChange}
     />,
   );
-  const rerenderWith = (key: string) =>
-    utils.rerender(
+  function rerenderWith(key: string) {
+    return utils.rerender(
       <ApiKeySection
         savedKey={key}
         backend="local-storage"
         onDirtyChange={onDirtyChange}
       />,
     );
+  }
   return {...utils, rerenderWith, onDirtyChange};
-};
+}
 
 afterEach(() => window.localStorage.clear());
 

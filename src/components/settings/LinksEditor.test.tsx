@@ -12,22 +12,27 @@ const custom: StoredLink[] = [
   {id: 'c2', label: 'Other', url: 'https://other.example/'},
 ];
 
-const renderEditor = (links: readonly StoredLink[] = custom) => {
+function renderEditor(links: readonly StoredLink[] = custom) {
   const onSave = vi.fn<(links: StoredLink[] | null) => Promise<void>>(
     async () => {},
   );
   const props = {title: 'Sidebar links', description: '', defaults, onSave};
   const utils = render(<LinksEditor {...props} links={links} />);
-  const rerenderWith = (next: readonly StoredLink[]) =>
-    utils.rerender(<LinksEditor {...props} links={next} />);
+  function rerenderWith(next: readonly StoredLink[]) {
+    return utils.rerender(<LinksEditor {...props} links={next} />);
+  }
   return {onSave, rerenderWith};
-};
+}
 
-const button = (name: string | RegExp) => screen.getByRole('button', {name});
-const urlInput = (n: number) =>
-  screen.getByLabelText<HTMLInputElement>(`URL for link ${n}`);
-const labelInput = (n: number) =>
-  screen.getByLabelText<HTMLInputElement>(`Label for link ${n}`);
+function button(name: string | RegExp) {
+  return screen.getByRole('button', {name});
+}
+function urlInput(n: number) {
+  return screen.getByLabelText<HTMLInputElement>(`URL for link ${n}`);
+}
+function labelInput(n: number) {
+  return screen.getByLabelText<HTMLInputElement>(`Label for link ${n}`);
+}
 
 describe('LinksEditor', () => {
   it('saves reordered links', async () => {

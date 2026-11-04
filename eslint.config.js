@@ -107,11 +107,6 @@ export default defineConfig([
     },
   },
   {
-    // Temporary: files not yet converted to function declarations
-    files: ['src/components/settings/*.tsx'],
-    rules: {'func-style': 'off'},
-  },
-  {
     // Config files whose tools require a default export
     files: ['eslint.config.js', 'vite.config.ts', 'vitest.config.ts'],
     rules: {

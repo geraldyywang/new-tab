@@ -17,13 +17,15 @@ interface ApiKeySectionProps {
   onDirtyChange?: (dirty: boolean) => void;
 }
 
-const keyEquals = (a: string, b: string) => a.trim() === b.trim();
+function keyEquals(a: string, b: string) {
+  return a.trim() === b.trim();
+}
 
-export const ApiKeySection = ({
+export function ApiKeySection({
   savedKey,
   backend,
   onDirtyChange,
-}: ApiKeySectionProps) => {
+}: ApiKeySectionProps) {
   const {draft, setDraft, dirty, conflict, reload} = useSyncedDraft(
     savedKey,
     keyEquals,
@@ -41,7 +43,7 @@ export const ApiKeySection = ({
       ? 'test'
       : null;
 
-  const persist = async (value: string) => {
+  async function persist(value: string) {
     if (busy) return;
     setSaving(true);
     setDraft(value);
@@ -55,14 +57,14 @@ export const ApiKeySection = ({
     } finally {
       setSaving(false);
     }
-  };
+  }
 
-  const handleTest = async () => {
+  async function handleTest() {
     if (busy || !trimmed) return;
     setStatus({tone: 'info', text: 'Testing…'});
     const result = await tester.run(trimmed);
     if (result) setStatus(result);
-  };
+  }
 
   return (
     <section aria-labelledby="settings-api-key-title">
@@ -159,4 +161,4 @@ export const ApiKeySection = ({
       </p>
     </section>
   );
-};
+}
