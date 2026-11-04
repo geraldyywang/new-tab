@@ -40,7 +40,7 @@ describe('useKeyTester', () => {
     let signal: AbortSignal | undefined;
     vi.stubGlobal(
       'fetch',
-      vi.fn((_url: string, init?: RequestInit) => {
+      vi.fn((_: string, init?: RequestInit) => {
         signal = init?.signal ?? undefined;
         return new Promise((_, reject) =>
           signal?.addEventListener('abort', () =>

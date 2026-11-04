@@ -5,7 +5,7 @@ export interface WeatherCondition {
   icon: number;
 }
 
-const WEATHER_CONDITIONS_RAW: WeatherCondition[] = [
+export const WEATHER_CONDITIONS_RAW: WeatherCondition[] = [
   {
     code: 1000,
     day: 'Sunny',
@@ -295,5 +295,3 @@ const WEATHER_CONDITIONS_RAW: WeatherCondition[] = [
     icon: 395,
   },
 ];
-
-export default WEATHER_CONDITIONS_RAW;

@@ -2,7 +2,7 @@ import {fireEvent, render, screen, within} from '@testing-library/react';
 import {describe, expect, it, vi} from 'vitest';
 import type {StoredLink} from '../../lib/links';
 import {SettingsWriteError} from '../../lib/storage';
-import LinksEditor from './LinksEditor';
+import {LinksEditor} from './LinksEditor';
 
 const defaults: StoredLink[] = [
   {id: 'd1', label: 'GitHub', url: 'https://github.com/'},

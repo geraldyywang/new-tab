@@ -33,7 +33,7 @@ const SiteFavicon = ({link}: {link: StoredLink}) => {
   );
 };
 
-const LinkIcon = ({link, className = ''}: LinkIconProps) => {
+export const LinkIcon = ({link, className = ''}: LinkIconProps) => {
   const icon = siteIconElement(link.url);
   return (
     <a
@@ -46,5 +46,3 @@ const LinkIcon = ({link, className = ''}: LinkIconProps) => {
     </a>
   );
 };
-
-export default LinkIcon;

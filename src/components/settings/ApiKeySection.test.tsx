@@ -1,6 +1,6 @@
 import {fireEvent, render, screen, waitFor} from '@testing-library/react';
 import {afterEach, describe, expect, it, vi} from 'vitest';
-import ApiKeySection from './ApiKeySection';
+import {ApiKeySection} from './ApiKeySection';
 
 const input = () => screen.getByLabelText<HTMLInputElement>('WeatherAPI key');
 const button = (name: string) => screen.getByRole('button', {name});

@@ -9,7 +9,7 @@ import {
   type WeatherApiResponse,
 } from '../lib/weatherApi';
 import {buttonClass} from './ui/styles';
-import WEATHER_CONDITIONS_RAW from './weatherConditions';
+import {WEATHER_CONDITIONS_RAW} from './weatherConditions';
 
 interface WeatherData {
   place: string;
@@ -219,7 +219,7 @@ const WeatherReport = ({
   );
 };
 
-const Weather = ({onOpenSettings}: WeatherProps) => {
+export const Weather = ({onOpenSettings}: WeatherProps) => {
   const {loaded, weatherApiKey} = useSettings();
   if (!loaded) return null;
   if (!weatherApiKey) return <MissingKey onOpenSettings={onOpenSettings} />;
@@ -231,5 +231,3 @@ const Weather = ({onOpenSettings}: WeatherProps) => {
     />
   );
 };
-
-export default Weather;

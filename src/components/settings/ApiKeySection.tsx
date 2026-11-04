@@ -7,7 +7,7 @@ import {
 } from '../../lib/storage';
 import {WEATHERAPI_SIGNUP_URL} from '../../lib/weatherApi';
 import * as ui from '../ui/styles';
-import ConflictNotice from './ConflictNotice';
+import {ConflictNotice} from './ConflictNotice';
 import {useKeyTester} from './useKeyTester';
 import {useReportDirty, useSyncedDraft} from './useSyncedDraft';
 
@@ -19,7 +19,7 @@ interface ApiKeySectionProps {
 
 const keyEquals = (a: string, b: string) => a.trim() === b.trim();
 
-const ApiKeySection = ({
+export const ApiKeySection = ({
   savedKey,
   backend,
   onDirtyChange,
@@ -160,5 +160,3 @@ const ApiKeySection = ({
     </section>
   );
 };
-
-export default ApiKeySection;

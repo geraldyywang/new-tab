@@ -32,7 +32,7 @@ const FIELDS: Record<
   },
 };
 
-const LinkRow = (props: LinkRowProps) => {
+export const LinkRow = (props: LinkRowProps) => {
   const {row, index, count, idPrefix, errorFor} = props;
   const name = row.label.trim() || `link ${index + 1}`;
 
@@ -111,5 +111,3 @@ const LinkRow = (props: LinkRowProps) => {
     </li>
   );
 };
-
-export default LinkRow;

@@ -1,6 +1,6 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
-import Weather from './Weather';
+import {Weather} from './Weather';
 
 const position = {
   coords: {latitude: 43.65, longitude: -79.38},

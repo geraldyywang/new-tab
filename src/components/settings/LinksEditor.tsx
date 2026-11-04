@@ -3,8 +3,8 @@ import {FiPlus} from 'react-icons/fi';
 import type {StoredLink} from '../../lib/links';
 import {SettingsWriteError} from '../../lib/storage';
 import * as ui from '../ui/styles';
-import ConflictNotice from './ConflictNotice';
-import LinkRow from './LinkRow';
+import {ConflictNotice} from './ConflictNotice';
+import {LinkRow} from './LinkRow';
 import {useLinksDraft} from './linksDraft';
 import {useReportDirty} from './useSyncedDraft';
 
@@ -18,7 +18,7 @@ interface LinksEditorProps {
   onDirtyChange?: (dirty: boolean) => void;
 }
 
-const LinksEditor = (props: LinksEditorProps) => {
+export const LinksEditor = (props: LinksEditorProps) => {
   const {title, description, links, defaults, onSave} = props;
   const baseId = useId();
   const draft = useLinksDraft(links, defaults);
@@ -141,5 +141,3 @@ const LinksEditor = (props: LinksEditorProps) => {
     </section>
   );
 };
-
-export default LinksEditor;

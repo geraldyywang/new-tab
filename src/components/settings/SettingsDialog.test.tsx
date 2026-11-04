@@ -1,7 +1,7 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {pressEscape} from '../../test/dialogPolyfill';
-import SettingsDialog from './SettingsDialog';
+import {SettingsDialog} from './SettingsDialog';
 
 const dialog = () => document.querySelector('dialog') as HTMLDialogElement;
 

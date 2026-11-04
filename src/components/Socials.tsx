@@ -1,8 +1,8 @@
 import {useSettings} from '../lib/storage';
-import LinkIcon from './LinkIcon';
+import {LinkIcon} from './LinkIcon';
 
 // Socials bottom-left bar; links are edited in the settings panel
-const Socials = () => {
+export const Socials = () => {
   const {loaded, socialLinks} = useSettings();
   if (!loaded || socialLinks.length === 0) return null;
 
@@ -19,5 +19,3 @@ const Socials = () => {
     </nav>
   );
 };
-
-export default Socials;

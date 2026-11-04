@@ -3,15 +3,15 @@ import {FiX} from 'react-icons/fi';
 import {DEFAULT_SIDEBAR_LINKS, DEFAULT_SOCIAL_LINKS} from '../../lib/links';
 import {saveLinks, useSettings} from '../../lib/storage';
 import {iconButtonClass} from '../ui/styles';
-import ApiKeySection from './ApiKeySection';
-import LinksEditor from './LinksEditor';
+import {ApiKeySection} from './ApiKeySection';
+import {LinksEditor} from './LinksEditor';
 
 interface SettingsDialogProps {
   open: boolean;
   onClose: () => void;
 }
 
-const SettingsDialog = ({open, onClose}: SettingsDialogProps) => {
+export const SettingsDialog = ({open, onClose}: SettingsDialogProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
   const pointerDownOnBackdrop = useRef(false);
@@ -147,5 +147,3 @@ const SettingsDialog = ({open, onClose}: SettingsDialogProps) => {
     </dialog>
   );
 };
-
-export default SettingsDialog;

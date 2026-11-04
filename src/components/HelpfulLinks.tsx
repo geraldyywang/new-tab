@@ -1,8 +1,8 @@
 import {useSettings} from '../lib/storage';
-import LinkIcon from './LinkIcon';
+import {LinkIcon} from './LinkIcon';
 
 // Quick-access side bar; links are edited in the settings panel
-const HelpfulLinks = () => {
+export const HelpfulLinks = () => {
   const {loaded, sidebarLinks} = useSettings();
 
   return (
@@ -19,5 +19,3 @@ const HelpfulLinks = () => {
     </nav>
   );
 };
-
-export default HelpfulLinks;
