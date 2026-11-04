@@ -1,5 +1,7 @@
 # new_tab(), a new tab extension for browsers!
 
+[![CI](https://github.com/geraldyywang/new-tab/actions/workflows/ci.yml/badge.svg)](https://github.com/geraldyywang/new-tab/actions/workflows/ci.yml)
+
 ![image](https://github.com/geraldyywang/new-tab/assets/96800313/56c18642-5d48-4c5a-8821-791bc9285866)
 
 Built with React 19, TypeScript, Vite and Tailwind CSS 4, packaged as a Chrome Manifest V3 extension.
