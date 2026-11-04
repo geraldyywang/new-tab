@@ -6,80 +6,29 @@
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/9b348492-d6d6-418f-9e2b-819e0072681b/deploy-status)](https://app.netlify.com/sites/geraldtab/deploys)
 
-# How to Use
+Built with React 19, TypeScript, Vite and Tailwind CSS 4, packaged as a Chrome Manifest V3 extension.
 
-1. In "src/components/HelpfulLinks.js" and "src/components/Socials.js", add or remove desired links
-2. Sign up and generate an API key from [WeatherAPI](https://www.weatherapi.com/)
-3. Create a .env file in your base project folder ("/") and paste **REACT_APP_WEATHERAPI_API_KEY = "*api key here*"**
-4. Run **npm run build** to make a production build
-5. (For Chrome) go to [extensions](chrome://extensions), click "Developer Mode". Click "Load Unpacked" and select the build folder
-6. Click "Update" and enjoy!
+## How to Use
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+1. Install [Node.js](https://nodejs.org/) 22.12 or newer, then run `npm install`.
+2. Edit the link lists in `src/components/HelpfulLinks.tsx` and `src/components/Socials.tsx`.
+3. Sign up and generate an API key from [WeatherAPI](https://www.weatherapi.com/).
+4. Create a `.env` file in the project root containing:
+   ```
+   VITE_WEATHERAPI_API_KEY=your-api-key-here
+   ```
+   The key is bundled into the built extension, so only use it for personal builds.
+5. Run `npm run build` to create a production build in `dist/`.
+6. In Chrome, open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and select the `dist` folder.
+7. Open a new tab. After you rebuild, click the reload icon on the extension card.
 
-## Available Scripts
+## Scripts
 
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+| Command             | Description                                        |
+| ------------------- | -------------------------------------------------- |
+| `npm run dev`       | Start the Vite dev server at http://localhost:5173 |
+| `npm run build`     | Type-check and build the extension into `dist/`    |
+| `npm run preview`   | Serve the production build locally                 |
+| `npm run typecheck` | Run the TypeScript compiler                        |
+| `npm run lint`      | Lint with ESLint                                   |
+| `npm run format`    | Format with Prettier                               |

@@ -1,4 +1,11 @@
-const WEATHER_CONDITIONS_RAW = [
+export interface WeatherCondition {
+  code: number;
+  day: string;
+  night: string;
+  icon: number;
+}
+
+const WEATHER_CONDITIONS_RAW: WeatherCondition[] = [
   {
     code: 1000,
     day: "Sunny",
