@@ -1,5 +1,5 @@
 import {useEffect, useState, type ReactNode} from 'react';
-import {useSettings} from '../lib/storage';
+import {useSettings} from '../../settings/storage';
 import {
   classifyWeatherApiError,
   currentWeatherUrl,
@@ -7,8 +7,8 @@ import {
   isWeatherApiResponse,
   WEATHERAPI_SIGNUP_URL,
   type WeatherApiResponse,
-} from '../lib/weatherApi';
-import {Button} from './ui/Button';
+} from './weatherApi';
+import {Button} from '../../ui/Button';
 import {WEATHER_CONDITIONS_RAW} from './weatherConditions';
 
 interface WeatherData {

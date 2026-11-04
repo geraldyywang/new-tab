@@ -1,11 +1,14 @@
 import {useEffect, useRef, useState} from 'react';
 import {FiX} from 'react-icons/fi';
-import {DEFAULT_SIDEBAR_LINKS, DEFAULT_SOCIAL_LINKS} from '../../lib/links';
-import {saveLinks, useSettings} from '../../lib/storage';
+import {
+  DEFAULT_SIDEBAR_LINKS,
+  DEFAULT_SOCIAL_LINKS,
+} from '../features/links/links';
+import {saveLinks, useSettings} from './storage';
 import {IconButton} from '../ui/Button';
 import {surfaceAttributes} from '../ui/styles';
-import {ApiKeySection} from './ApiKeySection';
-import {LinksEditor} from './LinksEditor';
+import {ApiKeySection} from '../features/weather/ApiKeySection';
+import {LinksEditor} from '../features/links/LinksEditor';
 
 interface SettingsDialogProps {
   open: boolean;

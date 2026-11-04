@@ -4,7 +4,7 @@ import {
   DEFAULT_SOCIAL_LINKS,
   sanitizeLinks,
   type StoredLink,
-} from './links';
+} from '../features/links/links';
 import {
   createBackend,
   type RawSettings,

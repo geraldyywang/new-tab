@@ -118,7 +118,7 @@ describe('findHardCodedColors', () => {
 
 describe('theme tokens', () => {
   it('finds the source files to check', () => {
-    expect(Object.keys(SOURCES)).toContain('/src/App.tsx');
+    expect(Object.keys(SOURCES)).toContain('/src/app/App.tsx');
     expect(Object.keys(SOURCES)).toContain('/src/index.css');
     // Vitest blanks CSS unless vitest.config.ts keeps `?raw` imports raw
     for (const source of Object.values(SOURCES)) {

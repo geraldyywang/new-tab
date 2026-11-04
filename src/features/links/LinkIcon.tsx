@@ -1,6 +1,6 @@
 import {useState} from 'react';
-import type {StoredLink} from '../lib/links';
-import {extensionFaviconUrl, siteIconElement} from '../lib/siteIcons';
+import type {StoredLink} from './links';
+import {extensionFaviconUrl, siteIconElement} from './siteIcons';
 
 interface LinkIconProps {
   link: StoredLink;

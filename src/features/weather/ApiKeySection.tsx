@@ -4,14 +4,14 @@ import {
   saveWeatherApiKey,
   SettingsWriteError,
   type StorageBackendKind,
-} from '../../lib/storage';
-import {WEATHERAPI_SIGNUP_URL} from '../../lib/weatherApi';
-import {Button, IconButton} from '../ui/Button';
-import * as ui from '../ui/styles';
-import {TextInput} from '../ui/TextInput';
-import {ConflictNotice} from './ConflictNotice';
+} from '../../settings/storage';
+import {WEATHERAPI_SIGNUP_URL} from './weatherApi';
+import {Button, IconButton} from '../../ui/Button';
+import * as ui from '../../ui/styles';
+import {TextInput} from '../../ui/TextInput';
+import {ConflictNotice} from '../../settings/ConflictNotice';
 import {useKeyTester} from './useKeyTester';
-import {useReportDirty, useSyncedDraft} from './useSyncedDraft';
+import {useReportDirty, useSyncedDraft} from '../../settings/useSyncedDraft';
 
 interface ApiKeySectionProps {
   savedKey: string;

@@ -3,8 +3,8 @@ import {
   describeWeatherApiProblem,
   testWeatherApiKey,
   type KeyTestResult,
-} from '../../lib/weatherApi';
-import type {StatusMessage} from '../ui/styles';
+} from './weatherApi';
+import type {StatusMessage} from '../../ui/styles';
 
 /** The status message to show for a key test result. */
 export function keyTestStatus(result: KeyTestResult): StatusMessage {

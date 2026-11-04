@@ -1,6 +1,6 @@
-import {useSettings} from '../lib/storage';
+import {useSettings} from '../../settings/storage';
 import {LinkIcon} from './LinkIcon';
-import {Card} from './ui/Card';
+import {Card} from '../../ui/Card';
 
 /**
  * Quick-access sidebar on the right; links are edited in the settings panel.
