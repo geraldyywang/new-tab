@@ -37,7 +37,7 @@ describe('ApiKeySection', () => {
     fireEvent.change(input(), {target: {value: '  abc  '}});
     fireEvent.click(button('Save'));
     await screen.findByText('Key saved.');
-    expect(window.localStorage.getItem('new-tab:weatherApiKey')).toBe('"abc"');
+    expect(window.localStorage.getItem('new-tab:weather.apiKey')).toBe('"abc"');
   });
 
   it('toggles key visibility', () => {
@@ -111,12 +111,12 @@ describe('ApiKeySection', () => {
   });
 
   it('Clear removes the stored key', async () => {
-    window.localStorage.setItem('new-tab:weatherApiKey', '"abc"');
+    window.localStorage.setItem('new-tab:weather.apiKey', '"abc"');
     renderSection('abc');
     fireEvent.click(button('Clear'));
     await screen.findByText('Key cleared.');
     await waitFor(() =>
-      expect(window.localStorage.getItem('new-tab:weatherApiKey')).toBeNull(),
+      expect(window.localStorage.getItem('new-tab:weather.apiKey')).toBeNull(),
     );
     expect(input().value).toBe('');
   });

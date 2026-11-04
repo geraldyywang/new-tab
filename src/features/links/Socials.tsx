@@ -1,4 +1,5 @@
-import {useSettings} from '../../settings/storage';
+import {useSlice} from '../../settings/slices';
+import {socialLinksSlice} from './settings';
 import {LinkIcon} from './LinkIcon';
 import {Card} from '../../ui/Card';
 
@@ -7,7 +8,7 @@ import {Card} from '../../ui/Card';
  * Links are edited in the settings panel.
  */
 export function Socials() {
-  const {loaded, socialLinks} = useSettings();
+  const {loaded, value: socialLinks} = useSlice(socialLinksSlice);
   if (!loaded || socialLinks.length === 0) return null;
 
   return (

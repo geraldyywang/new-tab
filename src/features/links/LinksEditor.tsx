@@ -1,7 +1,7 @@
 import {useId, useState, type FormEvent} from 'react';
 import {FiPlus} from 'react-icons/fi';
 import type {StoredLink} from './links';
-import {SettingsWriteError} from '../../settings/storage';
+import {SettingsWriteError} from '../../settings/slices';
 import {Button} from '../../ui/Button';
 import * as ui from '../../ui/styles';
 import {ConflictNotice} from '../../settings/ConflictNotice';

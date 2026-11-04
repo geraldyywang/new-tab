@@ -4,7 +4,13 @@ import {
   DEFAULT_SIDEBAR_LINKS,
   DEFAULT_SOCIAL_LINKS,
 } from '../features/links/links';
-import {saveLinks, useSettings} from './storage';
+import {sliceBackendKind, useSlice} from './slices';
+import {weatherApiKeySlice} from '../features/weather/settings';
+import {
+  saveLinkList,
+  sidebarLinksSlice,
+  socialLinksSlice,
+} from '../features/links/settings';
 import {IconButton} from '../ui/Button';
 import {surfaceAttributes} from '../ui/styles';
 import {ApiKeySection} from '../features/weather/ApiKeySection';
@@ -20,7 +26,9 @@ export function SettingsDialog({open, onClose}: SettingsDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
   const pointerDownOnBackdrop = useRef(false);
-  const settings = useSettings();
+  const apiKey = useSlice(weatherApiKeySlice);
+  const sidebarLinks = useSlice(sidebarLinksSlice);
+  const socialLinks = useSlice(socialLinksSlice);
 
   // Ids of sections with unsaved edits, plus stable per-section callbacks
   // for useReportDirty. Only read in event handlers, so not React state.
@@ -127,27 +135,27 @@ export function SettingsDialog({open, onClose}: SettingsDialogProps) {
             </IconButton>
           </div>
 
-          {settings.loaded ? (
+          {apiKey.loaded && sidebarLinks.loaded && socialLinks.loaded ? (
             <div className="mt-4 flex flex-col gap-8">
               <ApiKeySection
-                savedKey={settings.weatherApiKey}
-                backend={settings.backend}
+                savedKey={apiKey.value}
+                backend={sliceBackendKind(weatherApiKeySlice)}
                 onDirtyChange={dirty.report.apiKey}
               />
               <LinksEditor
                 title="Sidebar links"
                 description="Shown in the bar on the right."
-                links={settings.sidebarLinks}
+                links={sidebarLinks.value}
                 defaults={DEFAULT_SIDEBAR_LINKS}
-                onSave={links => saveLinks('sidebarLinks', links)}
+                onSave={links => saveLinkList(sidebarLinksSlice, links)}
                 onDirtyChange={dirty.report.sidebarLinks}
               />
               <LinksEditor
                 title="Social links"
                 description="Shown in the bar at the bottom left."
-                links={settings.socialLinks}
+                links={socialLinks.value}
                 defaults={DEFAULT_SOCIAL_LINKS}
-                onSave={links => saveLinks('socialLinks', links)}
+                onSave={links => saveLinkList(socialLinksSlice, links)}
                 onDirtyChange={dirty.report.socialLinks}
               />
             </div>

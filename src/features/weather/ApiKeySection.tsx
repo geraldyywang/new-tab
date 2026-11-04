@@ -1,10 +1,8 @@
 import {useState, type FormEvent} from 'react';
 import {FiEye, FiEyeOff} from 'react-icons/fi';
-import {
-  saveWeatherApiKey,
-  SettingsWriteError,
-  type StorageBackendKind,
-} from '../../settings/storage';
+import {SettingsWriteError} from '../../settings/slices';
+import type {StorageBackendKind} from '../../settings/storageBackends';
+import {saveWeatherApiKey} from './settings';
 import {WEATHERAPI_SIGNUP_URL} from './weatherApi';
 import {Button, IconButton} from '../../ui/Button';
 import * as ui from '../../ui/styles';
