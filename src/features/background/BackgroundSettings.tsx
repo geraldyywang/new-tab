@@ -20,6 +20,9 @@ import {
   displayEquals,
 } from './settings';
 
+// Width of the photo preview (sm:w-48), for scaling blur to match the page
+const PREVIEW_WIDTH = 192;
+
 /**
  * The Background section: upload or remove the photo (applied at once) and
  * edit how it is shown (previewed live, applied on Save).
@@ -74,7 +77,13 @@ export function BackgroundSettings({
 
       <div className="mt-3">
         <PhotoPicker
-          preview={url => <BackgroundPhoto url={url} display={draft} />}
+          preview={url => (
+            <BackgroundPhoto
+              url={url}
+              display={draft}
+              scale={PREVIEW_WIDTH / window.innerWidth}
+            />
+          )}
         />
       </div>
 

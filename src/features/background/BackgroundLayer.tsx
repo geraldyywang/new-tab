@@ -10,15 +10,24 @@ interface BackgroundPhotoProps {
   url: string;
   display: BackgroundDisplay;
   onError?: () => void;
+  /** Shrinks the blur for a small preview (preview width / page width). */
+  scale?: number;
 }
 
 /**
  * The photo with its fit, focal point, blur and dim applied, filling its
  * nearest positioned ancestor.
  */
-export function BackgroundPhoto({url, display, onError}: BackgroundPhotoProps) {
-  // Blur fades the edges; draw the image larger so they stay off-screen
-  const bleed = display.blur * 2;
+export function BackgroundPhoto({
+  url,
+  display,
+  onError,
+  scale = 1,
+}: BackgroundPhotoProps) {
+  const blur = display.blur * scale;
+  // Blur fades the edges; when cropping, draw the image larger so they stay
+  // off-screen (a letterboxed photo shows its edges anyway)
+  const bleed = display.fit === 'cover' ? blur * 2 : 0;
   return (
     <>
       <img
@@ -34,7 +43,7 @@ export function BackgroundPhoto({url, display, onError}: BackgroundPhotoProps) {
           height: `calc(100% + ${bleed * 2}px)`,
           objectFit: display.fit,
           objectPosition: `${display.focusX}% ${display.focusY}%`,
-          filter: display.blur ? `blur(${display.blur}px)` : undefined,
+          filter: blur ? `blur(${blur}px)` : undefined,
         }}
       />
       {display.dim > 0 && (

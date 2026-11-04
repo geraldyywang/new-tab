@@ -5,9 +5,10 @@ import {
   type BackgroundImageStore,
   type ImageBackend,
 } from './backgroundImage';
-import {BackgroundLayer} from './BackgroundLayer';
+import {BackgroundLayer, BackgroundPhoto} from './BackgroundLayer';
 import {setDisplayPreview} from './displayPreview';
 import type {StoredImage} from './imageStore';
+import type {BackgroundDisplay} from './settings';
 
 let urlCount = 0;
 const revoked: string[] = [];
@@ -127,10 +128,35 @@ describe('BackgroundLayer', () => {
     expect(photo()?.style.objectFit).toBe('contain');
     expect(photo()?.style.objectPosition).toBe('0% 100%');
     expect(photo()?.style.filter).toBe('blur(10px)');
-    expect(photo()?.style.top).toBe('-20px');
+    // A letterboxed photo isn't enlarged
+    expect(photo()?.style.top).toBe('0px');
     const dim = photo()?.nextElementSibling as HTMLElement;
     expect(dim.style.opacity).toBe('0.4');
     act(() => setDisplayPreview(null));
     expect(photo()?.style.objectFit).toBe('cover');
+  });
+});
+
+describe('BackgroundPhoto', () => {
+  const display: BackgroundDisplay = {
+    fit: 'cover',
+    focusX: 50,
+    focusY: 50,
+    dim: 0,
+    blur: 10,
+  };
+
+  it('bleeds a blurred, cropped photo past the edges', () => {
+    render(<BackgroundPhoto url="blob:x" display={{...display}} />);
+    const img = screen.getByRole('presentation');
+    expect(img.style.top).toBe('-20px');
+    expect(img.style.width).toBe('calc(100% + 40px)');
+  });
+
+  it('scales the blur down for a small preview', () => {
+    render(<BackgroundPhoto url="blob:x" display={{...display}} scale={0.5} />);
+    const img = screen.getByRole('presentation');
+    expect(img.style.filter).toBe('blur(5px)');
+    expect(img.style.top).toBe('-10px');
   });
 });
