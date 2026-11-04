@@ -11,7 +11,7 @@ function LetterBadge({label}: {label: string}) {
   return (
     <span
       aria-hidden="true"
-      className="flex h-6 w-6 items-center justify-center rounded-md bg-neutral-800 text-sm font-bold uppercase"
+      className="flex h-6 w-6 items-center justify-center rounded-md bg-surface-2 text-sm font-bold uppercase"
     >
       {label.trim().charAt(0) || '?'}
     </span>
@@ -46,7 +46,7 @@ export function LinkIcon({link, className = ''}: LinkIconProps) {
       href={link.url}
       aria-label={link.label}
       title={link.label}
-      className={`group flex shrink-0 items-center justify-center hover:text-neutral-600 ${className}`}
+      className={`group flex shrink-0 items-center justify-center hover:text-fg-faint ${className}`}
     >
       {icon ?? <SiteFavicon key={link.url} link={link} />}
     </a>

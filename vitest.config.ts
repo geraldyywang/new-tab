@@ -11,6 +11,8 @@ export default mergeConfig(
       restoreMocks: true,
       unstubGlobals: true,
       passWithNoTests: true,
+      // Keep `?raw` CSS imports raw so tests can read stylesheet source
+      css: {include: [/\.css\?raw$/]},
     },
   }),
 );

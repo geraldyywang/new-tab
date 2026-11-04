@@ -1,0 +1,53 @@
+/*
+ * Semantic colour tokens. Components use these (`bg-surface`, `text-fg-muted`,
+ * `border-danger/70`), never palette colours such as `neutral-900`.
+ *
+ * `@theme static` emits every token as a `--color-*` custom property on
+ * `:root`, used or not, and the generated utilities read them through
+ * `var()` (e.g. `.bg-surface { background-color: var(--color-surface) }`).
+ * A theme therefore overrides tokens at runtime by redefining the properties
+ * on `<html data-theme="...">`; unlayered rules beat Tailwind's theme layer:
+ *
+ *   [data-theme='light'] {
+ *     --color-surface: oklch(98.5% 0 0);
+ *     --color-fg: oklch(20.5% 0 0);
+ *   }
+ *
+ * The defaults reproduce the original Stone look exactly: each one is the
+ * Tailwind palette colour the UI used before tokens existed.
+ */
+
+/* The guard test's sample class names must not end up in the build */
+@source not './tokens.test.ts';
+
+@theme static {
+  /* Page background behind everything */
+  --color-backdrop: var(--color-stone-800);
+  /* Cards, bars and the settings dialog */
+  --color-surface: var(--color-neutral-900);
+  /* Raised controls on a surface: buttons, letter badges, hovers */
+  --color-surface-2: var(--color-neutral-800);
+  /* Hovered raised controls */
+  --color-surface-3: var(--color-neutral-700);
+  /* Recessed fields on a surface: text inputs */
+  --color-surface-inset: var(--color-neutral-950);
+  /* Dims the page behind a modal dialog */
+  --color-scrim: color-mix(in oklab, var(--color-black) 60%, transparent);
+
+  /* Text, strongest to faintest */
+  --color-fg: var(--color-neutral-300);
+  --color-fg-muted: var(--color-neutral-400);
+  --color-fg-subtle: var(--color-neutral-500);
+  --color-fg-faint: var(--color-neutral-600);
+
+  /* Hairlines and scrollbar thumbs */
+  --color-border: var(--color-neutral-700);
+  /* Focus rings and the focused-input border */
+  --color-accent: var(--color-neutral-500);
+
+  /* Status colours */
+  --color-danger: var(--color-red-400);
+  --color-success: var(--color-emerald-400);
+  --color-warning: var(--color-amber-300);
+  --color-warning-fg: var(--color-amber-200);
+}

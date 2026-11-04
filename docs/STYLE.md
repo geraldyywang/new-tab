@@ -62,6 +62,17 @@ Configured in `eslint.config.js`, on top of `@eslint/js` recommended,
     `aria-hidden`, `chrome.storage` constants like `QUOTA_BYTES_PER_ITEM`).
     Name your own properties `lowerCamelCase` anyway.
 
+## Colours and UI primitives
+
+- **Theme tokens only.** Colour utilities use the semantic tokens in
+  `src/theme/tokens.css` (`bg-surface`, `text-fg-muted`, `border-danger/70`),
+  never palette colours (`bg-neutral-900`), hex values or colour functions.
+  `src/theme/tokens.test.ts` fails the build if one slips in. Themes override
+  the `--color-*` properties under `[data-theme]` on `<html>`.
+- **Primitives from `src/components/ui/`:** `Card` for every panel, bar and
+  dialog surface (`surfaceAttributes()` for elements `Card` can't render,
+  such as `<dialog>`), `Button`, `IconButton` and `TextInput` for controls.
+
 ## Not linted (check in review)
 
 - **JSDoc on exported symbols.** Give every export a short `/** ... */` that

@@ -6,7 +6,9 @@ import {
   type StorageBackendKind,
 } from '../../lib/storage';
 import {WEATHERAPI_SIGNUP_URL} from '../../lib/weatherApi';
+import {Button, IconButton} from '../ui/Button';
 import * as ui from '../ui/styles';
+import {TextInput} from '../ui/TextInput';
 import {ConflictNotice} from './ConflictNotice';
 import {useKeyTester} from './useKeyTester';
 import {useReportDirty, useSyncedDraft} from './useSyncedDraft';
@@ -75,13 +77,13 @@ export function ApiKeySection({
       <h3 id="settings-api-key-title" className={ui.sectionTitleClass}>
         Weather API key
       </h3>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p className="mt-1 text-sm text-fg-subtle">
         Get a free key at{' '}
         <a
           href={WEATHERAPI_SIGNUP_URL}
           target="_blank"
           rel="noreferrer"
-          className="underline hover:text-neutral-400"
+          className="underline hover:text-fg-muted"
         >
           weatherapi.com
         </a>
@@ -99,7 +101,7 @@ export function ApiKeySection({
           WeatherAPI key
         </label>
         <div className="flex items-center gap-2">
-          <input
+          <TextInput
             id="settings-api-key"
             type={visible ? 'text' : 'password'}
             value={draft}
@@ -107,46 +109,36 @@ export function ApiKeySection({
             placeholder="Paste your WeatherAPI key"
             autoComplete="off"
             spellCheck={false}
-            className={`${ui.inputClass} font-mono`}
+            className="font-mono"
           />
-          <button
-            type="button"
+          <IconButton
             onClick={() => setVisible(v => !v)}
             aria-label={visible ? 'Hide API key' : 'Show API key'}
             aria-pressed={visible}
             title={visible ? 'Hide key' : 'Show key'}
-            className={ui.iconButtonClass}
           >
             {visible ? <FiEyeOff aria-hidden /> : <FiEye aria-hidden />}
-          </button>
+          </IconButton>
         </div>
 
         {conflict && <ConflictNotice onReload={reload} />}
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <button
-            type="submit"
-            disabled={busy !== null || !dirty}
-            className={ui.buttonClass}
-          >
+          <Button type="submit" disabled={busy !== null || !dirty}>
             {busy === 'save' ? 'Saving…' : 'Save'}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             onClick={() => void handleTest()}
             disabled={busy !== null || !trimmed}
-            className={ui.buttonClass}
           >
             {busy === 'test' ? 'Testing…' : 'Test'}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             onClick={() => void persist('')}
             disabled={busy !== null || (!savedKey && !draft)}
-            className={ui.buttonClass}
           >
             Clear
-          </button>
+          </Button>
           <p
             role="status"
             aria-live="polite"
@@ -157,7 +149,7 @@ export function ApiKeySection({
         </div>
       </form>
 
-      <p className="mt-3 text-xs text-neutral-500">
+      <p className="mt-3 text-xs text-fg-subtle">
         Stored in Chrome sync (your Google account) when signed in; otherwise
         only on this device.
         {backend === 'local-storage' &&
