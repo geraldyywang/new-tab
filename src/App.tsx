@@ -25,14 +25,10 @@ function App() {
       </div>
 
       {/* Quick-access side bar */}
-      <div className="absolute z-20 inset-y-0 right-0 bg-neutral-900 rounded-xl m-3 w-16">
-        <HelpfulLinks />
-      </div>
+      <HelpfulLinks />
 
       {/* Socials bottom-left bar */}
-      <div className="absolute z-20 bottom-0 left-0 bg-neutral-900 rounded-xl m-3 w-72">
-        <Socials />
-      </div>
+      <Socials />
 
       <p className="absolute z-20 bottom-3 right-24 text-neutral-500 text-sm">
         Made with &#128156; by geraldyywang

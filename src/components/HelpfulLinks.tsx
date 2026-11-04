@@ -1,58 +1,23 @@
-import {
-  SiClaude,
-  SiGmail,
-  SiGooglecalendar,
-  SiGooglegemini,
-  SiNotion,
-} from "react-icons/si";
-import { GiAcorn, GiFruitTree } from "react-icons/gi";
-import { FaGoogleDrive, FaYoutube } from "react-icons/fa";
-import { PiMicrosoftOutlookLogoFill } from "react-icons/pi";
-import { RiOpenaiFill } from "react-icons/ri";
-import LinkIcon, { type LinkItem } from "./LinkIcon";
+import { useSettings } from "../lib/storage";
+import LinkIcon from "./LinkIcon";
 
-// Add, remove, or reorder links here.
-const LINKS: LinkItem[] = [
-  { href: "https://acorn.utoronto.ca/", label: "Acorn", Icon: GiAcorn },
-  { href: "https://q.utoronto.ca/", label: "Quercus", Icon: GiFruitTree },
-  {
-    // Replace with your Notion page
-    href: "https://www.notion.so/f9a6a338e0404893b26e1a7c280c3f82?v=988ed6935b4e4bb2b20282080773e057",
-    label: "Notion",
-    Icon: SiNotion,
-  },
-  {
-    href: "https://outlook.office.com/mail/",
-    label: "Outlook",
-    Icon: PiMicrosoftOutlookLogoFill,
-  },
-  {
-    href: "https://mail.google.com/mail/u/0/#inbox",
-    label: "Gmail",
-    Icon: SiGmail,
-  },
-  {
-    href: "https://calendar.google.com/",
-    label: "Google Calendar",
-    Icon: SiGooglecalendar,
-  },
-  {
-    href: "https://drive.google.com/drive/u/0/my-drive",
-    label: "Google Drive",
-    Icon: FaGoogleDrive,
-  },
-  { href: "https://www.youtube.com/", label: "YouTube", Icon: FaYoutube },
-  { href: "https://claude.ai/", label: "Claude", Icon: SiClaude },
-  { href: "https://chatgpt.com/", label: "ChatGPT", Icon: RiOpenaiFill },
-  { href: "https://gemini.google.com/", label: "Gemini", Icon: SiGooglegemini },
-];
+// Quick-access side bar; links are edited in the settings panel
+const HelpfulLinks = () => {
+  const { loaded, sidebarLinks } = useSettings();
 
-const HelpfulLinks = () => (
-  <nav className="flex flex-col items-center justify-center h-full px-5 py-5 text-2xl text-neutral-500">
-    {LINKS.map((link) => (
-      <LinkIcon key={link.href} {...link} className="my-3" />
-    ))}
-  </nav>
-);
+  return (
+    <nav
+      aria-label="Quick links"
+      className="absolute z-20 inset-y-0 right-0 m-3 w-16 rounded-xl bg-neutral-900"
+    >
+      <div className="flex h-full flex-col items-center justify-center-safe overflow-y-auto px-5 py-5 text-2xl text-neutral-500 [scrollbar-color:var(--color-neutral-700)_transparent] [scrollbar-width:thin]">
+        {loaded &&
+          sidebarLinks.map((link) => (
+            <LinkIcon key={link.id} link={link} className="my-3" />
+          ))}
+      </div>
+    </nav>
+  );
+};
 
 export default HelpfulLinks;
