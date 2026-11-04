@@ -7,14 +7,16 @@ import {
   testWeatherApiKey,
 } from './weatherApi';
 
-const jsonResponse = (status: number, body: unknown) =>
-  new Response(JSON.stringify(body), {
+function jsonResponse(status: number, body: unknown) {
+  return new Response(JSON.stringify(body), {
     status,
     headers: {'Content-Type': 'application/json'},
   });
+}
 
-const apiError = (status: number, code: number, message = 'msg') =>
-  jsonResponse(status, {error: {code, message}});
+function apiError(status: number, code: number, message = 'msg') {
+  return jsonResponse(status, {error: {code, message}});
+}
 
 describe('currentWeatherUrl', () => {
   it('encodes the key and query', () => {

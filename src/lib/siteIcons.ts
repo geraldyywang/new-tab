@@ -35,11 +35,12 @@ const SITE_ICONS: ReadonlyArray<readonly [readonly string[], IconType]> = [
   [['reddit.com'], AiOutlineReddit],
 ];
 
-const hostMatches = (hostname: string, suffix: string) =>
-  hostname === suffix || hostname.endsWith(`.${suffix}`);
+function hostMatches(hostname: string, suffix: string) {
+  return hostname === suffix || hostname.endsWith(`.${suffix}`);
+}
 
 /** Returns a bundled icon for well-known sites, or null. */
-export const iconForUrl = (url: string): IconType | null => {
+export function iconForUrl(url: string): IconType | null {
   let hostname: string;
   try {
     hostname = new URL(url).hostname.toLowerCase();
@@ -50,26 +51,26 @@ export const iconForUrl = (url: string): IconType | null => {
     suffixes.some(suffix => hostMatches(hostname, suffix)),
   );
   return match ? match[1] : null;
-};
+}
 
 /**
  * The bundled icon as an element (decorative; the link carries the label).
  * Returned as an element rather than a component so callers don't create
  * component types during render.
  */
-export const siteIconElement = (url: string): ReactElement | null => {
+export function siteIconElement(url: string): ReactElement | null {
   const Icon = iconForUrl(url);
   return Icon ? createElement(Icon, {'aria-hidden': true}) : null;
-};
+}
 
 /**
  * Chrome's built-in favicon cache (needs the "favicon" permission). Only
  * available when running as an extension; returns null on the dev server.
  */
-export const extensionFaviconUrl = (pageUrl: string, size = 32) => {
+export function extensionFaviconUrl(pageUrl: string, size = 32) {
   if (typeof chrome === 'undefined' || !chrome.runtime?.id) return null;
   const url = new URL(chrome.runtime.getURL('/_favicon/'));
   url.searchParams.set('pageUrl', pageUrl);
   url.searchParams.set('size', String(size));
   return url.toString();
-};
+}

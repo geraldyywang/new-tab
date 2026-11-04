@@ -49,7 +49,7 @@ export const DEFAULT_SOCIAL_LINKS: readonly StoredLink[] = [
 ];
 
 /** Parses `input` and returns it only if it is an absolute http(s) URL. */
-export const parseHttpUrl = (input: string): URL | null => {
+export function parseHttpUrl(input: string): URL | null {
   if (input.length > MAX_URL_LENGTH) return null;
   try {
     const url = new URL(input);
@@ -59,7 +59,7 @@ export const parseHttpUrl = (input: string): URL | null => {
   } catch {
     return null;
   }
-};
+}
 
 const SCHEME = /^[a-z][a-z0-9+.-]*:/i;
 // `localhost:3000`, `example.com:8080/x`: a port, not a scheme
@@ -69,26 +69,26 @@ const HOST_WITH_PORT = /^[^/?#:]+:\d+(?:[/?#]|$)/;
  * Adds `https://` when the user typed a bare host such as `example.com` or
  * `localhost:3000`. Anything with a real scheme is left for validation.
  */
-export const normalizeUrlInput = (input: string): string => {
+export function normalizeUrlInput(input: string): string {
   const trimmed = input.trim();
   if (!trimmed) return trimmed;
   if (SCHEME.test(trimmed) && !HOST_WITH_PORT.test(trimmed)) return trimmed;
   return `https://${trimmed}`;
-};
+}
 
-export const newLinkId = (): string => {
+export function newLinkId(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
     return crypto.randomUUID();
   }
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
-};
+}
 
 /**
  * Validates an untrusted value read from storage. Returns `null` when the
  * value is not a list at all (caller falls back to defaults); otherwise drops
  * malformed entries, duplicate ids and anything that is not an http(s) URL.
  */
-export const sanitizeLinks = (value: unknown): StoredLink[] | null => {
+export function sanitizeLinks(value: unknown): StoredLink[] | null {
   if (!Array.isArray(value)) return null;
 
   const seen = new Set<string>();
@@ -113,12 +113,15 @@ export const sanitizeLinks = (value: unknown): StoredLink[] | null => {
   }
 
   return links;
-};
+}
 
 /** Same labels and URLs in the same order (ids ignored). */
-export const sameLinks = (
+export function sameLinks(
   a: readonly StoredLink[],
   b: readonly StoredLink[],
-): boolean =>
-  a.length === b.length &&
-  a.every((link, i) => link.label === b[i].label && link.url === b[i].url);
+): boolean {
+  return (
+    a.length === b.length &&
+    a.every((link, i) => link.label === b[i].label && link.url === b[i].url)
+  );
+}

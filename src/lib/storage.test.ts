@@ -8,22 +8,22 @@ import {DEFAULT_SIDEBAR_LINKS, DEFAULT_SOCIAL_LINKS} from './links';
 type StorageModule = typeof import('./storage');
 
 // storage.ts picks its backend at import time, so import it fresh per test
-const loadStorage = async (): Promise<StorageModule> => {
+async function loadStorage(): Promise<StorageModule> {
   vi.resetModules();
   return import('./storage');
-};
+}
 
 let unsubscribe: (() => void) | undefined;
 
 /** Subscribes (which triggers the first read) and waits until loaded. */
-const startStore = async (storage: StorageModule) => {
+async function startStore(storage: StorageModule) {
   const listener = vi.fn();
   unsubscribe = storage.subscribeSettings(listener);
   await vi.waitFor(() =>
     expect(storage.getSettingsSnapshot().loaded).toBe(true),
   );
   return listener;
-};
+}
 
 afterEach(() => {
   unsubscribe?.();

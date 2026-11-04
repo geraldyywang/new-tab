@@ -16,13 +16,14 @@ export interface WeatherApiResponse {
   };
 }
 
-const isObject = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null;
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
 
 /** Minimal shape check so a malformed body can't crash rendering. */
-export const isWeatherApiResponse = (
+export function isWeatherApiResponse(
   value: unknown,
-): value is WeatherApiResponse => {
+): value is WeatherApiResponse {
   if (!isObject(value) || !isObject(value.location)) return false;
   const {location, current} = value;
   if (!isObject(current) || !isObject(current.condition)) return false;
@@ -32,17 +33,20 @@ export const isWeatherApiResponse = (
     typeof current.condition.text === 'string' &&
     typeof current.condition.code === 'number'
   );
-};
+}
 
-export const currentWeatherUrl = (
+export function currentWeatherUrl(
   apiKey: string,
   query: string,
   {aqi = false}: {aqi?: boolean} = {},
-): string =>
-  `https://api.weatherapi.com/v1/current.json` +
-  `?key=${encodeURIComponent(apiKey)}` +
-  `&q=${encodeURIComponent(query)}` +
-  (aqi ? '&aqi=yes' : '');
+): string {
+  return (
+    `https://api.weatherapi.com/v1/current.json` +
+    `?key=${encodeURIComponent(apiKey)}` +
+    `&q=${encodeURIComponent(query)}` +
+    (aqi ? '&aqi=yes' : '')
+  );
+}
 
 /**
  * What went wrong with a failed request. Only `key` means the user should
@@ -61,9 +65,9 @@ const KIND_BY_CODE: Record<number, 'key' | 'quota' | 'disabled'> = {
 };
 
 /** Classifies a non-OK response using WeatherAPI's JSON `error.code`. */
-export const classifyWeatherApiError = async (
+export async function classifyWeatherApiError(
   res: Response,
-): Promise<WeatherApiProblem> => {
+): Promise<WeatherApiProblem> {
   let code: number | undefined;
   let detail: string | undefined;
   try {
@@ -79,9 +83,9 @@ export const classifyWeatherApiError = async (
   if (kind) return {kind, code, detail};
   if (code === undefined && res.status === 401) return {kind: 'key', detail};
   return {kind: 'other', status: res.status, code, detail};
-};
+}
 
-export const describeWeatherApiProblem = (problem: WeatherApiProblem) => {
+export function describeWeatherApiProblem(problem: WeatherApiProblem) {
   switch (problem.kind) {
     case 'key':
       return 'Your WeatherAPI key was rejected — check it in settings.';
@@ -92,7 +96,7 @@ export const describeWeatherApiProblem = (problem: WeatherApiProblem) => {
     case 'other':
       return `WeatherAPI returned an error (HTTP ${problem.status}${problem.detail ? `: ${problem.detail}` : ''}).`;
   }
-};
+}
 
 export type KeyTestResult =
   | {kind: 'ok'}
@@ -103,10 +107,10 @@ export type KeyTestResult =
  * Makes a single request for London's current weather to check a key.
  * Rethrows if `signal` aborts the request.
  */
-export const testWeatherApiKey = async (
+export async function testWeatherApiKey(
   apiKey: string,
   signal?: AbortSignal,
-): Promise<KeyTestResult> => {
+): Promise<KeyTestResult> {
   let res: Response;
   try {
     res = await fetch(currentWeatherUrl(apiKey, 'London'), {signal});
@@ -116,4 +120,4 @@ export const testWeatherApiKey = async (
   }
   if (res.ok) return {kind: 'ok'};
   return {kind: 'problem', problem: await classifyWeatherApiError(res)};
-};
+}

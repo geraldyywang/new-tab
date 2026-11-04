@@ -55,6 +55,7 @@ export default defineConfig([
         ...BANNED_SYNTAX,
         ...DEFAULT_EXPORT_SYNTAX,
       ],
+      'func-style': ['error', 'declaration', {allowArrowFunctions: false}],
       'no-var': 'error',
       'prefer-const': 'error',
       eqeqeq: ['error', 'always', {null: 'ignore'}],
@@ -104,6 +105,11 @@ export default defineConfig([
         {selector: ['objectLiteralProperty', 'typeProperty'], format: null},
       ],
     },
+  },
+  {
+    // Temporary: files not yet converted to function declarations
+    files: ['src/lib/storageBackends.ts', 'src/components/**', 'src/test/**'],
+    rules: {'func-style': 'off'},
   },
   {
     // Config files whose tools require a default export

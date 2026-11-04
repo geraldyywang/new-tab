@@ -38,14 +38,16 @@ export const QUOTA_BYTES_PER_ITEM = 8192;
 
 const backend = createBackend();
 
-const parseSettings = (raw: RawSettings): SettingsSnapshot => ({
-  loaded: true,
-  backend: backend.kind,
-  weatherApiKey:
-    typeof raw.weatherApiKey === 'string' ? raw.weatherApiKey.trim() : '',
-  sidebarLinks: sanitizeLinks(raw.sidebarLinks) ?? DEFAULT_SIDEBAR_LINKS,
-  socialLinks: sanitizeLinks(raw.socialLinks) ?? DEFAULT_SOCIAL_LINKS,
-});
+function parseSettings(raw: RawSettings): SettingsSnapshot {
+  return {
+    loaded: true,
+    backend: backend.kind,
+    weatherApiKey:
+      typeof raw.weatherApiKey === 'string' ? raw.weatherApiKey.trim() : '',
+    sidebarLinks: sanitizeLinks(raw.sidebarLinks) ?? DEFAULT_SIDEBAR_LINKS,
+    socialLinks: sanitizeLinks(raw.socialLinks) ?? DEFAULT_SOCIAL_LINKS,
+  };
+}
 
 // --- External store for useSyncExternalStore -------------------------------
 
@@ -60,7 +62,7 @@ const listeners = new Set<() => void>();
 let unsubscribeBackend: (() => void) | null = null;
 let readSeq = 0;
 
-const refresh = async () => {
+async function refresh() {
   const seq = ++readSeq;
   let raw: RawSettings = {};
   try {
@@ -72,9 +74,9 @@ const refresh = async () => {
   if (seq !== readSeq) return;
   snapshot = parseSettings(raw);
   listeners.forEach(listener => listener());
-};
+}
 
-export const subscribeSettings = (listener: () => void) => {
+export function subscribeSettings(listener: () => void) {
   listeners.add(listener);
   if (!unsubscribeBackend) {
     unsubscribeBackend = backend.subscribe(() => void refresh());
@@ -87,13 +89,15 @@ export const subscribeSettings = (listener: () => void) => {
       unsubscribeBackend = null;
     }
   };
-};
+}
 
-export const getSettingsSnapshot = () => snapshot;
+export function getSettingsSnapshot() {
+  return snapshot;
+}
 
 // --- Writes ----------------------------------------------------------------
 
-export const describeWriteError = (err: unknown): string => {
+export function describeWriteError(err: unknown): string {
   const message = err instanceof Error ? err.message : String(err);
   if (message.includes('QUOTA_BYTES_PER_ITEM')) {
     return "That's too much data for one setting (Chrome sync allows 8 KB). Remove some links and try again.";
@@ -108,10 +112,10 @@ export const describeWriteError = (err: unknown): string => {
     return "This browser's storage is full.";
   }
   return `Could not save settings: ${message}`;
-};
+}
 
 /** Writes one item; `undefined` removes it. */
-const writeSetting = async (key: SettingKey, value: unknown) => {
+async function writeSetting(key: SettingKey, value: unknown) {
   if (value !== undefined) {
     const bytes = new TextEncoder().encode(key + JSON.stringify(value)).length;
     if (bytes > QUOTA_BYTES_PER_ITEM) {
@@ -127,15 +131,18 @@ const writeSetting = async (key: SettingKey, value: unknown) => {
     throw new SettingsWriteError(describeWriteError(err), {cause: err});
   }
   await refresh();
-};
+}
 
 /** Saves the WeatherAPI key; an empty string removes it. */
-export const saveWeatherApiKey = (key: string) =>
-  writeSetting('weatherApiKey', key.trim() || undefined);
+export function saveWeatherApiKey(key: string) {
+  return writeSetting('weatherApiKey', key.trim() || undefined);
+}
 
 /** Saves a link list; `null` removes it so the defaults are used. */
-export const saveLinks = (which: LinkListKey, links: StoredLink[] | null) =>
-  writeSetting(which, links ?? undefined);
+export function saveLinks(which: LinkListKey, links: StoredLink[] | null) {
+  return writeSetting(which, links ?? undefined);
+}
 
-export const useSettings = (): SettingsSnapshot =>
-  useSyncExternalStore(subscribeSettings, getSettingsSnapshot);
+export function useSettings(): SettingsSnapshot {
+  return useSyncExternalStore(subscribeSettings, getSettingsSnapshot);
+}
