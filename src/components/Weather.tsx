@@ -8,7 +8,7 @@ import {
   WEATHERAPI_SIGNUP_URL,
   type WeatherApiResponse,
 } from '../lib/weatherApi';
-import {buttonClass} from './ui/styles';
+import {Button} from './ui/Button';
 import {WEATHER_CONDITIONS_RAW} from './weatherConditions';
 
 interface WeatherData {
@@ -97,9 +97,7 @@ function MissingKey({onOpenSettings}: WeatherProps) {
     <div className="px-5 py-3 text-sm text-fg-subtle">
       <p>Add your free WeatherAPI key to see local weather</p>
       <div className="mt-2 flex flex-wrap items-center gap-3">
-        <button type="button" onClick={onOpenSettings} className={buttonClass}>
-          Open settings
-        </button>
+        <Button onClick={onOpenSettings}>Open settings</Button>
         <a
           href={WEATHERAPI_SIGNUP_URL}
           target="_blank"
@@ -173,9 +171,7 @@ function WeatherReport({
     return (
       <div className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm text-fg-subtle">
         <p>{state.message}</p>
-        <button type="button" onClick={onOpenSettings} className={buttonClass}>
-          Open settings
-        </button>
+        <Button onClick={onOpenSettings}>Open settings</Button>
       </div>
     );
   }

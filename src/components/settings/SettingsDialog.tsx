@@ -2,7 +2,8 @@ import {useEffect, useRef, useState} from 'react';
 import {FiX} from 'react-icons/fi';
 import {DEFAULT_SIDEBAR_LINKS, DEFAULT_SOCIAL_LINKS} from '../../lib/links';
 import {saveLinks, useSettings} from '../../lib/storage';
-import {iconButtonClass} from '../ui/styles';
+import {IconButton} from '../ui/Button';
+import {surfaceAttributes} from '../ui/styles';
 import {ApiKeySection} from './ApiKeySection';
 import {LinksEditor} from './LinksEditor';
 
@@ -99,7 +100,10 @@ export function SettingsDialog({open, onClose}: SettingsDialogProps) {
         }
         pointerDownOnBackdrop.current = false;
       }}
-      className="m-auto max-h-[calc(100vh-2rem)] w-[min(44rem,calc(100vw-2rem))] overflow-y-auto rounded-xl bg-surface p-0 text-fg-muted shadow-2xl backdrop:bg-scrim [scrollbar-color:var(--color-border)_transparent]"
+      {...surfaceAttributes(
+        'solid',
+        'm-auto max-h-[calc(100vh-2rem)] w-[min(44rem,calc(100vw-2rem))] overflow-y-auto p-0 text-fg-muted shadow-2xl backdrop:bg-scrim [scrollbar-color:var(--color-border)_transparent]',
+      )}
     >
       {open && (
         <div className="p-6">
@@ -110,15 +114,14 @@ export function SettingsDialog({open, onClose}: SettingsDialogProps) {
             >
               Settings
             </h2>
-            <button
-              type="button"
+            <IconButton
               onClick={requestClose}
               aria-label="Close settings"
               title="Close"
-              className={`${iconButtonClass} text-xl`}
+              className="text-xl"
             >
               <FiX aria-hidden="true" />
-            </button>
+            </IconButton>
           </div>
 
           {settings.loaded ? (

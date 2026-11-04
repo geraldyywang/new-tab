@@ -2,6 +2,7 @@ import {useId, useState, type FormEvent} from 'react';
 import {FiPlus} from 'react-icons/fi';
 import type {StoredLink} from '../../lib/links';
 import {SettingsWriteError} from '../../lib/storage';
+import {Button} from '../ui/Button';
 import * as ui from '../ui/styles';
 import {ConflictNotice} from './ConflictNotice';
 import {LinkRow} from './LinkRow';
@@ -101,16 +102,10 @@ export function LinksEditor(props: LinksEditorProps) {
         {draft.conflict && <ConflictNotice onReload={draft.reload} />}
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => edit(draft.add)}
-            disabled={!draft.canAdd}
-            className={ui.buttonClass}
-          >
+          <Button onClick={() => edit(draft.add)} disabled={!draft.canAdd}>
             <FiPlus aria-hidden /> Add link
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             onClick={() => {
               draft.reset();
               setStatus({
@@ -119,17 +114,12 @@ export function LinksEditor(props: LinksEditorProps) {
               });
             }}
             disabled={draft.isDefault}
-            className={ui.buttonClass}
           >
             Reset to defaults
-          </button>
-          <button
-            type="submit"
-            disabled={saving || !draft.dirty}
-            className={ui.buttonClass}
-          >
+          </Button>
+          <Button type="submit" disabled={saving || !draft.dirty}>
             {saving ? 'Saving…' : 'Save'}
-          </button>
+          </Button>
           <p
             role="status"
             aria-live="polite"

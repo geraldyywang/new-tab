@@ -4,7 +4,9 @@ import {
   MAX_URL_LENGTH,
   type StoredLink,
 } from '../../lib/links';
+import {IconButton} from '../ui/Button';
 import * as ui from '../ui/styles';
+import {TextInput} from '../ui/TextInput';
 import type {LinkField} from './linksDraft';
 
 interface LinkRowProps {
@@ -48,7 +50,7 @@ export function LinkRow(props: LinkRowProps) {
         <label htmlFor={id} className="sr-only">
           {label} for link {index + 1}
         </label>
-        <input
+        <TextInput
           id={id}
           type={key === 'url' ? 'url' : 'text'}
           inputMode={key === 'url' ? 'url' : undefined}
@@ -60,7 +62,6 @@ export function LinkRow(props: LinkRowProps) {
           onBlur={() => props.onBlur(key)}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : undefined}
-          className={ui.inputClass}
         />
         {error && (
           <p
@@ -81,35 +82,29 @@ export function LinkRow(props: LinkRowProps) {
         {field('url')}
       </div>
       <div className="flex shrink-0 items-center">
-        <button
-          type="button"
+        <IconButton
           onClick={() => props.onMove(-1)}
           disabled={index === 0}
           aria-label={`Move ${name} up`}
           title="Move up"
-          className={ui.iconButtonClass}
         >
           <FiArrowUp aria-hidden />
-        </button>
-        <button
-          type="button"
+        </IconButton>
+        <IconButton
           onClick={() => props.onMove(1)}
           disabled={index === count - 1}
           aria-label={`Move ${name} down`}
           title="Move down"
-          className={ui.iconButtonClass}
         >
           <FiArrowDown aria-hidden />
-        </button>
-        <button
-          type="button"
+        </IconButton>
+        <IconButton
           onClick={props.onRemove}
           aria-label={`Remove ${name}`}
           title="Remove"
-          className={ui.iconButtonClass}
         >
           <FiTrash2 aria-hidden />
-        </button>
+        </IconButton>
       </div>
     </li>
   );
