@@ -94,7 +94,7 @@ interface WeatherProps {
 
 function MissingKey({onOpenSettings}: WeatherProps) {
   return (
-    <div className="px-5 py-3 text-sm text-neutral-500">
+    <div className="px-5 py-3 text-sm text-fg-subtle">
       <p>Add your free WeatherAPI key to see local weather</p>
       <div className="mt-2 flex flex-wrap items-center gap-3">
         <button type="button" onClick={onOpenSettings} className={buttonClass}>
@@ -104,7 +104,7 @@ function MissingKey({onOpenSettings}: WeatherProps) {
           href={WEATHERAPI_SIGNUP_URL}
           target="_blank"
           rel="noreferrer"
-          className="underline hover:text-neutral-400"
+          className="underline hover:text-fg-muted"
         >
           Get a free key at weatherapi.com
         </a>
@@ -171,7 +171,7 @@ function WeatherReport({
 
   if (state.status === 'error' && state.keyProblem) {
     return (
-      <div className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm text-neutral-500">
+      <div className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm text-fg-subtle">
         <p>{state.message}</p>
         <button type="button" onClick={onOpenSettings} className={buttonClass}>
           Open settings
@@ -187,7 +187,7 @@ function WeatherReport({
         : state.status === 'locating'
           ? 'Finding your location…'
           : 'Loading weather…';
-    return <p className="px-5 py-3 text-sm text-neutral-500">{message}</p>;
+    return <p className="px-5 py-3 text-sm text-fg-subtle">{message}</p>;
   }
 
   const {data} = state;
@@ -195,13 +195,13 @@ function WeatherReport({
   return (
     <div className="flex flex-col px-5 py-3">
       {/* Header and weather text */}
-      <div className="flex flex-col justify-center text-neutral-500">
+      <div className="flex flex-col justify-center text-fg-subtle">
         <h2 className="font-bold text-lg pr-3">{data.place}</h2>
         <p className="text-sm">{data.condition}</p>
       </div>
 
       {/* Stats row */}
-      <div className="flex flex-row text-neutral-500 items-center">
+      <div className="flex flex-row text-fg-subtle items-center">
         <div className="flex flex-row items-center justify-between pr-4">
           {data.iconCode !== undefined && (
             <img

@@ -99,14 +99,14 @@ export function SettingsDialog({open, onClose}: SettingsDialogProps) {
         }
         pointerDownOnBackdrop.current = false;
       }}
-      className="m-auto max-h-[calc(100vh-2rem)] w-[min(44rem,calc(100vw-2rem))] overflow-y-auto rounded-xl bg-neutral-900 p-0 text-neutral-400 shadow-2xl backdrop:bg-black/60 [scrollbar-color:var(--color-neutral-700)_transparent]"
+      className="m-auto max-h-[calc(100vh-2rem)] w-[min(44rem,calc(100vw-2rem))] overflow-y-auto rounded-xl bg-surface p-0 text-fg-muted shadow-2xl backdrop:bg-scrim [scrollbar-color:var(--color-border)_transparent]"
     >
       {open && (
         <div className="p-6">
           <div className="flex items-center justify-between gap-4">
             <h2
               id="settings-title"
-              className="text-2xl font-bold text-neutral-500"
+              className="text-2xl font-bold text-fg-subtle"
             >
               Settings
             </h2>
@@ -146,7 +146,7 @@ export function SettingsDialog({open, onClose}: SettingsDialogProps) {
               />
             </div>
           ) : (
-            <p className="mt-4 text-sm text-neutral-500">Loading settings…</p>
+            <p className="mt-4 text-sm text-fg-subtle">Loading settings…</p>
           )}
         </div>
       )}

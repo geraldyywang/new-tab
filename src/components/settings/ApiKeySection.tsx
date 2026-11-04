@@ -75,13 +75,13 @@ export function ApiKeySection({
       <h3 id="settings-api-key-title" className={ui.sectionTitleClass}>
         Weather API key
       </h3>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p className="mt-1 text-sm text-fg-subtle">
         Get a free key at{' '}
         <a
           href={WEATHERAPI_SIGNUP_URL}
           target="_blank"
           rel="noreferrer"
-          className="underline hover:text-neutral-400"
+          className="underline hover:text-fg-muted"
         >
           weatherapi.com
         </a>
@@ -157,7 +157,7 @@ export function ApiKeySection({
         </div>
       </form>
 
-      <p className="mt-3 text-xs text-neutral-500">
+      <p className="mt-3 text-xs text-fg-subtle">
         Stored in Chrome sync (your Google account) when signed in; otherwise
         only on this device.
         {backend === 'local-storage' &&

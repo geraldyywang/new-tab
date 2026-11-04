@@ -11,7 +11,7 @@ export function Clock() {
 
   return (
     <div className="flex flex-col justify-center items-center px-5 py-5">
-      <p className="font-bold text-7xl text-neutral-500">
+      <p className="font-bold text-7xl text-fg-subtle">
         {time.toLocaleString('en-US')}
       </p>
     </div>

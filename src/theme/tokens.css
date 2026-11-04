@@ -16,6 +16,10 @@
  * The defaults reproduce the original Stone look exactly: each one is the
  * Tailwind palette colour the UI used before tokens existed.
  */
+
+/* The guard test's sample class names must not end up in the build */
+@source not './tokens.test.ts';
+
 @theme static {
   /* Page background behind everything */
   --color-backdrop: var(--color-stone-800);

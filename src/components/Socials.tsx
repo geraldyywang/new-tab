@@ -12,9 +12,9 @@ export function Socials() {
   return (
     <nav
       aria-label="Social links"
-      className="absolute z-20 bottom-0 left-0 m-3 min-w-72 max-w-[max(18rem,calc(100vw-24rem))] rounded-xl bg-neutral-900"
+      className="absolute z-20 bottom-0 left-0 m-3 min-w-72 max-w-[max(18rem,calc(100vw-24rem))] rounded-xl bg-surface"
     >
-      <div className="flex flex-row flex-wrap justify-center gap-y-4 px-5 py-5 text-2xl text-neutral-500">
+      <div className="flex flex-row flex-wrap justify-center gap-y-4 px-5 py-5 text-2xl text-fg-subtle">
         {socialLinks.map(link => (
           <LinkIcon key={link.id} link={link} className="mx-4" />
         ))}

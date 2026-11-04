@@ -62,11 +62,11 @@ export function LinksEditor(props: LinksEditorProps) {
       <h3 id={titleId} className={ui.sectionTitleClass}>
         {title}
       </h3>
-      <p className="mt-1 text-sm text-neutral-500">{description}</p>
+      <p className="mt-1 text-sm text-fg-subtle">{description}</p>
 
       <form onSubmit={e => void handleSave(e)} noValidate className="mt-3">
         {draft.rows.length === 0 ? (
-          <p className="text-sm text-neutral-500 italic">No links.</p>
+          <p className="text-sm text-fg-subtle italic">No links.</p>
         ) : (
           <ol className="flex flex-col gap-2">
             {draft.rows.map((row, index) => (
