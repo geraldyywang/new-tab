@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "GeraldTab",
   "description": "New tab by geraldyywang",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsw7oenBaIXXlrrTlyPnX19iJ9T36G6aBF55KwMDy+ghJQs6AKP3eYqKb/UcD4tUl0MZJBhHSzoQJQJZseKjjY2liPJmIMfHDszQ+KlJwoyfnfCLZ29G8fBZe3wFglVnCMwD+lDl5WOTVUU3ftAb2JMng+jQJjunaSMWjUnRgw99j+gR5/ieKv7mTC7YPITGf50JoOKAiNK9B5g/eF2AykaHBX7DHgnmYlGw8CROrOYhHVChDBfdOR5fU1TWkH8pcZNpT+hZOJkzXA7SMfcCcOi7abeOxpkXB+RE1aSVjc58olDU4KqUhl6eVIGLxEdTp3S3Rry2JlKtke+yIHUAlSQIDAQAB",
   "chrome_url_overrides": {
     "newtab": "index.html"

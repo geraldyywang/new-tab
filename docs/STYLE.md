@@ -84,6 +84,8 @@ Configured in `eslint.config.js`, on top of `@eslint/js` recommended,
   safe. Prefer a type guard or narrowing. Never `as any`.
 - **Prefer `unknown` over `any`**, and validate untrusted data (storage,
   network) before use.
+- **Settings go through slices** (`defineSettingsSlice` in the feature's
+  folder, never `chrome.storage` directly); see [storage.md](storage.md).
 - **Optional over `| undefined`** for optional fields and parameters
   (`a?: T`), and no `null`/`undefined` aliases in type names.
 - **No `#private` fields**; use TypeScript's `private`. Mark properties that

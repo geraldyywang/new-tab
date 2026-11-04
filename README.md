@@ -18,7 +18,7 @@ Built with React 19, TypeScript, Vite and Tailwind CSS 4, packaged as a Chrome M
 
 ### Settings sync
 
-Settings (the WeatherAPI key and your links) are stored with `chrome.storage.sync`. They follow your Google account to other computers when you are signed in to Chrome with sync turned on and **Extensions** included in what you sync. Otherwise they stay on this device only. When you run `npm run dev`, settings are kept in the browser's `localStorage` instead.
+Settings (the WeatherAPI key and your links) are stored with `chrome.storage.sync` under `weather.apiKey`, `links.sidebar` and `links.social`. They follow your Google account to other computers when you are signed in to Chrome with sync turned on and **Extensions** included in what you sync. Otherwise they stay on this device only. When you run `npm run dev`, settings are kept in the browser's `localStorage` instead (prefix `new-tab:`). See [docs/storage.md](docs/storage.md) for every key, the sync budget and how to add settings. Settings saved by 2.1 are not carried over to 2.2.
 
 ### Stable extension ID
 
