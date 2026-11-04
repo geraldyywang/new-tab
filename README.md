@@ -33,3 +33,7 @@ Settings (the WeatherAPI key and your links) are stored with `chrome.storage.syn
 | `npm run lint`      | Lint with ESLint                                   |
 | `npm test`          | Run the unit tests with Vitest                     |
 | `npm run format`    | Format with Prettier                               |
+
+## Code style
+
+The code follows the [Google TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html), enforced by ESLint (`npm run lint`, zero warnings allowed) and Prettier (`npm run format`). See [docs/STYLE.md](docs/STYLE.md) for a summary and the rules that tooling can't check.

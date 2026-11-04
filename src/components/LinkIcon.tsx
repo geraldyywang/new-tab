@@ -1,23 +1,25 @@
-import { useState } from "react";
-import type { StoredLink } from "../lib/links";
-import { extensionFaviconUrl, siteIconElement } from "../lib/siteIcons";
+import {useState} from 'react';
+import type {StoredLink} from '../lib/links';
+import {extensionFaviconUrl, siteIconElement} from '../lib/siteIcons';
 
 interface LinkIconProps {
   link: StoredLink;
   className?: string;
 }
 
-const LetterBadge = ({ label }: { label: string }) => (
-  <span
-    aria-hidden="true"
-    className="flex h-6 w-6 items-center justify-center rounded-md bg-neutral-800 text-sm font-bold uppercase"
-  >
-    {label.trim().charAt(0) || "?"}
-  </span>
-);
+function LetterBadge({label}: {label: string}) {
+  return (
+    <span
+      aria-hidden="true"
+      className="flex h-6 w-6 items-center justify-center rounded-md bg-neutral-800 text-sm font-bold uppercase"
+    >
+      {label.trim().charAt(0) || '?'}
+    </span>
+  );
+}
 
 // Unknown site: Chrome's favicon cache in the extension, a letter otherwise
-const SiteFavicon = ({ link }: { link: StoredLink }) => {
+function SiteFavicon({link}: {link: StoredLink}) {
   const [failed, setFailed] = useState(false);
   const src = extensionFaviconUrl(link.url);
   if (!src || failed) return <LetterBadge label={link.label} />;
@@ -31,9 +33,13 @@ const SiteFavicon = ({ link }: { link: StoredLink }) => {
       onError={() => setFailed(true)}
     />
   );
-};
+}
 
-const LinkIcon = ({ link, className = "" }: LinkIconProps) => {
+/**
+ * Icon link to a site: a bundled brand icon if there is one, else the site's
+ * favicon, else its first letter.
+ */
+export function LinkIcon({link, className = ''}: LinkIconProps) {
   const icon = siteIconElement(link.url);
   return (
     <a
@@ -45,6 +51,4 @@ const LinkIcon = ({ link, className = "" }: LinkIconProps) => {
       {icon ?? <SiteFavicon key={link.url} link={link} />}
     </a>
   );
-};
-
-export default LinkIcon;
+}

@@ -1,0 +1,12 @@
+# Always LF in the working tree, whatever core.autocrlf says, so Prettier
+# (endOfLine: lf) doesn't flag every file on Windows checkouts.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary

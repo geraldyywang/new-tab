@@ -1,12 +1,13 @@
-import { useState } from "react";
-import { FiSettings } from "react-icons/fi";
-import Clock from "./components/Clock";
-import HelpfulLinks from "./components/HelpfulLinks";
-import Weather from "./components/Weather";
-import Socials from "./components/Socials";
-import SettingsDialog from "./components/settings/SettingsDialog";
+import {useState} from 'react';
+import {FiSettings} from 'react-icons/fi';
+import {Clock} from './components/Clock';
+import {HelpfulLinks} from './components/HelpfulLinks';
+import {Weather} from './components/Weather';
+import {Socials} from './components/Socials';
+import {SettingsDialog} from './components/settings/SettingsDialog';
 
-function App() {
+/** The new tab page. */
+export function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
@@ -57,5 +58,3 @@ function App() {
     </>
   );
 }
-
-export default App;

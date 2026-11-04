@@ -1,9 +1,11 @@
-import { useSettings } from "../lib/storage";
-import LinkIcon from "./LinkIcon";
+import {useSettings} from '../lib/storage';
+import {LinkIcon} from './LinkIcon';
 
-// Quick-access side bar; links are edited in the settings panel
-const HelpfulLinks = () => {
-  const { loaded, sidebarLinks } = useSettings();
+/**
+ * Quick-access sidebar on the right; links are edited in the settings panel.
+ */
+export function HelpfulLinks() {
+  const {loaded, sidebarLinks} = useSettings();
 
   return (
     <nav
@@ -12,12 +14,10 @@ const HelpfulLinks = () => {
     >
       <div className="flex h-full flex-col items-center justify-center-safe overflow-y-auto px-5 py-5 text-2xl text-neutral-500 [scrollbar-color:var(--color-neutral-700)_transparent] [scrollbar-width:thin]">
         {loaded &&
-          sidebarLinks.map((link) => (
+          sidebarLinks.map(link => (
             <LinkIcon key={link.id} link={link} className="my-3" />
           ))}
       </div>
     </nav>
   );
-};
-
-export default HelpfulLinks;
+}

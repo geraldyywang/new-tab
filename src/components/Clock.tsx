@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from 'react';
 
-const Clock = () => {
+/** Large clock showing the local date and time, updated every second. */
+export function Clock() {
   const [time, setTime] = useState(() => new Date());
 
   useEffect(() => {
@@ -11,10 +12,8 @@ const Clock = () => {
   return (
     <div className="flex flex-col justify-center items-center px-5 py-5">
       <p className="font-bold text-7xl text-neutral-500">
-        {time.toLocaleString("en-US")}
+        {time.toLocaleString('en-US')}
       </p>
     </div>
   );
-};
-
-export default Clock;
+}
