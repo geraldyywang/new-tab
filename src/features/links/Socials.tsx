@@ -1,6 +1,6 @@
-import {useSettings} from '../lib/storage';
+import {useSettings} from '../../settings/storage';
 import {LinkIcon} from './LinkIcon';
-import {Card} from './ui/Card';
+import {Card} from '../../ui/Card';
 
 /**
  * Social links bar at the bottom left; renders nothing when the list is empty.

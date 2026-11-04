@@ -8,8 +8,8 @@ import {
   parseHttpUrl,
   sameLinks,
   type StoredLink,
-} from '../../lib/links';
-import {useSyncedDraft} from './useSyncedDraft';
+} from './links';
+import {useSyncedDraft} from '../../settings/useSyncedDraft';
 
 /** An editable field of a link row. */
 export type LinkField = 'label' | 'url';

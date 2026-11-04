@@ -1,12 +1,12 @@
 import {useState} from 'react';
 import {FiSettings} from 'react-icons/fi';
-import {Clock} from './components/Clock';
-import {HelpfulLinks} from './components/HelpfulLinks';
-import {Weather} from './components/Weather';
-import {Socials} from './components/Socials';
-import {SettingsDialog} from './components/settings/SettingsDialog';
-import {Card} from './components/ui/Card';
-import {focusRingClass, surfaceAttributes} from './components/ui/styles';
+import {Clock} from '../features/clock/Clock';
+import {HelpfulLinks} from '../features/links/HelpfulLinks';
+import {Weather} from '../features/weather/Weather';
+import {Socials} from '../features/links/Socials';
+import {SettingsDialog} from '../settings/SettingsDialog';
+import {Card} from '../ui/Card';
+import {focusRingClass, surfaceAttributes} from '../ui/styles';
 
 /** The new tab page. */
 export function App() {

@@ -1,6 +1,6 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
-import {pressEscape} from '../../test/dialogPolyfill';
+import {pressEscape} from '../test/dialogPolyfill';
 import {SettingsDialog} from './SettingsDialog';
 
 function dialog() {

@@ -1,6 +1,6 @@
 import {act, renderHook} from '@testing-library/react';
 import {describe, expect, it} from 'vitest';
-import {MAX_LINKS, type StoredLink} from '../../lib/links';
+import {MAX_LINKS, type StoredLink} from './links';
 import {
   cleanRows,
   linksReducer,

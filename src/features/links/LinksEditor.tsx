@@ -1,13 +1,13 @@
 import {useId, useState, type FormEvent} from 'react';
 import {FiPlus} from 'react-icons/fi';
-import type {StoredLink} from '../../lib/links';
-import {SettingsWriteError} from '../../lib/storage';
-import {Button} from '../ui/Button';
-import * as ui from '../ui/styles';
-import {ConflictNotice} from './ConflictNotice';
+import type {StoredLink} from './links';
+import {SettingsWriteError} from '../../settings/storage';
+import {Button} from '../../ui/Button';
+import * as ui from '../../ui/styles';
+import {ConflictNotice} from '../../settings/ConflictNotice';
 import {LinkRow} from './LinkRow';
 import {useLinksDraft} from './linksDraft';
-import {useReportDirty} from './useSyncedDraft';
+import {useReportDirty} from '../../settings/useSyncedDraft';
 
 interface LinksEditorProps {
   title: string;

@@ -1,12 +1,8 @@
 import {FiArrowDown, FiArrowUp, FiTrash2} from 'react-icons/fi';
-import {
-  MAX_LABEL_LENGTH,
-  MAX_URL_LENGTH,
-  type StoredLink,
-} from '../../lib/links';
-import {IconButton} from '../ui/Button';
-import * as ui from '../ui/styles';
-import {TextInput} from '../ui/TextInput';
+import {MAX_LABEL_LENGTH, MAX_URL_LENGTH, type StoredLink} from './links';
+import {IconButton} from '../../ui/Button';
+import * as ui from '../../ui/styles';
+import {TextInput} from '../../ui/TextInput';
 import type {LinkField} from './linksDraft';
 
 interface LinkRowProps {

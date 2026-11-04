@@ -69,7 +69,7 @@ Configured in `eslint.config.js`, on top of `@eslint/js` recommended,
   never palette colours (`bg-neutral-900`), hex values or colour functions.
   `src/theme/tokens.test.ts` fails the build if one slips in. Themes override
   the `--color-*` properties under `[data-theme]` on `<html>`.
-- **Primitives from `src/components/ui/`:** `Card` for every panel, bar and
+- **Primitives from `src/ui/`:** `Card` for every panel, bar and
   dialog surface (`surfaceAttributes()` for elements `Card` can't render,
   such as `<dialog>`), `Button`, `IconButton` and `TextInput` for controls.
 

@@ -3,7 +3,10 @@ import {
   installChromeStorageMock,
   type ChromeStorageMock,
 } from '../test/chromeStorageMock';
-import {DEFAULT_SIDEBAR_LINKS, DEFAULT_SOCIAL_LINKS} from './links';
+import {
+  DEFAULT_SIDEBAR_LINKS,
+  DEFAULT_SOCIAL_LINKS,
+} from '../features/links/links';
 
 type StorageModule = typeof import('./storage');
 

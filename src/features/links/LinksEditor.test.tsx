@@ -1,7 +1,7 @@
 import {fireEvent, render, screen, within} from '@testing-library/react';
 import {describe, expect, it, vi} from 'vitest';
-import type {StoredLink} from '../../lib/links';
-import {SettingsWriteError} from '../../lib/storage';
+import type {StoredLink} from './links';
+import {SettingsWriteError} from '../../settings/storage';
 import {LinksEditor} from './LinksEditor';
 
 const defaults: StoredLink[] = [
