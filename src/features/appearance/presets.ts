@@ -182,6 +182,16 @@ export const THEME_PRESETS: readonly ThemePreset[] = [
   },
 ];
 
+/** Accent swatches offered next to the custom colour picker. */
+export const ACCENT_PRESETS: ReadonlyArray<{name: string; color: string}> = [
+  {name: 'Blue', color: '#60a5fa'},
+  {name: 'Teal', color: '#2dd4bf'},
+  {name: 'Green', color: '#4ade80'},
+  {name: 'Amber', color: '#fbbf24'},
+  {name: 'Rose', color: '#fb7185'},
+  {name: 'Violet', color: '#a78bfa'},
+];
+
 /** Whether `value` names a built-in theme. */
 export function isPresetId(value: unknown): value is PresetId {
   return THEME_PRESETS.some(preset => preset.id === value);
