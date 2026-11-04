@@ -31,12 +31,19 @@ Chrome's limits for `chrome.storage.sync`:
 
 Every key in use:
 
-| Key              | Area | Owner              | Holds                   | Expected size                              |
-| ---------------- | ---- | ------------------ | ----------------------- | ------------------------------------------ |
-| `weather.apiKey` | sync | `features/weather` | WeatherAPI key (string) | ~50 B                                      |
-| `links.sidebar`  | sync | `features/links`   | Sidebar link list       | ~1 KB for 8 links; capped at 8 KB          |
-| `links.social`   | sync | `features/links`   | Social link list        | ~0.6 KB for 5 links; capped at 8 KB        |
-| **Total**        |      |                    |                         | ~2 KB typical, ~16 KB worst case of 100 KB |
+| Key                  | Area | Owner                 | Holds                             | Expected size                              |
+| -------------------- | ---- | --------------------- | --------------------------------- | ------------------------------------------ |
+| `weather.apiKey`     | sync | `features/weather`    | WeatherAPI key (string)           | ~50 B                                      |
+| `links.sidebar`      | sync | `features/links`      | Sidebar link list                 | ~1 KB for 8 links; capped at 8 KB          |
+| `links.social`       | sync | `features/links`      | Social link list                  | ~0.6 KB for 5 links; capped at 8 KB        |
+| `background.display` | sync | `features/background` | Photo fit, focal point, dim, blur | ~70 B                                      |
+| **Total**            |      |                       |                                   | ~2 KB typical, ~16 KB worst case of 100 KB |
+
+The background photo itself is not a slice: it lives in IndexedDB (database
+`new-tab`, object store `background`, key `photo`; see
+`src/features/background/imageStore.ts`), on this computer only and never in
+settings export. It is downscaled to at most 3840 px and stored as WebP,
+typically under 2 MB, so no `unlimitedStorage` permission is needed.
 
 Saving a sync slice that isn't chunked checks the 8 KB item limit first and
 fails with a `SettingsWriteError` ("too much data for one setting") without
