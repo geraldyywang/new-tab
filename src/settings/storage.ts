@@ -5,6 +5,7 @@ import {
   sanitizeLinks,
   type StoredLink,
 } from '../features/links/links';
+import {itemBytes, QUOTA_BYTES_PER_ITEM} from './quota';
 import {createBackend, type StorageBackendKind} from './storageBackends';
 
 export type {StorageBackendKind} from './storageBackends';
@@ -38,12 +39,6 @@ export class SettingsWriteError extends Error {
     this.name = 'SettingsWriteError';
   }
 }
-
-/**
- * `chrome.storage.sync.QUOTA_BYTES_PER_ITEM`, also enforced in dev so behaviour
- * matches the extension. Each setting is its own item to stay under it.
- */
-export const QUOTA_BYTES_PER_ITEM = 8192;
 
 const backend = createBackend('sync');
 
@@ -136,7 +131,7 @@ export function describeWriteError(err: unknown): string {
 /** Writes one item; `undefined` removes it. */
 async function writeSetting(key: SettingKey, value: unknown) {
   if (value !== undefined) {
-    const bytes = new TextEncoder().encode(key + JSON.stringify(value)).length;
+    const bytes = itemBytes(key, value);
     if (bytes > QUOTA_BYTES_PER_ITEM) {
       throw new SettingsWriteError(
         `That's too much data for one setting (${bytes} of ${QUOTA_BYTES_PER_ITEM} bytes). Remove some links and try again.`,
