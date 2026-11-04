@@ -10,6 +10,8 @@ export const weatherApiKeySlice = defineSettingsSlice<string>({
   area: 'sync',
   parse: data => (typeof data === 'string' ? data.trim() : null),
   default: '',
+  label: 'WeatherAPI key',
+  secret: true,
 });
 
 /** Saves the WeatherAPI key; an empty string removes it. */
