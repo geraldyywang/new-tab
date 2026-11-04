@@ -2,40 +2,136 @@
 
 [![CI](https://github.com/geraldyywang/new-tab/actions/workflows/ci.yml/badge.svg)](https://github.com/geraldyywang/new-tab/actions/workflows/ci.yml)
 
+A Chrome Manifest V3 extension that replaces the new tab page with a clock,
+local weather and editable quick links. Built with React 19, TypeScript, Vite
+and Tailwind CSS 4.
+
 ![image](https://github.com/geraldyywang/new-tab/assets/96800313/56c18642-5d48-4c5a-8821-791bc9285866)
 
-Built with React 19, TypeScript, Vite and Tailwind CSS 4, packaged as a Chrome Manifest V3 extension.
+## Features
 
-## How to Use
+- **Clock**: the local date and time, updated every second.
+- **Weather** for your current location, from [WeatherAPI](https://www.weatherapi.com/)
+  with your own free key: place, condition and icon, temperature (°C), wind,
+  precipitation, humidity and US EPA air quality.
+  - Without a key it shows a prompt to open settings and a sign-up link.
+  - Clear messages for a rejected key (with an **Open settings** button), a
+    used-up monthly quota, a disabled key, denied or unavailable location, and
+    network errors.
+- **Links**: a sidebar on the right and a social bar at the bottom left.
+  - Well-known sites (Gmail, Calendar, Drive, YouTube, Notion, Outlook,
+    Claude, ChatGPT, Gemini, GitHub, LinkedIn, Instagram, X, Reddit) get a
+    bundled icon; other sites use Chrome's favicon cache, or their first letter.
+- **Settings panel** (gear icon next to the title):
+  - WeatherAPI key: show/hide, **Test**, **Save**, **Clear**.
+  - Sidebar and social links: add, edit, reorder, remove, **Reset to
+    defaults**, then **Save**. URLs are validated (http/https only), and
+    `example.com` becomes `https://example.com`.
+  - Asks before discarding unsaved changes, and offers **Reload** when a
+    setting changes on another device while you edit it.
+- **Chrome sync**: settings follow your Google account (see
+  [Settings and sync](#settings-and-sync)).
 
-1. Install [Node.js](https://nodejs.org/) 22.22.2 or newer, then run `npm install`.
-2. Run `npm run build` to create a production build in `dist/`. No `.env` file or API key is needed at build time.
-3. In Chrome, open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and select the `dist` folder.
-4. Open a new tab and click the gear icon next to the `new_tab()` title.
-5. Paste a free API key from [WeatherAPI](https://www.weatherapi.com/signup.aspx), click **Test** to check it, then **Save**.
-6. In the same panel, edit, reorder, add or remove the sidebar and social links, then click **Save** under each list.
-7. After you rebuild, click the reload icon on the extension card.
+## Install
 
-### Settings sync
+1. Install [Node.js](https://nodejs.org/) 22.22.2 or newer.
+2. Run `npm ci`, then `npm run build`. This creates `dist/`. No `.env` file or
+   API key is needed at build time.
+3. In Chrome, open `chrome://extensions`, turn on **Developer mode**, click
+   **Load unpacked** and select the `dist` folder.
+4. Open a new tab, click the gear icon, paste a free key from
+   [WeatherAPI](https://www.weatherapi.com/signup.aspx), click **Test**, then
+   **Save**.
 
-Settings (the WeatherAPI key and your links) are stored with `chrome.storage.sync` under `weather.apiKey`, `links.sidebar` and `links.social`. They follow your Google account to other computers when you are signed in to Chrome with sync turned on and **Extensions** included in what you sync. Otherwise they stay on this device only. When you run `npm run dev`, settings are kept in the browser's `localStorage` instead (prefix `new-tab:`). See [docs/storage.md](docs/storage.md) for every key, the sync budget and how to add settings. Settings saved by 2.1 are not carried over to 2.2.
+After a rebuild, click the reload icon on the extension's card in
+`chrome://extensions`.
+
+## Settings and sync
+
+| Setting        | Key              | Area                  |
+| -------------- | ---------------- | --------------------- |
+| WeatherAPI key | `weather.apiKey` | `chrome.storage.sync` |
+| Sidebar links  | `links.sidebar`  | `chrome.storage.sync` |
+| Social links   | `links.social`   | `chrome.storage.sync` |
+
+- Each setting is a slice owned by its feature, one item per slice (each must
+  fit Chrome's 8 KB per-item limit; bigger slices can be chunked). Unset or
+  invalid values use the defaults. See [docs/storage.md](docs/storage.md) for
+  the sync budget, chunking and how to add a setting.
+- On the dev server (`npm run dev`) they live in `localStorage` instead, under
+  keys prefixed with `new-tab:` (`new-tab-local:` for device-only settings).
+- 2.2 does not read settings saved by 2.1; re-enter the API key and links
+  after upgrading.
+- Settings sync between computers only when Chrome is signed in, sync is on
+  with **Extensions** included, and the extension has the same ID on each.
+  Otherwise they stay on this device.
 
 ### Stable extension ID
 
-`public/manifest.json` contains a fixed `key`. It gives the unpacked extension the same ID (`pkhmhapiepbkchmgilgjekogiklkbppc`) on every computer, which is what lets Chrome sync its settings between them. Remove the `key` field before uploading the extension to the Chrome Web Store, because the store assigns its own key.
+`public/manifest.json` contains a fixed `key`. It gives the unpacked extension
+the same ID (`pkhmhapiepbkchmgilgjekogiklkbppc`) on every computer, which is
+what lets Chrome sync its settings.
 
-## Scripts
+## Development
 
-| Command             | Description                                        |
-| ------------------- | -------------------------------------------------- |
-| `npm run dev`       | Start the Vite dev server at http://localhost:5173 |
-| `npm run build`     | Type-check and build the extension into `dist/`    |
-| `npm run preview`   | Serve the production build locally                 |
-| `npm run typecheck` | Run the TypeScript compiler                        |
-| `npm run lint`      | Lint with ESLint                                   |
-| `npm test`          | Run the unit tests with Vitest                     |
-| `npm run format`    | Format with Prettier                               |
+Run `npm ci` once, then `npm run dev` to start the Vite dev server at
+http://localhost:5173. There settings use `localStorage`, the browser asks for
+location permission, and unknown sites show a letter instead of a favicon.
 
-## Code style
+| Command             | Description                                     |
+| ------------------- | ----------------------------------------------- |
+| `npm run dev`       | Start the Vite dev server                       |
+| `npm run build`     | Type-check and build the extension into `dist/` |
+| `npm run preview`   | Serve the production build locally              |
+| `npm run typecheck` | Run the TypeScript compiler (`tsc -b`)          |
+| `npm run lint`      | Lint with ESLint, zero warnings allowed         |
+| `npm test`          | Run the unit tests with Vitest                  |
+| `npm run format`    | Format everything with Prettier                 |
 
-The code follows the [Google TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html), enforced by ESLint (`npm run lint`, zero warnings allowed) and Prettier (`npm run format`). See [docs/STYLE.md](docs/STYLE.md) for a summary and the rules that tooling can't check.
+### CI
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on pushes to
+`master` and on every pull request, on Node 22.x and the current LTS:
+`npm ci`, `npx prettier --check .`, typecheck, lint, test and build. The LTS
+job uploads `dist/` as the `new-tab-dist` artifact (kept for 14 days).
+
+## Project structure
+
+```text
+src/
+  main.tsx        Entry point
+  index.css       Global styles; imports the theme tokens
+  app/            The page layout (App.tsx)
+  features/
+    clock/        Clock
+    weather/      Weather card, WeatherAPI client, API key settings section
+    links/        Sidebar, social bar, link icons, links editor
+  settings/       Settings dialog, section registry, slices and storage
+  ui/             Shared primitives: Card, Button, IconButton, TextInput
+  theme/          Semantic colour tokens and the guard test
+  test/           Vitest setup and mocks
+public/           manifest.json, icons and weather condition images
+```
+
+New features go in `src/features/<name>/`.
+
+## Contributing
+
+- **Style**: the [Google TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html),
+  enforced by ESLint and Prettier (gts settings). See
+  [docs/STYLE.md](docs/STYLE.md) for the summary and the rules tooling can't
+  check.
+- **Colours**: semantic theme tokens from `src/theme/tokens.css` only (such as
+  `bg-surface`, `text-fg-muted`), never palette colours or hex values.
+  `src/theme/tokens.test.ts` fails if one slips in.
+- **Workflow**: one issue, one branch, one pull request whose description says
+  `Closes #N`.
+- **Commits**: at most 200 lines of real code each (tests, the lockfile, docs
+  and generated reformats don't count), and every commit passes all the checks
+  above.
+
+## Roadmap
+
+Planned work is tracked in the
+[milestones](https://github.com/geraldyywang/new-tab/milestones) and
+[issues](https://github.com/geraldyywang/new-tab/issues).
