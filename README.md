@@ -1,12 +1,14 @@
 # new_tab(), a new tab extension for browsers!
 
+[![CI](https://github.com/geraldyywang/new-tab/actions/workflows/ci.yml/badge.svg)](https://github.com/geraldyywang/new-tab/actions/workflows/ci.yml)
+
 ![image](https://github.com/geraldyywang/new-tab/assets/96800313/56c18642-5d48-4c5a-8821-791bc9285866)
 
 Built with React 19, TypeScript, Vite and Tailwind CSS 4, packaged as a Chrome Manifest V3 extension.
 
 ## How to Use
 
-1. Install [Node.js](https://nodejs.org/) 22.12 or newer, then run `npm install`.
+1. Install [Node.js](https://nodejs.org/) 22.22.2 or newer, then run `npm install`.
 2. Run `npm run build` to create a production build in `dist/`. No `.env` file or API key is needed at build time.
 3. In Chrome, open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and select the `dist` folder.
 4. Open a new tab and click the gear icon next to the `new_tab()` title.
