@@ -46,11 +46,13 @@ describe('SETTINGS_SECTIONS', () => {
       'apiKey',
       'sidebarLinks',
       'socialLinks',
+      'backup',
     ]);
     expect(SETTINGS_SECTIONS.map(s => s.title)).toEqual([
       'Weather API key',
       'Sidebar links',
       'Social links',
+      'Import and export',
     ]);
   });
 });
