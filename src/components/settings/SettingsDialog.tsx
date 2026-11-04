@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { useSettings } from "../../lib/storage";
 import { iconButtonClass } from "../ui/styles";
+import ApiKeySection from "./ApiKeySection";
 
 interface SettingsDialogProps {
   open: boolean;
@@ -12,9 +13,18 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
   const pointerDownOnBackdrop = useRef(false);
-  // Ids of sections with unsaved edits
-  const dirtySectionsRef = useRef(new Set<string>());
   const settings = useSettings();
+
+  // Ids of sections with unsaved edits, plus stable per-section callbacks
+  // for useReportDirty. Only read in event handlers, so not React state.
+  const [dirty] = useState(() => {
+    const sections = new Set<string>();
+    const reporter = (id: string) => (isDirty: boolean) => {
+      if (isDirty) sections.add(id);
+      else sections.delete(id);
+    };
+    return { sections, report: { apiKey: reporter("apiKey") } };
+  });
 
   // Sync the native dialog with the `open` prop (no React state set here)
   useEffect(() => {
@@ -32,8 +42,7 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
   }, [open]);
 
   const confirmDiscard = () =>
-    dirtySectionsRef.current.size === 0 ||
-    window.confirm("Discard unsaved changes?");
+    dirty.sections.size === 0 || window.confirm("Discard unsaved changes?");
 
   // Close button and backdrop click
   const requestClose = () => {
@@ -41,7 +50,6 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
   };
 
   const handleClose = () => {
-    dirtySectionsRef.current.clear();
     onClose();
     restoreFocusRef.current?.focus();
     restoreFocusRef.current = null;
@@ -89,7 +97,13 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
           </div>
 
           {settings.loaded ? (
-            <div className="mt-4 flex flex-col gap-8"></div>
+            <div className="mt-4 flex flex-col gap-8">
+              <ApiKeySection
+                savedKey={settings.weatherApiKey}
+                backend={settings.backend}
+                onDirtyChange={dirty.report.apiKey}
+              />
+            </div>
           ) : (
             <p className="mt-4 text-sm text-neutral-500">Loading settings…</p>
           )}
