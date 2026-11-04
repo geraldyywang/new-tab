@@ -59,6 +59,8 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
   };
 
   const handleClose = () => {
+    // Sections unmount once closed; don't let stale flags outlive them
+    dirty.sections.clear();
     onClose();
     restoreFocusRef.current?.focus();
     restoreFocusRef.current = null;
@@ -68,7 +70,15 @@ const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
     <dialog
       ref={dialogRef}
       aria-labelledby="settings-title"
-      // Esc fires `cancel` before `close`; keep the dialog open if asked to
+      // Chrome may skip `cancel` (or make it non-cancelable) on repeated Esc,
+      // so with unsaved edits handle Esc here: a canceled keydown never
+      // becomes a close request
+      onKeyDown={(e) => {
+        if (e.key !== "Escape" || dirty.sections.size === 0) return;
+        e.preventDefault();
+        requestClose();
+      }}
+      // Fallback for other close requests; keep the dialog open if asked to
       onCancel={(e) => {
         if (!confirmDiscard()) e.preventDefault();
       }}

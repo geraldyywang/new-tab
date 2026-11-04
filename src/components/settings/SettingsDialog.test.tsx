@@ -64,6 +64,32 @@ describe("SettingsDialog", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it("handles Esc keydown itself when there are unsaved edits", async () => {
+    const onClose = await renderOpenDialog();
+    makeDirty();
+    const input = screen.getByLabelText("WeatherAPI key");
+
+    // Cancelled: keydown is prevented so the browser never sends a close request
+    confirmSpy.mockReturnValue(false);
+    expect(fireEvent.keyDown(input, { key: "Escape" })).toBe(false);
+    expect(confirmSpy).toHaveBeenCalledWith("Discard unsaved changes?");
+    expect(dialog().open).toBe(true);
+    expect(onClose).not.toHaveBeenCalled();
+
+    // Confirmed: the dialog closes itself
+    confirmSpy.mockReturnValue(true);
+    expect(fireEvent.keyDown(input, { key: "Escape" })).toBe(false);
+    expect(dialog().open).toBe(false);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("leaves Esc keydown to the browser when nothing is dirty", async () => {
+    const onClose = await renderOpenDialog();
+    expect(fireEvent.keyDown(dialog(), { key: "Escape" })).toBe(true);
+    expect(confirmSpy).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
   it("asks on a backdrop click, but ignores clicks inside", async () => {
     const onClose = await renderOpenDialog();
     makeDirty();
