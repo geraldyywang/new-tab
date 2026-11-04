@@ -2,12 +2,15 @@ import {act, renderHook} from '@testing-library/react';
 import {describe, expect, it, vi} from 'vitest';
 import {useReportDirty, useSyncedDraft} from './useSyncedDraft';
 
-const trimEquals = (a: string, b: string) => a.trim() === b.trim();
+function trimEquals(a: string, b: string) {
+  return a.trim() === b.trim();
+}
 
-const setup = (initial: string) =>
-  renderHook(({saved}) => useSyncedDraft(saved, trimEquals), {
+function setup(initial: string) {
+  return renderHook(({saved}) => useSyncedDraft(saved, trimEquals), {
     initialProps: {saved: initial},
   });
+}
 
 describe('useSyncedDraft', () => {
   it('starts clean with the saved value', () => {

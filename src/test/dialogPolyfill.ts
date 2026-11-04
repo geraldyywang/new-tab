@@ -17,9 +17,9 @@ if (!proto.__polyfilled) {
 }
 
 /** Simulates pressing Esc: fires a cancelable `cancel`, closes unless prevented. */
-export const pressEscape = (dialog: HTMLDialogElement): boolean => {
+export function pressEscape(dialog: HTMLDialogElement): boolean {
   const event = new Event('cancel', {cancelable: true});
   dialog.dispatchEvent(event);
   if (!event.defaultPrevented) dialog.close();
   return !event.defaultPrevented;
-};
+}

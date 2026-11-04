@@ -108,7 +108,7 @@ export default defineConfig([
   },
   {
     // Temporary: files not yet converted to function declarations
-    files: ['src/lib/storageBackends.ts', 'src/components/**', 'src/test/**'],
+    files: ['src/components/*.tsx', 'src/components/settings/*.tsx'],
     rules: {'func-style': 'off'},
   },
   {

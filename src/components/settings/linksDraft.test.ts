@@ -8,11 +8,13 @@ import {
   validateRow,
 } from './linksDraft';
 
-const link = (id: string, label = id, url = `https://${id}.example.com/`) => ({
-  id,
-  label,
-  url,
-});
+function link(id: string, label = id, url = `https://${id}.example.com/`) {
+  return {
+    id,
+    label,
+    url,
+  };
+}
 const a = link('a');
 const b = link('b');
 const c = link('c');
@@ -95,10 +97,11 @@ describe('cleanRows', () => {
 });
 
 describe('useLinksDraft', () => {
-  const setup = (saved: readonly StoredLink[] = [c]) =>
-    renderHook(({saved}) => useLinksDraft(saved, defaults), {
+  function setup(saved: readonly StoredLink[] = [c]) {
+    return renderHook(({saved}) => useLinksDraft(saved, defaults), {
       initialProps: {saved},
     });
+  }
 
   it('tracks dirtiness through add, move and remove', () => {
     const {result} = setup([a, b]);

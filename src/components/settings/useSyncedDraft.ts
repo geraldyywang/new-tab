@@ -16,10 +16,10 @@ export interface SyncedDraft<T> {
  * from outside, a clean draft adopts it; a dirty draft is kept and `conflict`
  * is raised instead.
  */
-export const useSyncedDraft = <T>(
+export function useSyncedDraft<T>(
   saved: T,
   equals: (a: T, b: T) => boolean = Object.is,
-): SyncedDraft<T> => {
+): SyncedDraft<T> {
   const [draft, setDraft] = useState(saved);
   // The saved value the draft was last reconciled with
   const [base, setBase] = useState(saved);
@@ -48,16 +48,16 @@ export const useSyncedDraft = <T>(
       setConflict(false);
     },
   };
-};
+}
 
 /** Tells a parent whether a section has unsaved edits (false on unmount). */
-export const useReportDirty = (
+export function useReportDirty(
   dirty: boolean,
   onDirtyChange: ((dirty: boolean) => void) | undefined,
-) => {
+) {
   useEffect(() => {
     if (!onDirtyChange) return;
     onDirtyChange(dirty);
     return () => onDirtyChange(false);
   }, [dirty, onDirtyChange]);
-};
+}

@@ -14,7 +14,7 @@ import {useSyncedDraft} from './useSyncedDraft';
 export type LinkField = 'label' | 'url';
 export type RowErrors = Partial<Record<LinkField, string>>;
 
-export const validateRow = (row: StoredLink): RowErrors => {
+export function validateRow(row: StoredLink): RowErrors {
   const errors: RowErrors = {};
   if (!row.label.trim()) errors.label = 'Enter a label.';
   const url = normalizeUrlInput(row.url);
@@ -24,7 +24,7 @@ export const validateRow = (row: StoredLink): RowErrors => {
     errors.url = 'Enter a valid web address starting with http:// or https://.';
   }
   return errors;
-};
+}
 
 export type LinksAction =
   | {type: 'update'; index: number; patch: Partial<Record<LinkField, string>>}
@@ -33,10 +33,10 @@ export type LinksAction =
   | {type: 'add'; id: string}
   | {type: 'reset'; links: readonly StoredLink[]};
 
-export const linksReducer = (
+export function linksReducer(
   rows: readonly StoredLink[],
   action: LinksAction,
-): readonly StoredLink[] => {
+): readonly StoredLink[] {
   switch (action.type) {
     case 'update':
       return rows.map((row, i) =>
@@ -57,10 +57,10 @@ export const linksReducer = (
     case 'reset':
       return action.links.map(link => ({...link}));
   }
-};
+}
 
 /** Trimmed labels and normalised URLs, or null if any row is invalid. */
-export const cleanRows = (rows: readonly StoredLink[]): StoredLink[] | null => {
+export function cleanRows(rows: readonly StoredLink[]): StoredLink[] | null {
   const cleaned: StoredLink[] = [];
   for (const row of rows) {
     const url = parseHttpUrl(normalizeUrlInput(row.url));
@@ -69,13 +69,13 @@ export const cleanRows = (rows: readonly StoredLink[]): StoredLink[] | null => {
     cleaned.push({id: row.id, label, url: url.href});
   }
   return cleaned;
-};
+}
 
 /** Editable copy of a saved link list with validation state. */
-export const useLinksDraft = (
+export function useLinksDraft(
   saved: readonly StoredLink[],
   defaults: readonly StoredLink[],
-) => {
+) {
   const synced = useSyncedDraft(saved, sameLinks);
   // "<row id>:<field>" for fields the user has left at least once
   const [touched, setTouched] = useState<ReadonlySet<string>>(new Set());
@@ -83,12 +83,13 @@ export const useLinksDraft = (
   const rows = synced.draft;
   const errors = rows.map(validateRow);
 
-  const clearValidation = () => {
+  function clearValidation() {
     setTouched(new Set());
     setSubmitted(false);
-  };
-  const dispatch = (action: LinksAction) =>
+  }
+  function dispatch(action: LinksAction) {
     synced.setDraft(prev => linksReducer(prev, action));
+  }
 
   return {
     rows,
@@ -126,4 +127,4 @@ export const useLinksDraft = (
     },
     clearValidation,
   };
-};
+}
