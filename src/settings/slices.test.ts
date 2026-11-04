@@ -77,6 +77,40 @@ describe('defineSettingsSlice', () => {
       }),
     ).toThrow(/Invalid settings key/);
   });
+
+  it('registers every slice it defines, in definition order', async () => {
+    const {text, local, big} = await setup();
+    const {listSettingsSlices} = await import('./sliceRegistry');
+    expect(listSettingsSlices()).toEqual([text, local, big]);
+  });
+
+  it('lets a redefinition replace a slice with the same area and key', async () => {
+    const {slices, local, big} = await setup();
+    const again = slices.defineSettingsSlice({
+      key: 'test.text',
+      area: 'sync',
+      parse: parseString,
+      default: 'other',
+      secret: true,
+    });
+    const sameKeyOtherArea = slices.defineSettingsSlice({
+      key: 'test.big',
+      area: 'local',
+      parse: parseString,
+      default: '',
+    });
+    const {listSettingsSlices} = await import('./sliceRegistry');
+    expect(listSettingsSlices()).toEqual([again, local, big, sameKeyOtherArea]);
+  });
+});
+
+describe('loadSlice', () => {
+  it('reads the stored value once, or the default', async () => {
+    const {slices, text} = await setup();
+    expect(await slices.loadSlice(text)).toBe('fallback');
+    window.localStorage.setItem('new-tab:test.text', '"stored"');
+    expect(await slices.loadSlice(text)).toBe('stored');
+  });
 });
 
 describe('with chrome.storage', () => {

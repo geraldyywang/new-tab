@@ -20,6 +20,7 @@ export const sidebarLinksSlice: LinkListSlice = defineSettingsSlice({
   area: 'sync',
   parse: sanitizeLinks,
   default: DEFAULT_SIDEBAR_LINKS,
+  label: 'Sidebar links',
 });
 
 /** Links in the socials bar at the bottom left. */
@@ -28,6 +29,7 @@ export const socialLinksSlice: LinkListSlice = defineSettingsSlice({
   area: 'sync',
   parse: sanitizeLinks,
   default: DEFAULT_SOCIAL_LINKS,
+  label: 'Social links',
 });
 
 /** Saves a link list; `null` removes it so the defaults are used. */

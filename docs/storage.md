@@ -76,7 +76,16 @@ but remember the 100 KB total.
    ```
 
    `parse` must validate everything: storage is untrusted, and another
-   computer may run a different build.
+   computer may run a different build (and imported files go through it too).
+
+   Optional fields: `label` names the slice in the import summary (defaults
+   to the key); `secret: true` marks values such as API keys, which settings
+   export leaves out unless the user ticks a checkbox.
+
+   `defineSettingsSlice` adds the slice to a registry
+   (`listSettingsSlices()` in `src/settings/sliceRegistry.ts`). Export and
+   import cover every registered `sync` slice automatically; `local` slices
+   stay on the device and are never exported.
 
 2. Read it with `useSlice(clockSlice)`, which returns `{loaded, value}` and
    re-renders when the value changes in this tab, another tab or on another

@@ -10,6 +10,7 @@ import {
   removeChunked,
   writeChunked,
 } from './chunkedStorage';
+import {registerSlice} from './sliceRegistry';
 import {
   createBackend,
   type StorageArea,
@@ -39,6 +40,10 @@ export interface SettingsSliceOptions<T> {
   default: T;
   /** Split across several items, for sync values that may pass 8 KB. */
   chunked?: boolean;
+  /** Human-readable name, e.g. in the import summary; defaults to `key`. */
+  label?: string;
+  /** Holds a secret (an API key): left out of exports unless asked for. */
+  secret?: boolean;
 }
 
 /** A settings slice, as returned by `defineSettingsSlice`. */
@@ -51,14 +56,19 @@ export interface SliceState<T> {
   value: T;
 }
 
-/** Defines a slice of settings stored under one key. */
+/**
+ * Defines a slice of settings stored under one key and adds it to the slice
+ * registry (`listSettingsSlices`).
+ */
 export function defineSettingsSlice<T>(
   options: SettingsSliceOptions<T>,
 ): SettingsSlice<T> {
   if (!options.key || options.key.includes(':')) {
     throw new Error(`Invalid settings key "${options.key}"`);
   }
-  return Object.freeze({...options});
+  const slice = Object.freeze({...options});
+  registerSlice(slice);
+  return slice;
 }
 
 const backends = new Map<StorageArea, StorageBackend>();
@@ -145,6 +155,11 @@ function storeFor<T>(slice: SettingsSlice<T>): SliceStore<T> {
   stores.set(slice, store);
   // Each slice gets the store created for it above, so T matches
   return store as SliceStore<T>;
+}
+
+/** Reads a slice from storage once: its parsed value, or the default. */
+export function loadSlice<T>(slice: SettingsSlice<T>): Promise<T> {
+  return readSlice(slice);
 }
 
 /** Watches a slice outside React; returns unsubscribe. */
