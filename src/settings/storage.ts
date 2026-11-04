@@ -5,17 +5,21 @@ import {
   sanitizeLinks,
   type StoredLink,
 } from '../features/links/links';
-import {
-  createBackend,
-  type RawSettings,
-  type SettingKey,
-  type StorageBackendKind,
-} from './storageBackends';
+import {createBackend, type StorageBackendKind} from './storageBackends';
 
 export type {StorageBackendKind} from './storageBackends';
 
+/** Every key the settings store reads and writes. */
+const SETTING_KEYS: readonly string[] = [
+  'weatherApiKey',
+  'sidebarLinks',
+  'socialLinks',
+];
+type SettingKey = 'weatherApiKey' | 'sidebarLinks' | 'socialLinks';
+type RawSettings = Partial<Record<SettingKey, unknown>>;
+
 /** Settings keys that hold a link list. */
-export type LinkListKey = Extract<SettingKey, 'sidebarLinks' | 'socialLinks'>;
+export type LinkListKey = 'sidebarLinks' | 'socialLinks';
 
 /** Current settings, validated, with defaults filled in. */
 export interface SettingsSnapshot {
@@ -41,7 +45,7 @@ export class SettingsWriteError extends Error {
  */
 export const QUOTA_BYTES_PER_ITEM = 8192;
 
-const backend = createBackend();
+const backend = createBackend('sync');
 
 function parseSettings(raw: RawSettings): SettingsSnapshot {
   return {
@@ -71,7 +75,7 @@ async function refresh() {
   const seq = ++readSeq;
   let raw: RawSettings = {};
   try {
-    raw = await backend.get();
+    raw = await backend.get(SETTING_KEYS);
   } catch (err) {
     console.error('Could not read settings', err);
   }
@@ -88,7 +92,11 @@ async function refresh() {
 export function subscribeSettings(listener: () => void) {
   listeners.add(listener);
   if (!unsubscribeBackend) {
-    unsubscribeBackend = backend.subscribe(() => void refresh());
+    unsubscribeBackend = backend.subscribe(keys => {
+      if (keys === null || keys.some(key => SETTING_KEYS.includes(key))) {
+        void refresh();
+      }
+    });
     void refresh();
   }
   return () => {
@@ -136,8 +144,8 @@ async function writeSetting(key: SettingKey, value: unknown) {
     }
   }
   try {
-    if (value === undefined) await backend.remove(key);
-    else await backend.set(key, value);
+    if (value === undefined) await backend.remove([key]);
+    else await backend.set({[key]: value});
   } catch (err) {
     throw new SettingsWriteError(describeWriteError(err), {cause: err});
   }
