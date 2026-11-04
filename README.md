@@ -67,8 +67,7 @@ After a rebuild, click the reload icon on the extension's card in
 
 `public/manifest.json` contains a fixed `key`. It gives the unpacked extension
 the same ID (`pkhmhapiepbkchmgilgjekogiklkbppc`) on every computer, which is
-what lets Chrome sync its settings. Remove the `key` field before uploading to
-the Chrome Web Store, which assigns its own.
+what lets Chrome sync its settings.
 
 ## Development
 
