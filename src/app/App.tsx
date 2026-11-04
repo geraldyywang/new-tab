@@ -4,6 +4,8 @@ import {Clock} from '../features/clock/Clock';
 import {HelpfulLinks} from '../features/links/HelpfulLinks';
 import {Weather} from '../features/weather/Weather';
 import {Socials} from '../features/links/Socials';
+import {OPEN_SETTINGS_SHORTCUT} from '../features/shortcuts/registry';
+import {useShortcut} from '../features/shortcuts/shortcuts';
 import {SettingsDialog} from '../settings/SettingsDialog';
 import {Card} from '../ui/Card';
 import {focusRingClass, surfaceAttributes} from '../ui/styles';
@@ -11,6 +13,7 @@ import {focusRingClass, surfaceAttributes} from '../ui/styles';
 /** The new tab page. */
 export function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  useShortcut(OPEN_SETTINGS_SHORTCUT, () => setSettingsOpen(true));
 
   return (
     <>
