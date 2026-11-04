@@ -2,7 +2,7 @@ import {useSettings} from '../lib/storage';
 import {LinkIcon} from './LinkIcon';
 
 // Socials bottom-left bar; links are edited in the settings panel
-export const Socials = () => {
+export function Socials() {
   const {loaded, socialLinks} = useSettings();
   if (!loaded || socialLinks.length === 0) return null;
 
@@ -18,4 +18,4 @@ export const Socials = () => {
       </div>
     </nav>
   );
-};
+}

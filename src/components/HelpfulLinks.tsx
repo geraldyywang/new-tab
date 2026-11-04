@@ -2,7 +2,7 @@ import {useSettings} from '../lib/storage';
 import {LinkIcon} from './LinkIcon';
 
 // Quick-access side bar; links are edited in the settings panel
-export const HelpfulLinks = () => {
+export function HelpfulLinks() {
   const {loaded, sidebarLinks} = useSettings();
 
   return (
@@ -18,4 +18,4 @@ export const HelpfulLinks = () => {
       </div>
     </nav>
   );
-};
+}

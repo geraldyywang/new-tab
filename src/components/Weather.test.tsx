@@ -18,15 +18,20 @@ const okBody = {
   },
 };
 
-const respond = (status: number, body: unknown) =>
-  vi.stubGlobal(
+function respond(status: number, body: unknown) {
+  return vi.stubGlobal(
     'fetch',
     // A fresh Response per call: a body can only be read once
     vi.fn(async () => new Response(JSON.stringify(body), {status})),
   );
+}
 
-const setKey = (key: string) =>
-  window.localStorage.setItem('new-tab:weatherApiKey', JSON.stringify(key));
+function setKey(key: string) {
+  return window.localStorage.setItem(
+    'new-tab:weatherApiKey',
+    JSON.stringify(key),
+  );
+}
 
 beforeEach(() => {
   Object.defineProperty(navigator, 'geolocation', {

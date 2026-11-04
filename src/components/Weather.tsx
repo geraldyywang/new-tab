@@ -43,10 +43,7 @@ const AQI_LABELS: Record<number, string> = {
   6: '301 - 500 \u{1F534}',
 };
 
-const toWeatherData = ({
-  location,
-  current,
-}: WeatherApiResponse): WeatherData => {
+function toWeatherData({location, current}: WeatherApiResponse): WeatherData {
   const epa = current.air_quality?.['us-epa-index'];
   return {
     place: [location.name, location.region].filter(Boolean).join(', '),
@@ -58,9 +55,9 @@ const toWeatherData = ({
     humidity: current.humidity,
     aqi: (epa !== undefined && AQI_LABELS[epa]) || 'N/A',
   };
-};
+}
 
-const geolocationErrorMessage = (err: GeolocationPositionError): string => {
+function geolocationErrorMessage(err: GeolocationPositionError): string {
   switch (err.code) {
     case err.PERMISSION_DENIED:
       return 'Location access denied — allow it to see local weather.';
@@ -71,49 +68,56 @@ const geolocationErrorMessage = (err: GeolocationPositionError): string => {
     default:
       return 'Could not get your location.';
   }
-};
+}
 
-const Stat = ({label, children}: {label: string; children: ReactNode}) => (
-  <div className="pr-2 text-base">
-    {label}: <span className="block font-bold">{children}</span>
-  </div>
-);
+function Stat({label, children}: {label: string; children: ReactNode}) {
+  return (
+    <div className="pr-2 text-base">
+      {label}: <span className="block font-bold">{children}</span>
+    </div>
+  );
+}
 
-const geolocationSupported = () => 'geolocation' in navigator;
+function geolocationSupported() {
+  return 'geolocation' in navigator;
+}
 
-const initialState = (): WeatherState =>
-  geolocationSupported()
+function initialState(): WeatherState {
+  return geolocationSupported()
     ? {status: 'locating'}
     : {status: 'error', message: 'Geolocation is not supported.'};
+}
 
 interface WeatherProps {
   onOpenSettings: () => void;
 }
 
-const MissingKey = ({onOpenSettings}: WeatherProps) => (
-  <div className="px-5 py-3 text-sm text-neutral-500">
-    <p>Add your free WeatherAPI key to see local weather</p>
-    <div className="mt-2 flex flex-wrap items-center gap-3">
-      <button type="button" onClick={onOpenSettings} className={buttonClass}>
-        Open settings
-      </button>
-      <a
-        href={WEATHERAPI_SIGNUP_URL}
-        target="_blank"
-        rel="noreferrer"
-        className="underline hover:text-neutral-400"
-      >
-        Get a free key at weatherapi.com
-      </a>
+function MissingKey({onOpenSettings}: WeatherProps) {
+  return (
+    <div className="px-5 py-3 text-sm text-neutral-500">
+      <p>Add your free WeatherAPI key to see local weather</p>
+      <div className="mt-2 flex flex-wrap items-center gap-3">
+        <button type="button" onClick={onOpenSettings} className={buttonClass}>
+          Open settings
+        </button>
+        <a
+          href={WEATHERAPI_SIGNUP_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="underline hover:text-neutral-400"
+        >
+          Get a free key at weatherapi.com
+        </a>
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
 // Mounted with key={apiKey}, so a new key starts from a fresh state
-const WeatherReport = ({
+function WeatherReport({
   apiKey,
   onOpenSettings,
-}: WeatherProps & {apiKey: string}) => {
+}: WeatherProps & {apiKey: string}) {
   const [state, setState] = useState<WeatherState>(initialState);
 
   useEffect(() => {
@@ -121,7 +125,7 @@ const WeatherReport = ({
     if (!geolocationSupported()) return;
     const controller = new AbortController();
 
-    const fetchWeather = async (pos: GeolocationPosition) => {
+    async function fetchWeather(pos: GeolocationPosition) {
       if (controller.signal.aborted) return;
       setState({status: 'loading'});
 
@@ -151,7 +155,7 @@ const WeatherReport = ({
         console.error(err);
         setState({status: 'error', message: 'Could not load the weather.'});
       }
-    };
+    }
 
     navigator.geolocation.getCurrentPosition(
       pos => void fetchWeather(pos),
@@ -217,9 +221,9 @@ const WeatherReport = ({
       </div>
     </div>
   );
-};
+}
 
-export const Weather = ({onOpenSettings}: WeatherProps) => {
+export function Weather({onOpenSettings}: WeatherProps) {
   const {loaded, weatherApiKey} = useSettings();
   if (!loaded) return null;
   if (!weatherApiKey) return <MissingKey onOpenSettings={onOpenSettings} />;
@@ -230,4 +234,4 @@ export const Weather = ({onOpenSettings}: WeatherProps) => {
       onOpenSettings={onOpenSettings}
     />
   );
-};
+}
