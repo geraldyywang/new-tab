@@ -1,20 +1,15 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { WEATHERAPI_API_KEY } from "../config";
+import { useSettings } from "../lib/storage";
+import {
+  classifyWeatherApiError,
+  currentWeatherUrl,
+  describeWeatherApiProblem,
+  isWeatherApiResponse,
+  WEATHERAPI_SIGNUP_URL,
+  type WeatherApiResponse,
+} from "../lib/weatherApi";
+import { buttonClass } from "./ui/styles";
 import WEATHER_CONDITIONS_RAW from "./weatherConditions";
-
-// Subset of https://www.weatherapi.com/docs/ current.json response we use
-interface WeatherApiResponse {
-  location: { name: string; region: string };
-  current: {
-    temp_c: number;
-    wind_mph: number;
-    precip_in: number;
-    humidity: number;
-    is_day: 0 | 1;
-    condition: { text: string; icon: string; code: number };
-    air_quality?: { "us-epa-index"?: number };
-  };
-}
 
 interface WeatherData {
   place: string;
@@ -31,7 +26,7 @@ type WeatherState =
   | { status: "locating" }
   | { status: "loading" }
   | { status: "ready"; data: WeatherData }
-  | { status: "error"; message: string };
+  | { status: "error"; message: string; keyProblem?: boolean };
 
 // Condition code -> icon number, built once
 const ICON_BY_CODE = new Map(
@@ -84,25 +79,46 @@ const Stat = ({ label, children }: { label: string; children: ReactNode }) => (
   </div>
 );
 
-const initialState = (): WeatherState => {
-  if (!WEATHERAPI_API_KEY) {
-    return {
-      status: "error",
-      message: "Missing VITE_WEATHERAPI_API_KEY in .env.",
-    };
-  }
-  if (!("geolocation" in navigator)) {
-    return { status: "error", message: "Geolocation is not supported." };
-  }
-  return { status: "locating" };
-};
+const geolocationSupported = () => "geolocation" in navigator;
 
-const Weather = () => {
+const initialState = (): WeatherState =>
+  geolocationSupported()
+    ? { status: "locating" }
+    : { status: "error", message: "Geolocation is not supported." };
+
+interface WeatherProps {
+  onOpenSettings: () => void;
+}
+
+const MissingKey = ({ onOpenSettings }: WeatherProps) => (
+  <div className="px-5 py-3 text-sm text-neutral-500">
+    <p>Add your free WeatherAPI key to see local weather</p>
+    <div className="mt-2 flex flex-wrap items-center gap-3">
+      <button type="button" onClick={onOpenSettings} className={buttonClass}>
+        Open settings
+      </button>
+      <a
+        href={WEATHERAPI_SIGNUP_URL}
+        target="_blank"
+        rel="noreferrer"
+        className="underline hover:text-neutral-400"
+      >
+        Get a free key at weatherapi.com
+      </a>
+    </div>
+  </div>
+);
+
+// Mounted with key={apiKey}, so a new key starts from a fresh state
+const WeatherReport = ({
+  apiKey,
+  onOpenSettings,
+}: WeatherProps & { apiKey: string }) => {
   const [state, setState] = useState<WeatherState>(initialState);
 
   useEffect(() => {
-    // Missing API key / no geolocation: initialState already holds the error
-    if (initialState().status === "error") return;
+    // No geolocation: initialState already holds the error
+    if (!geolocationSupported()) return;
     const controller = new AbortController();
 
     const fetchWeather = async (pos: GeolocationPosition) => {
@@ -110,15 +126,25 @@ const Weather = () => {
       setState({ status: "loading" });
 
       const query = `${pos.coords.latitude},${pos.coords.longitude}`;
-      const url =
-        `https://api.weatherapi.com/v1/current.json` +
-        `?key=${encodeURIComponent(WEATHERAPI_API_KEY)}` +
-        `&q=${encodeURIComponent(query)}&aqi=yes`;
+      const url = currentWeatherUrl(apiKey, query, { aqi: true });
 
       try {
         const res = await fetch(url, { signal: controller.signal });
-        if (!res.ok) throw new Error(`Weather request failed (${res.status})`);
-        const json = (await res.json()) as WeatherApiResponse;
+        if (!res.ok) {
+          const problem = await classifyWeatherApiError(res);
+          if (problem.kind === "other") throw new Error(`HTTP ${res.status}`);
+          setState({
+            status: "error",
+            message: describeWeatherApiProblem(problem),
+            // Only a missing/invalid key is fixable in settings
+            keyProblem: problem.kind === "key",
+          });
+          return;
+        }
+        const json: unknown = await res.json();
+        if (!isWeatherApiResponse(json)) {
+          throw new Error("Unexpected weather response");
+        }
         setState({ status: "ready", data: toWeatherData(json) });
       } catch (err) {
         if (controller.signal.aborted) return;
@@ -137,7 +163,18 @@ const Weather = () => {
     );
 
     return () => controller.abort();
-  }, []);
+  }, [apiKey]);
+
+  if (state.status === "error" && state.keyProblem) {
+    return (
+      <div className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm text-neutral-500">
+        <p>{state.message}</p>
+        <button type="button" onClick={onOpenSettings} className={buttonClass}>
+          Open settings
+        </button>
+      </div>
+    );
+  }
 
   if (state.status !== "ready") {
     const message =
@@ -179,6 +216,19 @@ const Weather = () => {
         <Stat label="AQI">{data.aqi}</Stat>
       </div>
     </div>
+  );
+};
+
+const Weather = ({ onOpenSettings }: WeatherProps) => {
+  const { loaded, weatherApiKey } = useSettings();
+  if (!loaded) return null;
+  if (!weatherApiKey) return <MissingKey onOpenSettings={onOpenSettings} />;
+  return (
+    <WeatherReport
+      key={weatherApiKey}
+      apiKey={weatherApiKey}
+      onOpenSettings={onOpenSettings}
+    />
   );
 };
 
