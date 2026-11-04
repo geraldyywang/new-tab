@@ -8,7 +8,7 @@ Built with React 19, TypeScript, Vite and Tailwind CSS 4, packaged as a Chrome M
 
 ## How to Use
 
-1. Install [Node.js](https://nodejs.org/) 22.12 or newer, then run `npm install`.
+1. Install [Node.js](https://nodejs.org/) 22.22.2 or newer, then run `npm install`.
 2. Run `npm run build` to create a production build in `dist/`. No `.env` file or API key is needed at build time.
 3. In Chrome, open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and select the `dist` folder.
 4. Open a new tab and click the gear icon next to the `new_tab()` title.
