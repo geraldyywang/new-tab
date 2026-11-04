@@ -25,8 +25,12 @@ function defaultProcess(file: File) {
 }
 
 function describeImage(meta: StoredImageMeta) {
-  const megabytes = (meta.byteSize / (1024 * 1024)).toFixed(1);
-  return `${meta.width} × ${meta.height}, ${megabytes} MB`;
+  const kilobytes = meta.byteSize / 1024;
+  const size =
+    kilobytes < 1024
+      ? `${Math.max(1, Math.round(kilobytes))} KB`
+      : `${(kilobytes / 1024).toFixed(1)} MB`;
+  return `${meta.width} × ${meta.height}, ${size}`;
 }
 
 /**
@@ -50,7 +54,9 @@ export function PhotoPicker({
   ) {
     setBusy(kind);
     setStatus(
-      kind === 'processing' ? {tone: 'info', text: 'Processing…'} : null,
+      kind === 'processing'
+        ? {tone: 'info', text: 'Resizing and compressing…'}
+        : null,
     );
     try {
       setStatus({tone: 'ok', text: await action()});
@@ -106,11 +112,9 @@ export function PhotoPicker({
       </div>
       <div className="flex min-w-0 flex-col gap-2">
         <p className="text-sm text-fg-subtle">
-          {busy === 'processing'
-            ? 'Resizing and compressing…'
-            : meta
-              ? describeImage(meta)
-              : 'Drop an image here or choose one. JPEG, PNG, WebP, AVIF or GIF, up to 25 MB.'}
+          {meta
+            ? describeImage(meta)
+            : 'Drop an image here or choose one. JPEG, PNG, WebP, AVIF or GIF, up to 25 MB.'}
         </p>
         <div className="flex flex-wrap gap-2">
           <input
