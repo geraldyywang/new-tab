@@ -1,3 +1,5 @@
+// The background feature reads its photo from IndexedDB, which jsdom lacks
+import 'fake-indexeddb/auto';
 import {act, render, waitFor} from '@testing-library/react';
 import {afterEach, describe, expect, it, vi} from 'vitest';
 import {clearSlicePreview, setSlicePreview} from '../../settings/slicePreview';
@@ -27,6 +29,7 @@ afterEach(() => {
   clearSlicePreview(themeSlice);
   root.removeAttribute('style');
   root.removeAttribute('data-theme');
+  root.removeAttribute('data-photo');
   window.localStorage.clear();
 });
 

@@ -23,8 +23,10 @@
 @theme static {
   /* Page background behind everything */
   --color-backdrop: var(--color-stone-800);
-  /* Cards, bars and the settings dialog */
+  /* Cards and bars */
   --color-surface: var(--color-neutral-900);
+  /* The settings dialog; a photo gives it a stronger tint than the cards */
+  --color-surface-overlay: var(--color-surface);
   /* Raised controls on a surface: buttons, letter badges, hovers */
   --color-surface-2: var(--color-neutral-800);
   /* Hovered raised controls */
@@ -42,6 +44,10 @@
   --color-fg-muted: var(--color-neutral-400);
   --color-fg-subtle: var(--color-neutral-500);
   --color-fg-faint: var(--color-neutral-600);
+
+  /* Lit top edge and drop shadow of surfaces over a photo (src/ui/surfaces.css) */
+  --color-pane-highlight: transparent;
+  --color-pane-shadow: transparent;
 
   /* Hairlines and scrollbar thumbs */
   --color-border: var(--color-neutral-700);

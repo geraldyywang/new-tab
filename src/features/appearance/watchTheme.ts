@@ -1,4 +1,5 @@
 import {applyTheme, currentThemeEnvironment} from './applyTheme';
+import type {PhotoBackdrop} from './photoTokens';
 import {
   msUntilNextSwitch,
   resolvePresetId,
@@ -9,17 +10,18 @@ import {
 const MAX_TIMER_MS = 60 * 60_000;
 
 /**
- * Applies `settings` to `root` now and again whenever the result may change:
+ * Applies `settings` (and the background `photo`, if any) to `root` now and again whenever the result may change:
  * the system colour scheme flips, the page becomes visible, or the schedule
  * reaches a switch time. Returns a function that stops watching.
  */
 export function watchTheme(
   root: HTMLElement,
   settings: ThemeSettings,
+  photo?: PhotoBackdrop | null,
 ): () => void {
   function apply() {
     const presetId = resolvePresetId(settings, currentThemeEnvironment());
-    applyTheme(root, presetId, settings.accent);
+    applyTheme(root, presetId, settings.accent, photo);
   }
   apply();
 

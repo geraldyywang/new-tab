@@ -105,7 +105,7 @@ export function SettingsDialog({
         pointerDownOnBackdrop.current = false;
       }}
       {...surfaceAttributes(
-        'solid',
+        'overlay',
         'm-auto max-h-[calc(100vh-2rem)] w-[min(44rem,calc(100vw-2rem))] overflow-y-auto p-0 text-fg-muted shadow-2xl backdrop:bg-scrim [scrollbar-color:var(--color-border)_transparent]',
       )}
     >

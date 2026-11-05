@@ -56,7 +56,10 @@ export function App() {
       {/* Socials bottom-left bar */}
       <Socials />
 
-      <p className="absolute z-20 bottom-3 right-24 text-fg-subtle text-sm text-shadow-sm text-shadow-dim/60">
+      <p
+        data-on-photo
+        className="absolute z-20 bottom-3 right-24 text-fg-subtle text-sm text-shadow-sm text-shadow-dim/60"
+      >
         Made with &#128156; by geraldyywang
       </p>
 

@@ -1,3 +1,5 @@
+// The background feature reads its photo from IndexedDB, which jsdom lacks
+import 'fake-indexeddb/auto';
 import {fireEvent, render, screen} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {pressEscape} from '../test/dialogPolyfill';

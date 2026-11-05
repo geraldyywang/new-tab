@@ -5,6 +5,7 @@
  * needs an inline value anyway. `data-theme` is set too, as a styling hook.
  * The default theme (Stone) sets nothing, so the page is exactly as before.
  */
+import {readPhotoCache} from '../background/photoBackdrop';
 import {
   MIN_ACCENT_CONTRAST,
   parseColor,
@@ -13,6 +14,12 @@ import {
   type Rgb,
 } from './color';
 import {
+  photoTokens,
+  PHOTO_TOKEN_NAMES,
+  type PhotoBackdrop,
+  type PhotoTokenName,
+} from './photoTokens';
+import {
   DEFAULT_PRESET_ID,
   presetById,
   TOKEN_NAMES,
@@ -20,6 +27,7 @@ import {
   type ThemePreset,
 } from './presets';
 import {
+  DEFAULT_THEME_SETTINGS,
   parseThemeSettings,
   resolvePresetId,
   type ThemeEnvironment,
@@ -63,18 +71,31 @@ export function visibleAccent(
     : {color: toHex(color), adjusted: true};
 }
 
-/** Sets the preset's tokens (none for the default) and accent on `root`. */
+/**
+ * Sets the preset's tokens (none for the default) and accent on `root`. With
+ * a background `photo`, its tokens replace the preset's and `data-photo` is
+ * set to the pane scheme; without one, both are cleared again.
+ */
 export function applyTheme(
   root: HTMLElement,
   presetId: PresetId,
   accent?: string,
+  photo?: PhotoBackdrop | null,
 ): void {
   const preset = presetById(presetId);
   const isDefault = preset.id === DEFAULT_PRESET_ID;
-  for (const token of TOKEN_NAMES) {
-    if (isDefault) root.style.removeProperty(`--color-${token}`);
-    else root.style.setProperty(`--color-${token}`, preset.tokens[token]);
+  const photoTheme = photo ? photoTokens(photo, preset, accent) : null;
+  let tokens: Partial<Record<PhotoTokenName, string>> = {};
+  if (photoTheme) tokens = photoTheme.tokens;
+  else if (!isDefault) tokens = {...preset.tokens};
+  if (!photo && accent) tokens.accent = visibleAccent(accent, preset).color;
+  for (const token of [...TOKEN_NAMES, ...PHOTO_TOKEN_NAMES]) {
+    const value = tokens[token];
+    if (value === undefined) root.style.removeProperty(`--color-${token}`);
+    else root.style.setProperty(`--color-${token}`, value);
   }
+  if (photoTheme) root.dataset.photo = photoTheme.scheme;
+  else root.removeAttribute('data-photo');
   if (isDefault) {
     root.removeAttribute('data-theme');
     root.style.removeProperty('color-scheme');
@@ -82,12 +103,7 @@ export function applyTheme(
     root.dataset.theme = preset.id;
     root.style.colorScheme = preset.scheme;
   }
-  if (accent) {
-    root.style.setProperty(
-      '--color-accent',
-      visibleAccent(accent, preset).color,
-    );
-  }
+  if (photoTheme) root.style.colorScheme = photoTheme.scheme;
   if (root.style.length === 0) root.removeAttribute('style');
 }
 
@@ -124,8 +140,9 @@ export function currentThemeEnvironment(): ThemeEnvironment {
 }
 
 /**
- * Applies the cached theme synchronously, before React renders, so the page
- * never flashes the default theme. Returns whether a cache was found.
+ * Applies the cached theme and photo backdrop synchronously, before React
+ * renders, so the page never flashes the default theme or solid cards.
+ * Returns whether a theme cache was found.
  */
 export function applyCachedTheme(
   root: HTMLElement = document.documentElement,
@@ -133,8 +150,14 @@ export function applyCachedTheme(
   storage?: Storage,
 ): boolean {
   const settings = readThemeCache(storage);
-  if (settings) {
-    applyTheme(root, resolvePresetId(settings, environment), settings.accent);
+  const photo = readPhotoCache(storage);
+  if (settings || photo) {
+    const {accent} = settings ?? DEFAULT_THEME_SETTINGS;
+    const presetId = resolvePresetId(
+      settings ?? DEFAULT_THEME_SETTINGS,
+      environment,
+    );
+    applyTheme(root, presetId, accent, photo);
   }
   return settings !== null;
 }
