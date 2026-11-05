@@ -9,10 +9,12 @@ import {
   toHex,
   type Rgb,
 } from '../../theme/color';
+import {GLASS_LIT} from './glassTokens';
 import {photoTokens} from './photoTokens';
 import {presetById, THEME_PRESETS} from './presets';
 
 const BLACK: Rgb = {r: 0, g: 0, b: 0};
+const WHITE: Rgb = {r: 1, g: 1, b: 1};
 
 function tokensFor(...args: Parameters<typeof photoTokens>) {
   return photoTokens(...args).tokens;
@@ -69,7 +71,14 @@ const TWILIGHT: PhotoPalette = {
 const PALETTES = {BRIGHT, DARK, HIGH_RANGE, MID, TWILIGHT};
 const CASES = THEME_PRESETS.flatMap(preset =>
   Object.entries(PALETTES).flatMap(([name, palette]) =>
-    [0, 0.2, 0.8].map(dim => ({preset, name, backdrop: {palette, dim}})),
+    [0, 0.2, 0.8].flatMap(dim =>
+      [false, true].map(glass => ({
+        preset,
+        name,
+        glass,
+        backdrop: {palette, dim},
+      })),
+    ),
   ),
 );
 
@@ -95,10 +104,18 @@ function panesBehindText(
 
 describe('photoTokens', () => {
   it.each(CASES)(
-    'keeps text readable: $name photo, $preset.id, dim $backdrop.dim',
-    ({preset, backdrop}) => {
-      const tokens = tokensFor(backdrop, preset);
-      const {bare, raised} = panesBehindText(tokens, backdrop);
+    'keeps text readable: $name photo, $preset.id, dim $backdrop.dim, glass $glass',
+    ({preset, backdrop, glass}) => {
+      const lit = glass ? GLASS_LIT : undefined;
+      const theme = photoTokens(backdrop, preset, undefined, null, lit);
+      const {tokens} = theme;
+      const panes = panesBehindText(tokens, backdrop);
+      // Where the glass sheen and inner highlight light the panes
+      const lighted = panes.bare.map(pane =>
+        mixRgb(pane, WHITE, lit?.[theme.scheme] ?? 0),
+      );
+      const bare = [...panes.bare, ...lighted];
+      const {raised} = panes;
       function lowest(token: keyof typeof tokens, panes: Rgb[]) {
         return Math.min(
           ...panes.map(pane => contrastRatio(rgb(tokens[token]), pane)),

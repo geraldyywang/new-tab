@@ -36,8 +36,8 @@ export function usePaneReadability(settings: ThemeSettings): PaneReadability {
     const preset = presetById(
       resolvePresetId(settings, currentThemeEnvironment()),
     );
-    const {accent, surfaceOpacity} = settings;
-    const theme = paneTheme(preset, accent, surfaceOpacity, backdrop);
+    const {surfaceOpacity} = settings;
+    const theme = paneTheme(preset, settings, surfaceOpacity, backdrop);
     return paneReadability(surfaceOpacity, theme);
   }, [backdrop, settings]);
 }

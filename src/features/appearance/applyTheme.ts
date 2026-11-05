@@ -15,8 +15,8 @@ import {
 } from '../../theme/color';
 import {
   GLASS_TOKEN_NAMES,
+  GLASS_LIT,
   glassTokens,
-  type GlassTheme,
   type PaneTokenName,
 } from './glassTokens';
 import {photoTokens, PHOTO_TOKEN_NAMES, type PhotoTheme} from './photoTokens';
@@ -77,21 +77,39 @@ export function visibleAccent(
     : {color: toHex(color), adjusted: true};
 }
 
+/** Pane tokens, and how the panes came out. */
+export type PaneTheme = Omit<PhotoTheme, 'tokens'> & {
+  tokens: Partial<Record<PaneTokenName, string>>;
+};
+
 /**
  * Tokens of see-through or photo panes: tinted by the `photo` if there is
  * one, else the preset's own surfaces made translucent. `opacity` is the
- * card opacity in %, `null` for Auto.
+ * card opacity in %, `null` for Auto; `surface` adds liquid glass's light.
  */
 export function paneTheme(
   preset: ThemePreset,
-  accent: string | undefined,
+  {accent, surface = 'solid'}: ThemeLook,
   opacity: number | null,
   photo?: PhotoBackdrop | null,
-): GlassTheme | PhotoTheme {
+): PaneTheme {
   const fraction = opacity === null ? null : opacity / 100;
-  if (photo) return photoTokens(photo, preset, accent, fraction);
-  const drawn = accent ? visibleAccent(accent, preset).color : undefined;
-  return glassTokens(preset, drawn ?? preset.tokens.accent, fraction);
+  const glass = surface === 'glass';
+  const lit = glass ? GLASS_LIT : undefined;
+  let theme: PaneTheme;
+  if (photo) {
+    theme = photoTokens(photo, preset, accent, fraction, lit);
+  } else {
+    const drawn = accent ? visibleAccent(accent, preset).color : undefined;
+    const {scheme} = preset;
+    theme = glassTokens(
+      preset,
+      drawn ?? preset.tokens.accent,
+      fraction,
+      lit?.[scheme],
+    );
+  }
+  return theme;
 }
 
 /**
@@ -104,15 +122,16 @@ export function paneTheme(
 export function applyTheme(
   root: HTMLElement,
   presetId: PresetId,
-  {accent, surface = 'solid', surfaceOpacity = null}: ThemeLook = {},
+  look: ThemeLook = {},
   photo?: PhotoBackdrop | null,
 ): void {
+  const {accent, surface = 'solid', surfaceOpacity = null} = look;
   const preset = presetById(presetId);
   const isDefault = preset.id === DEFAULT_PRESET_ID;
   const solid = surface === 'solid';
   const panes =
     photo || !solid
-      ? paneTheme(preset, accent, solid ? 100 : surfaceOpacity, photo)
+      ? paneTheme(preset, look, solid ? 100 : surfaceOpacity, photo)
       : null;
   let tokens: Partial<Record<PaneTokenName, string>> = {};
   if (panes) tokens = panes.tokens;
