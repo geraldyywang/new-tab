@@ -27,7 +27,7 @@ afterEach(() => {
   root.removeAttribute('style');
   root.removeAttribute('data-theme');
   root.removeAttribute('data-photo');
-  root.removeAttribute('data-photo-legible');
+  root.removeAttribute('data-surface-legible');
   root.removeAttribute('data-surface-style');
   window.localStorage.clear();
 });
@@ -87,10 +87,10 @@ describe('applyTheme with a photo', () => {
 
   it('flags panes too see-through to read, and clears the flag', () => {
     applyTheme(root, 'stone', {surface: 'glass', surfaceOpacity: 0}, PHOTO);
-    expect(root.dataset.photoLegible).toBe('false');
+    expect(root.dataset.surfaceLegible).toBe('false');
     expect(root.style.getPropertyValue('--color-text-halo')).not.toBe('');
     applyTheme(root, 'stone', {surface: 'glass'}, PHOTO);
-    expect(root.hasAttribute('data-photo-legible')).toBe(false);
+    expect(root.hasAttribute('data-surface-legible')).toBe(false);
     applyTheme(root, 'stone');
     expect(root.hasAttribute('style')).toBe(false);
   });
@@ -99,7 +99,7 @@ describe('applyTheme with a photo', () => {
     applyTheme(root, 'stone', {surfaceOpacity: 20}, PHOTO);
     expect(root.dataset.photo).toBe('dark');
     expect(root.hasAttribute('data-surface-style')).toBe(false);
-    expect(root.hasAttribute('data-photo-legible')).toBe(false);
+    expect(root.hasAttribute('data-surface-legible')).toBe(false);
     for (const token of ['surface', 'surface-overlay']) {
       expect(root.style.getPropertyValue(`--color-${token}`)).toMatch(
         /^#[\da-f]{6}ff$/,

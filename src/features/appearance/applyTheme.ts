@@ -14,10 +14,12 @@ import {
   type Rgb,
 } from '../../theme/color';
 import {
-  photoTokens,
-  PHOTO_TOKEN_NAMES,
-  type PhotoTokenName,
-} from './photoTokens';
+  GLASS_TOKEN_NAMES,
+  glassTokens,
+  type GlassTheme,
+  type PaneTokenName,
+} from './glassTokens';
+import {photoTokens, PHOTO_TOKEN_NAMES, type PhotoTheme} from './photoTokens';
 import {
   DEFAULT_PRESET_ID,
   presetById,
@@ -76,11 +78,28 @@ export function visibleAccent(
 }
 
 /**
+ * Tokens of see-through or photo panes: tinted by the `photo` if there is
+ * one, else the preset's own surfaces made translucent. `opacity` is the
+ * card opacity in %, `null` for Auto.
+ */
+export function paneTheme(
+  preset: ThemePreset,
+  accent: string | undefined,
+  opacity: number | null,
+  photo?: PhotoBackdrop | null,
+): GlassTheme | PhotoTheme {
+  const fraction = opacity === null ? null : opacity / 100;
+  if (photo) return photoTokens(photo, preset, accent, fraction);
+  const drawn = accent ? visibleAccent(accent, preset).color : undefined;
+  return glassTokens(preset, drawn ?? preset.tokens.accent, fraction);
+}
+
+/**
  * Sets the preset's tokens (none for the default) and accent on `root`. With
  * a background `photo`, its tokens replace the preset's and `data-photo` is
  * set to the pane scheme; without one, both are cleared again. A surface
- * style other than solid is set as `data-surface-style`; solid panes over a
- * photo are opaque.
+ * style other than solid is set as `data-surface-style`, with translucent
+ * panes; solid panes over a photo are opaque.
  */
 export function applyTheme(
   root: HTMLElement,
@@ -90,29 +109,26 @@ export function applyTheme(
 ): void {
   const preset = presetById(presetId);
   const isDefault = preset.id === DEFAULT_PRESET_ID;
-  const opacity = surface === 'solid' ? 100 : surfaceOpacity;
-  const photoTheme = photo
-    ? photoTokens(
-        photo,
-        preset,
-        accent,
-        opacity === null ? null : opacity / 100,
-      )
-    : null;
-  let tokens: Partial<Record<PhotoTokenName, string>> = {};
-  if (photoTheme) tokens = photoTheme.tokens;
+  const solid = surface === 'solid';
+  const panes =
+    photo || !solid
+      ? paneTheme(preset, accent, solid ? 100 : surfaceOpacity, photo)
+      : null;
+  let tokens: Partial<Record<PaneTokenName, string>> = {};
+  if (panes) tokens = panes.tokens;
   else if (!isDefault) tokens = {...preset.tokens};
-  if (!photo && accent) tokens.accent = visibleAccent(accent, preset).color;
-  for (const token of [...TOKEN_NAMES, ...PHOTO_TOKEN_NAMES]) {
+  if (!panes && accent) tokens.accent = visibleAccent(accent, preset).color;
+  const names = [...TOKEN_NAMES, ...PHOTO_TOKEN_NAMES, ...GLASS_TOKEN_NAMES];
+  for (const token of names) {
     const value = tokens[token];
     if (value === undefined) root.style.removeProperty(`--color-${token}`);
     else root.style.setProperty(`--color-${token}`, value);
   }
-  if (photoTheme) root.dataset.photo = photoTheme.scheme;
+  if (photo && panes) root.dataset.photo = panes.scheme;
   else root.removeAttribute('data-photo');
-  if (photoTheme && !photoTheme.legible) root.dataset.photoLegible = 'false';
-  else root.removeAttribute('data-photo-legible');
-  if (surface === 'solid') root.removeAttribute('data-surface-style');
+  if (panes && !panes.legible) root.dataset.surfaceLegible = 'false';
+  else root.removeAttribute('data-surface-legible');
+  if (solid) root.removeAttribute('data-surface-style');
   else root.dataset.surfaceStyle = surface;
   if (isDefault) {
     root.removeAttribute('data-theme');
@@ -121,7 +137,7 @@ export function applyTheme(
     root.dataset.theme = preset.id;
     root.style.colorScheme = preset.scheme;
   }
-  if (photoTheme) root.style.colorScheme = photoTheme.scheme;
+  if (panes) root.style.colorScheme = panes.scheme;
   if (root.style.length === 0) root.removeAttribute('style');
 }
 

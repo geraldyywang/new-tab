@@ -5,19 +5,39 @@
  * - `data-photo`: a background photo is set, so the surface tokens are tints
  *   of the photo (features/appearance/photoTokens.ts), lit along their top
  *   edge and casting a soft shadow. Solid surfaces are opaque tints.
- * - `data-surface-style` (`frosted` or `glass`; absent for solid): the tints
- *   are translucent, and blurring what lies behind each surface makes it
- *   read as a raised pane of the same image.
+ * - `data-surface-style` (`frosted` or `glass`; absent for solid): the
+ *   surfaces are translucent, and blurring what lies behind each one makes
+ *   it read as a raised pane. Without a photo they are the theme's own
+ *   surface colour (features/appearance/glassTokens.ts) over a soft glow of
+ *   the accent on the backdrop.
  */
-:root[data-photo] [data-surface] {
+:root[data-photo] [data-surface],
+:root[data-surface-style] [data-surface] {
   box-shadow:
     inset 0 1px 0 0 var(--color-pane-highlight),
     inset 0 0 0 1px var(--color-border),
     0 12px 32px -12px var(--color-pane-shadow);
 }
 
-:root[data-photo][data-surface-style] [data-surface] {
+:root[data-surface-style] [data-surface] {
   backdrop-filter: blur(24px) saturate(1.4);
+}
+
+/* The light and glow glassTokens checks the text against: light from the
+   top left, the accent glowing in the opposite corner */
+:root[data-surface-style]:not([data-photo]) body {
+  background-image:
+    radial-gradient(
+      70vmax 55vmax at 10% 0%,
+      var(--color-backdrop-light),
+      transparent
+    ),
+    radial-gradient(
+      60vmax 50vmax at 90% 100%,
+      var(--color-backdrop-glow),
+      transparent
+    );
+  background-attachment: fixed;
 }
 
 /* Text drawn straight on the photo: light panes mean dark text, so give it a
@@ -27,8 +47,8 @@
 }
 
 /* The user chose cards too see-through for their text to reach its contrast
-   targets: the text is pure white or black, and a halo helps it further */
-:root[data-photo-legible='false'] [data-surface='solid'] {
+   targets, so a halo helps it */
+:root[data-surface-legible='false'] [data-surface='solid'] {
   text-shadow:
     0 0 2px var(--color-text-halo),
     0 0 8px var(--color-text-halo);

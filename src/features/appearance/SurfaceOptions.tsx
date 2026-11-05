@@ -86,7 +86,7 @@ export function SurfaceOptions({
         onChange={surface => onChange({...value, surface})}
       />
       <p className="mt-1 text-sm text-fg-subtle">{HINTS[value.surface]}</p>
-      {panes && value.surface !== 'solid' && (
+      {value.surface !== 'solid' && (
         <PaneOpacity
           value={value.surfaceOpacity}
           panes={panes}

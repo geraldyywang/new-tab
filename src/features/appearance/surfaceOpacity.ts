@@ -1,12 +1,12 @@
 /**
  * What the surface opacity control needs to know: the opacity Auto would
- * pick for the current photo and theme, and whether a chosen opacity still
- * lets the card text read.
+ * pick for the current photo (or the theme backdrop), and whether a chosen
+ * opacity still lets the card text read.
  */
 import {useMemo} from 'react';
 import {usePhotoBackdrop} from '../../theme/photoBackdrop';
-import {currentThemeEnvironment} from './applyTheme';
-import {photoTokens, type PhotoTheme} from './photoTokens';
+import {currentThemeEnvironment, paneTheme} from './applyTheme';
+import type {PhotoTheme} from './photoTokens';
 import {presetById} from './presets';
 import {resolvePresetId, type ThemeSettings} from './themeSettings';
 
@@ -29,26 +29,15 @@ export function paneReadability(
   };
 }
 
-/**
- * The readability of the cards `settings` draw over the current photo;
- * `null` without a photo, when there are no photo panes to adjust.
- */
-export function usePaneReadability(
-  settings: ThemeSettings,
-): PaneReadability | null {
+/** The readability of the see-through cards `settings` draw. */
+export function usePaneReadability(settings: ThemeSettings): PaneReadability {
   const {backdrop} = usePhotoBackdrop();
   return useMemo(() => {
-    if (!backdrop) return null;
     const preset = presetById(
       resolvePresetId(settings, currentThemeEnvironment()),
     );
-    const {surfaceOpacity: opacity} = settings;
-    const theme = photoTokens(
-      backdrop,
-      preset,
-      settings.accent,
-      opacity === null ? null : opacity / 100,
-    );
-    return paneReadability(opacity, theme);
+    const {accent, surfaceOpacity} = settings;
+    const theme = paneTheme(preset, accent, surfaceOpacity, backdrop);
+    return paneReadability(surfaceOpacity, theme);
   }, [backdrop, settings]);
 }
