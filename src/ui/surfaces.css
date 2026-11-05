@@ -116,17 +116,6 @@
   }
 }
 
-/* The rim must not scroll away with the dialog's content, so its content
-   scrolls instead */
-:root[data-surface-style='glass'] dialog[data-surface] {
-  overflow: hidden;
-
-  & > * {
-    max-height: inherit;
-    overflow-y: auto;
-  }
-}
-
 /* Backdrop filters are costly: only top-level surfaces get one */
 :root[data-surface-style] [data-surface] [data-surface] {
   backdrop-filter: none;
