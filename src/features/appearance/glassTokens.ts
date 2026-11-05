@@ -28,8 +28,16 @@ import {
 } from './photoTokens';
 import type {ThemePreset} from './presets';
 
-/** Tokens only see-through panes without a photo set. */
-export const GLASS_TOKEN_NAMES = ['backdrop-light', 'backdrop-glow'] as const;
+/** Light and glow on the backdrop: only see-through panes without a photo. */
+const BACKDROP_TOKEN_NAMES = ['backdrop-light', 'backdrop-glow'] as const;
+/** The light liquid glass catches (src/ui/surfaces.css). */
+const LIGHT_TOKEN_NAMES = ['glass-rim', 'glass-sheen', 'glass-inner'] as const;
+
+/** Tokens only see-through panes set, besides the photo ones. */
+export const GLASS_TOKEN_NAMES = [
+  ...BACKDROP_TOKEN_NAMES,
+  ...LIGHT_TOKEN_NAMES,
+] as const;
 
 /** A token see-through panes can set, with or without a photo. */
 export type PaneTokenName = PhotoTokenName | (typeof GLASS_TOKEN_NAMES)[number];
@@ -50,6 +58,18 @@ export const GLASS_LIT: Lit = {
   light: GLASS_LIGHT.light.sheen + GLASS_LIGHT.light.inner,
 };
 
+/** The tokens drawing liquid glass's light on `scheme` panes. */
+export function glassLightTokens(
+  scheme: keyof typeof GLASS_LIGHT,
+): Record<(typeof LIGHT_TOKEN_NAMES)[number], string> {
+  const {rim, sheen, inner} = GLASS_LIGHT[scheme];
+  return {
+    'glass-rim': toHexAlpha(WHITE, rim),
+    'glass-sheen': toHexAlpha(WHITE, sheen),
+    'glass-inner': toHexAlpha(WHITE, inner),
+  };
+}
+
 /** Strength of the accent glow behind the panes, at its brightest. */
 export const GLOW = 0.3;
 /** Strength of the white light on the backdrop, per scheme. */
@@ -68,7 +88,10 @@ function parsed(color: string): Rgb {
 
 /** Tokens for see-through panes, and how they came out. */
 export interface GlassTheme extends Omit<PhotoTheme, 'tokens'> {
-  tokens: Record<PaneTokenName, string>;
+  tokens: Record<
+    PhotoTokenName | (typeof BACKDROP_TOKEN_NAMES)[number],
+    string
+  >;
 }
 
 /**

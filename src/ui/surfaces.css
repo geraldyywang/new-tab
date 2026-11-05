@@ -40,6 +40,71 @@
   background-attachment: fixed;
 }
 
+/*
+ * Liquid glass: frosted panes that catch the light. A rim brightest at the
+ * top left fades around the edge (a masked gradient ring), the inside of the
+ * edges glows softly, a sheen lies where the light falls (`--sheen-x/y`, set
+ * by src/ui/sheen.ts) and layered shadows lift the pane off the page. The
+ * sheen and inner glow sit under the text, which glassTokens and photoTokens
+ * keep readable on panes lit by both.
+ */
+:root[data-surface-style='glass'] [data-surface] {
+  backdrop-filter: blur(20px) saturate(1.8);
+  background-image: radial-gradient(
+    circle 16rem at var(--sheen-x, 15%) var(--sheen-y, 0%),
+    var(--color-glass-sheen),
+    transparent
+  );
+  box-shadow:
+    inset 0 1px 0 0 var(--color-pane-highlight),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-border) 30%, transparent),
+    inset 0 0 16px 0 var(--color-glass-inner),
+    0 1px 2px color-mix(in oklab, var(--color-pane-shadow) 60%, transparent),
+    0 6px 16px -6px var(--color-pane-shadow),
+    0 24px 48px -18px var(--color-pane-shadow);
+}
+
+:root[data-surface-style='glass'] [data-surface]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    var(--color-glass-rim),
+    color-mix(in oklab, var(--color-glass-rim) 30%, transparent) 22%,
+    transparent 45%,
+    transparent 65%,
+    color-mix(in oklab, var(--color-glass-rim) 40%, transparent)
+  );
+  /* An opaque image, whatever its colour: the ring is the border box minus
+     the content box */
+  mask:
+    linear-gradient(black, black) content-box exclude,
+    linear-gradient(black, black);
+  pointer-events: none;
+}
+
+/* The rim needs a positioned surface; layered, so a surface's own `fixed` or
+   `absolute` wins. The modal dialog is positioned by the browser. */
+@layer components {
+  :root[data-surface-style='glass'] [data-surface]:not(dialog) {
+    position: relative;
+  }
+}
+
+/* The rim must not scroll away with the dialog's content, so its content
+   scrolls instead */
+:root[data-surface-style='glass'] dialog[data-surface] {
+  overflow: hidden;
+
+  & > * {
+    max-height: inherit;
+    overflow-y: auto;
+  }
+}
+
 /* Text drawn straight on the photo: light panes mean dark text, so give it a
    light halo instead of the dark shadow */
 :root[data-photo='light'] [data-on-photo] {

@@ -16,6 +16,7 @@ import {
 import {
   GLASS_TOKEN_NAMES,
   GLASS_LIT,
+  glassLightTokens,
   glassTokens,
   type PaneTokenName,
 } from './glassTokens';
@@ -109,7 +110,9 @@ export function paneTheme(
       lit?.[scheme],
     );
   }
-  return theme;
+  if (!glass) return theme;
+  const light = glassLightTokens(theme.scheme);
+  return {...theme, tokens: {...theme.tokens, ...light}};
 }
 
 /**

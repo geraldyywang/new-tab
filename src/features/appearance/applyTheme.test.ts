@@ -65,6 +65,24 @@ describe('applyTheme', () => {
   });
 });
 
+describe('applyTheme with see-through surfaces', () => {
+  it('makes the theme surfaces translucent, then restores them', () => {
+    applyTheme(root, 'nord', {surface: 'frosted'});
+    expect(root.dataset.surfaceStyle).toBe('frosted');
+    expect(root.style.getPropertyValue('--color-surface')).toMatch(
+      /^#2e3440[\da-f]{2}$/,
+    );
+    expect(root.style.getPropertyValue('--color-backdrop-glow')).not.toBe('');
+    expect(root.style.getPropertyValue('--color-glass-rim')).toBe('');
+    applyTheme(root, 'nord', {surface: 'glass'});
+    expect(root.style.getPropertyValue('--color-glass-rim')).not.toBe('');
+    expect(root.style.getPropertyValue('--color-glass-sheen')).not.toBe('');
+    applyTheme(root, 'stone');
+    expect(root.hasAttribute('style')).toBe(false);
+    expect(root.hasAttribute('data-surface-style')).toBe(false);
+  });
+});
+
 describe('applyTheme with a photo', () => {
   it('sets translucent photo tokens and data-photo, then clears them', () => {
     applyTheme(root, 'stone', {surface: 'frosted'}, PHOTO);

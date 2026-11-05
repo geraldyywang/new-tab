@@ -54,6 +54,10 @@
   /* Light and an accent glow on the backdrop behind see-through panes */
   --color-backdrop-light: transparent;
   --color-backdrop-glow: transparent;
+  /* Liquid glass's rim, sheen and inner highlight (src/ui/surfaces.css) */
+  --color-glass-rim: transparent;
+  --color-glass-sheen: transparent;
+  --color-glass-inner: transparent;
 
   /* Hairlines and scrollbar thumbs */
   --color-border: var(--color-neutral-700);
