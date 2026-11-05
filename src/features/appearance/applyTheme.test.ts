@@ -7,7 +7,7 @@ import {
   visibleAccent,
   writeThemeCache,
 } from './applyTheme';
-import {contrastRatio, parseColor, type Rgb} from './color';
+import {contrastRatio, parseColor, type Rgb} from '../../theme/color';
 import {presetById, THEME_PRESETS, TOKEN_NAMES} from './presets';
 import {DEFAULT_THEME_SETTINGS, type ThemeSettings} from './themeSettings';
 import {writePhotoCache} from '../background/photoBackdrop';

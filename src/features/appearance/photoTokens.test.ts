@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import type {PhotoPalette} from '../background/photoPalette';
+import type {PhotoPalette} from '../../theme/photoPalette';
 import {
   contrastRatio,
   MIN_ACCENT_CONTRAST,
@@ -7,7 +7,7 @@ import {
   parseColor,
   toHex,
   type Rgb,
-} from './color';
+} from '../../theme/color';
 import {photoTokens, type PhotoBackdrop} from './photoTokens';
 import {presetById, THEME_PRESETS} from './presets';
 

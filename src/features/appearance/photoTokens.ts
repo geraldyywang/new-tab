@@ -6,7 +6,6 @@
  * for contrast against the panes over the photo's darkest and lightest
  * regions, after the dim overlay.
  */
-import type {PhotoPalette} from '../background/photoPalette';
 import {
   MIN_ACCENT_CONTRAST,
   minContrast,
@@ -17,7 +16,8 @@ import {
   toHexAlpha,
   towardsContrast,
   type Rgb,
-} from './color';
+} from '../../theme/color';
+import type {PhotoPalette} from '../../theme/photoPalette';
 import type {ThemePreset, TokenName} from './presets';
 
 /** The background photo, as far as theming is concerned. */

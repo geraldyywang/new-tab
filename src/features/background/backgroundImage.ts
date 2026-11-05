@@ -12,7 +12,7 @@ import {
   type StoredImageMeta,
 } from './imageStore';
 import {storageError} from './imageProcessing';
-import type {PhotoPalette} from './photoPalette';
+import type {PhotoPalette} from '../../theme/photoPalette';
 
 /** The current background photo. */
 export interface BackgroundImageState {

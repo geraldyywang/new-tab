@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import tailwindThemeCss from 'tailwindcss/theme.css?raw';
 import tokensCss from '../../theme/tokens.css?raw';
-import {contrastRatio, parseColor, type Rgb} from './color';
+import {contrastRatio, parseColor, type Rgb} from '../../theme/color';
 import {
   presetById,
   THEME_PRESETS,

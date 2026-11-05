@@ -4,21 +4,9 @@
  * from a tiny downscaled copy, when the photo is processed, and stored with
  * it.
  */
-import {relativeLuminance, toHex, type Rgb} from '../appearance/color';
+import {relativeLuminance, toHex, type Rgb} from '../../theme/color';
+import type {PhotoPalette} from '../../theme/photoPalette';
 import type {Size} from './imageProcessing';
-
-/** Colours of the photo, as `#rrggbb`. */
-export interface PhotoPalette {
-  /** Mean colour of the whole photo. */
-  average: string;
-  /** Mean colour of its darkest region (one `REGION` square of the sample). */
-  darkest: string;
-  /** Mean colour of its lightest region. */
-  lightest: string;
-  /** Its most colourful pixel of the sample: the accent candidate. */
-  vivid: string;
-}
-
 /** RGBA pixels, row by row, like `ImageData`. */
 export interface Pixels {
   width: number;
@@ -34,13 +22,6 @@ export const PALETTE_SAMPLE_SIZE: Size = {width: 32, height: 18};
  * sample pixels: about 1/9 of the page height, roughly what a card covers.
  */
 const REGION = 2;
-
-const KEYS: ReadonlyArray<keyof PhotoPalette> = [
-  'average',
-  'darkest',
-  'lightest',
-  'vivid',
-];
 
 function mean(colors: readonly Rgb[]): Rgb {
   const sum = {r: 0, g: 0, b: 0};
@@ -95,19 +76,4 @@ export function extractPalette({width, height, data}: Pixels): PhotoPalette {
     lightest: toHex(byLuminance[byLuminance.length - 1]?.color ?? mean(pixels)),
     vivid: toHex(vivid),
   };
-}
-
-/** Validates a stored palette; `null` unless every colour is `#rrggbb`. */
-export function parsePhotoPalette(data: unknown): PhotoPalette | null {
-  if (typeof data !== 'object' || data === null) return null;
-  const record: Partial<Record<keyof PhotoPalette, unknown>> = data;
-  const palette: Partial<PhotoPalette> = {};
-  for (const key of KEYS) {
-    const value = record[key];
-    if (typeof value !== 'string' || !/^#[\da-f]{6}$/i.test(value)) {
-      return null;
-    }
-    palette[key] = value;
-  }
-  return palette as PhotoPalette; // every key was set above
 }

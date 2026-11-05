@@ -8,7 +8,7 @@ import type {PhotoBackdrop} from '../appearance/photoTokens';
 import {useSlice} from '../../settings/slices';
 import {BACKGROUND_IMAGE, useBackgroundImage} from './backgroundImage';
 import {useBackgroundDisplay} from './displayPreview';
-import {parsePhotoPalette} from './photoPalette';
+import {parsePhotoPalette} from '../../theme/photoPalette';
 import {backgroundDisplaySlice, type BackgroundDisplay} from './settings';
 
 /** `localStorage` key of the saved photo backdrop, read before render. */

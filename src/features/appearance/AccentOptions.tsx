@@ -1,7 +1,7 @@
 import {Button} from '../../ui/Button';
 import {statusClass} from '../../ui/styles';
 import {visibleAccent} from './applyTheme';
-import {parseColor, toHex} from './color';
+import {parseColor, toHex} from '../../theme/color';
 import {
   fieldLabelClass,
   HAS_FOCUS_RING_CLASS,

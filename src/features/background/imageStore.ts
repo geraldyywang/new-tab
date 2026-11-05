@@ -3,7 +3,7 @@
  * `chrome.storage.sync`, whose items are limited to 8 KB). One record holds
  * the processed image, its palette and a little metadata about it.
  */
-import {parsePhotoPalette, type PhotoPalette} from './photoPalette';
+import {parsePhotoPalette, type PhotoPalette} from '../../theme/photoPalette';
 
 /** What is known about the stored photo besides its bytes. */
 export interface StoredImageMeta {

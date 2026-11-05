@@ -12,7 +12,7 @@ import {
   toHex,
   towardsContrast,
   type Rgb,
-} from './color';
+} from '../../theme/color';
 import {
   photoTokens,
   PHOTO_TOKEN_NAMES,
@@ -34,7 +34,7 @@ import {
   type ThemeSettings,
 } from './themeSettings';
 
-export {MIN_ACCENT_CONTRAST} from './color';
+export {MIN_ACCENT_CONTRAST} from '../../theme/color';
 
 const WHITE: Rgb = {r: 1, g: 1, b: 1};
 const BLACK: Rgb = {r: 0, g: 0, b: 0};
