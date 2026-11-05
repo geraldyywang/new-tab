@@ -9,6 +9,7 @@ import {
   sidebarLinksSettingsSection,
   socialLinksSettingsSection,
 } from '../features/links/settingsSections';
+import {appearanceSettingsSection} from '../features/appearance/settingsSection';
 
 /** Props the dialog passes to every section component. */
 export interface SettingsSectionProps {
@@ -46,4 +47,5 @@ export const SETTINGS_SECTIONS = sortSections([
   weatherSettingsSection,
   sidebarLinksSettingsSection,
   socialLinksSettingsSection,
+  appearanceSettingsSection,
 ]);

@@ -8,6 +8,8 @@ const SOURCES = import.meta.glob<string>(
     '!/src/**/*.test.{ts,tsx}',
     '!/src/test/**',
     '!/src/theme/tokens.css',
+    // Theme presets: colour values that override the tokens at runtime
+    '!/src/features/appearance/presets.ts',
   ],
   {query: '?raw', import: 'default', eager: true},
 );
