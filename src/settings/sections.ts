@@ -5,6 +5,7 @@
 import type {ComponentType} from 'react';
 import type {SettingsSlice} from './slices';
 import {weatherSettingsSection} from '../features/weather/settingsSection';
+import {backgroundSettingsSection} from '../features/background/settingsSection';
 import {
   sidebarLinksSettingsSection,
   socialLinksSettingsSection,
@@ -48,4 +49,5 @@ export const SETTINGS_SECTIONS = sortSections([
   sidebarLinksSettingsSection,
   socialLinksSettingsSection,
   appearanceSettingsSection,
+  backgroundSettingsSection,
 ]);

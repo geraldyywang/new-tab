@@ -47,12 +47,14 @@ describe('SETTINGS_SECTIONS', () => {
       'sidebarLinks',
       'socialLinks',
       'appearance',
+      'background',
     ]);
     expect(SETTINGS_SECTIONS.map(s => s.title)).toEqual([
       'Weather API key',
       'Sidebar links',
       'Social links',
       'Appearance',
+      'Background',
     ]);
   });
 });

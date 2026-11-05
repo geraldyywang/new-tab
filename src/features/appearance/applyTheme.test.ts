@@ -10,6 +10,10 @@ import {
 import {contrastRatio, parseColor, type Rgb} from './color';
 import {presetById, THEME_PRESETS, TOKEN_NAMES} from './presets';
 import {DEFAULT_THEME_SETTINGS, type ThemeSettings} from './themeSettings';
+import {writePhotoCache} from '../background/photoBackdrop';
+import {TEST_PALETTE} from '../../test/photoFixtures';
+
+const PHOTO = {palette: TEST_PALETTE, dim: 0.2};
 
 function rgb(text: string): Rgb {
   const parsed = parseColor(text);
@@ -22,6 +26,8 @@ const root = document.documentElement;
 afterEach(() => {
   root.removeAttribute('style');
   root.removeAttribute('data-theme');
+  root.removeAttribute('data-photo');
+  root.removeAttribute('data-photo-legible');
   window.localStorage.clear();
 });
 
@@ -55,6 +61,63 @@ describe('applyTheme', () => {
     expect(root.hasAttribute('data-theme')).toBe(false);
     expect(root.style.length).toBe(1);
     expect(root.style.getPropertyValue('--color-accent')).toBe('#60a5fa');
+  });
+});
+
+describe('applyTheme with a photo', () => {
+  it('sets translucent photo tokens and data-photo, then clears them', () => {
+    applyTheme(root, 'stone', undefined, PHOTO);
+    expect(root.dataset.photo).toBe('dark');
+    expect(root.hasAttribute('data-theme')).toBe(false);
+    expect(root.style.getPropertyValue('--color-surface')).toMatch(
+      /^#[\da-f]{8}$/,
+    );
+    expect(root.style.getPropertyValue('--color-backdrop')).toBe(
+      TEST_PALETTE.average,
+    );
+    expect(root.style.getPropertyValue('--color-pane-shadow')).not.toBe('');
+
+    applyTheme(root, 'stone');
+    expect(root.hasAttribute('data-photo')).toBe(false);
+    expect(root.hasAttribute('style')).toBe(false);
+  });
+
+  it('flags panes too see-through to read, and clears the flag', () => {
+    applyTheme(root, 'stone', undefined, {...PHOTO, paneOpacity: 0});
+    expect(root.dataset.photoLegible).toBe('false');
+    expect(root.style.getPropertyValue('--color-text-halo')).not.toBe('');
+    applyTheme(root, 'stone', undefined, PHOTO);
+    expect(root.hasAttribute('data-photo-legible')).toBe(false);
+    applyTheme(root, 'stone');
+    expect(root.hasAttribute('style')).toBe(false);
+  });
+
+  it('takes light or dark panes from the theme', () => {
+    applyTheme(root, 'light', undefined, PHOTO);
+    expect(root.dataset.photo).toBe('light');
+    expect(root.dataset.theme).toBe('light');
+  });
+
+  it("prefers the user's accent to the photo's", () => {
+    applyTheme(root, 'nord', '#2dd4bf', PHOTO);
+    // Teal, if darkened to show on the light panes this photo gets
+    const custom = rgb(root.style.getPropertyValue('--color-accent'));
+    expect(custom.g).toBeGreaterThan(custom.r);
+    applyTheme(root, 'nord', undefined, PHOTO);
+    // The photo's vivid orange
+    const own = rgb(root.style.getPropertyValue('--color-accent'));
+    expect(own.r).toBeGreaterThan(own.g);
+  });
+
+  it('switching theme keeps the photo tokens on top', () => {
+    applyTheme(root, 'dracula', undefined, PHOTO);
+    const surface = root.style.getPropertyValue('--color-surface');
+    expect(surface).not.toBe(presetById('dracula').tokens.surface);
+    applyTheme(root, 'dracula');
+    expect(root.style.getPropertyValue('--color-surface')).toBe(
+      presetById('dracula').tokens.surface,
+    );
+    expect(root.style.getPropertyValue('--color-surface-overlay')).toBe('');
   });
 });
 
@@ -110,6 +173,12 @@ describe('theme cache', () => {
     expect(applyCachedTheme(root, night)).toBe(true);
     expect(root.dataset.theme).toBe('nord');
     expect(root.style.getPropertyValue('--color-accent')).toBe('#2dd4bf');
+  });
+
+  it('applies a cached photo backdrop, even without a theme cache', () => {
+    writePhotoCache(PHOTO);
+    expect(applyCachedTheme(root, night)).toBe(false);
+    expect(root.dataset.photo).toBe('dark');
   });
 
   it('ignores a corrupt cache', () => {

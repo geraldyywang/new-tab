@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {FiSettings} from 'react-icons/fi';
+import {BackgroundLayer} from '../features/background/BackgroundLayer';
 import {Clock} from '../features/clock/Clock';
 import {HelpfulLinks} from '../features/links/HelpfulLinks';
 import {Weather} from '../features/weather/Weather';
@@ -15,6 +16,8 @@ export function App() {
 
   return (
     <>
+      <BackgroundLayer />
+
       {/* new_tab() title and settings button */}
       <div className="absolute z-20 top-0 left-0 m-3 flex items-stretch gap-2">
         <Card>
@@ -35,7 +38,7 @@ export function App() {
       </div>
 
       {/* Main Screen */}
-      <div className="flex flex-col min-h-screen justify-center items-center bg-backdrop">
+      <div className="flex flex-col min-h-screen justify-center items-center">
         <div className="max-w-xl">
           <Card className="mx-3">
             <Clock />
@@ -53,7 +56,10 @@ export function App() {
       {/* Socials bottom-left bar */}
       <Socials />
 
-      <p className="absolute z-20 bottom-3 right-24 text-fg-subtle text-sm">
+      <p
+        data-on-photo
+        className="absolute z-20 bottom-3 right-24 text-fg-subtle text-sm text-shadow-sm text-shadow-dim/60"
+      >
         Made with &#128156; by geraldyywang
       </p>
 
