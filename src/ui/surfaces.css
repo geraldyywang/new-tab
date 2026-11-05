@@ -48,13 +48,29 @@
  * sheen and inner glow sit under the text, which glassTokens and photoTokens
  * keep readable on panes lit by both.
  */
+@property --sheen-x {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 15%;
+}
+
+@property --sheen-y {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
 :root[data-surface-style='glass'] [data-surface] {
   backdrop-filter: blur(20px) saturate(1.8);
   background-image: radial-gradient(
-    circle 16rem at var(--sheen-x, 15%) var(--sheen-y, 0%),
+    circle 16rem at var(--sheen-x) var(--sheen-y),
     var(--color-glass-sheen),
     transparent
   );
+  /* Eases after the pointer, and back to the top left when it leaves */
+  transition:
+    --sheen-x 0.3s ease-out,
+    --sheen-y 0.3s ease-out;
   box-shadow:
     inset 0 1px 0 0 var(--color-pane-highlight),
     inset 0 0 0 1px color-mix(in oklab, var(--color-border) 30%, transparent),
