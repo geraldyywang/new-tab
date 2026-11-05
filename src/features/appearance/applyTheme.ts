@@ -96,6 +96,8 @@ export function applyTheme(
   }
   if (photoTheme) root.dataset.photo = photoTheme.scheme;
   else root.removeAttribute('data-photo');
+  if (photoTheme && !photoTheme.legible) root.dataset.photoLegible = 'false';
+  else root.removeAttribute('data-photo-legible');
   if (isDefault) {
     root.removeAttribute('data-theme');
     root.style.removeProperty('color-scheme');

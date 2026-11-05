@@ -53,4 +53,58 @@ describe('DisplayControls', () => {
       true,
     );
   });
+
+  describe('card opacity', () => {
+    const AUTO = {autoOpacity: 55, warn: false};
+
+    it('is hidden without a photo', () => {
+      render(
+        <DisplayControls
+          value={DEFAULT_BACKGROUND_DISPLAY}
+          onChange={() => {}}
+        />,
+      );
+      expect(screen.queryByLabelText('Card opacity')).toBeNull();
+    });
+
+    it("shows Auto's opacity and leaves Auto when moved", () => {
+      const onChange = vi.fn();
+      render(
+        <DisplayControls
+          value={DEFAULT_BACKGROUND_DISPLAY}
+          onChange={onChange}
+          panes={AUTO}
+        />,
+      );
+      const slider = screen.getByLabelText('Card opacity');
+      expect((slider as HTMLInputElement).value).toBe('55');
+      expect(screen.getByText('55% (Auto)')).toBeTruthy();
+      fireEvent.change(slider, {target: {value: '30'}});
+      expect(onChange).toHaveBeenLastCalledWith({
+        ...DEFAULT_BACKGROUND_DISPLAY,
+        paneOpacity: 30,
+      });
+    });
+
+    it('goes back to Auto, and warns while text is hard to read', () => {
+      const onChange = vi.fn();
+      render(
+        <DisplayControls
+          value={{...DEFAULT_BACKGROUND_DISPLAY, paneOpacity: 10}}
+          onChange={onChange}
+          panes={{autoOpacity: 55, warn: true}}
+        />,
+      );
+      expect(
+        screen.getByText('Text may be hard to read at this opacity.'),
+      ).toBeTruthy();
+      const auto = screen.getByRole('checkbox', {name: /Auto/});
+      expect((auto as HTMLInputElement).checked).toBe(false);
+      fireEvent.click(auto);
+      expect(onChange).toHaveBeenLastCalledWith({
+        ...DEFAULT_BACKGROUND_DISPLAY,
+        paneOpacity: null,
+      });
+    });
+  });
 });

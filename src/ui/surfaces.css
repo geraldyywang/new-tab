@@ -19,3 +19,11 @@
 :root[data-photo='light'] [data-on-photo] {
   --tw-text-shadow-color: var(--color-pane-highlight);
 }
+
+/* The user chose cards too see-through for their text to reach its contrast
+   targets: the text is pure white or black, and a halo helps it further */
+:root[data-photo-legible='false'] [data-surface='solid'] {
+  text-shadow:
+    0 0 2px var(--color-text-halo),
+    0 0 8px var(--color-text-halo);
+}

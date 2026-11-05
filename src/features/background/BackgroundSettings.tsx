@@ -13,6 +13,7 @@ import * as ui from '../../ui/styles';
 import {BackgroundPhoto} from './BackgroundLayer';
 import {DisplayControls} from './DisplayControls';
 import {setDisplayPreview} from './displayPreview';
+import {usePaneReadability} from './paneOpacity';
 import {PhotoPicker} from './PhotoPicker';
 import {
   backgroundDisplaySlice,
@@ -40,6 +41,7 @@ export function BackgroundSettings({
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<ui.StatusMessage | null>(null);
   useReportDirty(dirty, onDirtyChange);
+  const panes = usePaneReadability(draft);
 
   // Preview unsaved options on the page; closing the dialog drops them
   useEffect(() => {
@@ -90,6 +92,7 @@ export function BackgroundSettings({
       <form onSubmit={e => void handleSave(e)} className="mt-4">
         <DisplayControls
           value={draft}
+          panes={panes}
           onChange={value => {
             setDraft(value);
             setStatus(null);

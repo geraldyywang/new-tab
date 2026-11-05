@@ -27,6 +27,7 @@ afterEach(() => {
   root.removeAttribute('style');
   root.removeAttribute('data-theme');
   root.removeAttribute('data-photo');
+  root.removeAttribute('data-photo-legible');
   window.localStorage.clear();
 });
 
@@ -78,6 +79,16 @@ describe('applyTheme with a photo', () => {
 
     applyTheme(root, 'stone');
     expect(root.hasAttribute('data-photo')).toBe(false);
+    expect(root.hasAttribute('style')).toBe(false);
+  });
+
+  it('flags panes too see-through to read, and clears the flag', () => {
+    applyTheme(root, 'stone', undefined, {...PHOTO, paneOpacity: 0});
+    expect(root.dataset.photoLegible).toBe('false');
+    expect(root.style.getPropertyValue('--color-text-halo')).not.toBe('');
+    applyTheme(root, 'stone', undefined, PHOTO);
+    expect(root.hasAttribute('data-photo-legible')).toBe(false);
+    applyTheme(root, 'stone');
     expect(root.hasAttribute('style')).toBe(false);
   });
 

@@ -48,6 +48,8 @@
   /* Lit top edge and drop shadow of surfaces over a photo (src/ui/surfaces.css) */
   --color-pane-highlight: transparent;
   --color-pane-shadow: transparent;
+  /* Halo behind card text when a chosen pane opacity is too low to read */
+  --color-text-halo: transparent;
 
   /* Hairlines and scrollbar thumbs */
   --color-border: var(--color-neutral-700);
