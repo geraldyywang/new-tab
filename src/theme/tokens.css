@@ -45,11 +45,19 @@
   --color-fg-subtle: var(--color-neutral-500);
   --color-fg-faint: var(--color-neutral-600);
 
-  /* Lit top edge and drop shadow of surfaces over a photo (src/ui/surfaces.css) */
+  /* Lit top edge and drop shadow of photo and see-through surfaces
+     (src/ui/surfaces.css) */
   --color-pane-highlight: transparent;
   --color-pane-shadow: transparent;
   /* Halo behind card text when a chosen pane opacity is too low to read */
   --color-text-halo: transparent;
+  /* Light and an accent glow on the backdrop behind see-through panes */
+  --color-backdrop-light: transparent;
+  --color-backdrop-glow: transparent;
+  /* Liquid glass's rim, sheen and inner highlight (src/ui/surfaces.css) */
+  --color-glass-rim: transparent;
+  --color-glass-sheen: transparent;
+  --color-glass-inner: transparent;
 
   /* Hairlines and scrollbar thumbs */
   --color-border: var(--color-neutral-700);

@@ -1,9 +1,8 @@
-// The background feature reads its photo from IndexedDB, which jsdom lacks
-import 'fake-indexeddb/auto';
 import {act, render, waitFor} from '@testing-library/react';
 import {afterEach, describe, expect, it, vi} from 'vitest';
 import {clearSlicePreview, setSlicePreview} from '../../settings/slicePreview';
 import {saveSlice} from '../../settings/slices';
+import {publishPhotoBackdrop} from '../../theme/photoBackdrop';
 import {THEME_CACHE_KEY} from './applyTheme';
 import {
   DEFAULT_THEME_SETTINGS,
@@ -68,6 +67,7 @@ describe('watchTheme', () => {
 
 describe('ThemeSync', () => {
   it('applies the saved theme, previews, and caches only saved values', async () => {
+    publishPhotoBackdrop({loaded: true, backdrop: null});
     render(<ThemeSync />);
     await act(() =>
       saveSlice(themeSlice, {...DEFAULT_THEME_SETTINGS, preset: 'dracula'}),

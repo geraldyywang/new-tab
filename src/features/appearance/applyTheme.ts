@@ -5,20 +5,22 @@
  * needs an inline value anyway. `data-theme` is set too, as a styling hook.
  * The default theme (Stone) sets nothing, so the page is exactly as before.
  */
-import {readPhotoCache} from '../background/photoBackdrop';
+import {readPhotoCache, type PhotoBackdrop} from '../../theme/photoBackdrop';
 import {
   MIN_ACCENT_CONTRAST,
   parseColor,
   toHex,
   towardsContrast,
   type Rgb,
-} from './color';
+} from '../../theme/color';
 import {
-  photoTokens,
-  PHOTO_TOKEN_NAMES,
-  type PhotoBackdrop,
-  type PhotoTokenName,
-} from './photoTokens';
+  GLASS_TOKEN_NAMES,
+  GLASS_LIT,
+  glassLightTokens,
+  glassTokens,
+  type PaneTokenName,
+} from './glassTokens';
+import {photoTokens, PHOTO_TOKEN_NAMES, type PhotoTheme} from './photoTokens';
 import {
   DEFAULT_PRESET_ID,
   presetById,
@@ -28,16 +30,22 @@ import {
 } from './presets';
 import {
   DEFAULT_THEME_SETTINGS,
+  drawnSurfaceStyle,
   parseThemeSettings,
   resolvePresetId,
   type ThemeEnvironment,
   type ThemeSettings,
 } from './themeSettings';
 
-export {MIN_ACCENT_CONTRAST} from './color';
+export {MIN_ACCENT_CONTRAST} from '../../theme/color';
 
 const WHITE: Rgb = {r: 1, g: 1, b: 1};
 const BLACK: Rgb = {r: 0, g: 0, b: 0};
+
+/** What the theme settings decide besides the preset. */
+export type ThemeLook = Partial<
+  Pick<ThemeSettings, 'accent' | 'surface' | 'surfaceOpacity'>
+>;
 
 /** A custom accent as it will be drawn. */
 export interface VisibleAccent {
@@ -71,33 +79,81 @@ export function visibleAccent(
     : {color: toHex(color), adjusted: true};
 }
 
+/** Pane tokens, and how the panes came out. */
+export type PaneTheme = Omit<PhotoTheme, 'tokens'> & {
+  tokens: Partial<Record<PaneTokenName, string>>;
+};
+
+/**
+ * Tokens of see-through or photo panes: tinted by the `photo` if there is
+ * one, else the preset's own surfaces made translucent. `opacity` is the
+ * card opacity in %, `null` for Auto; `surface` adds liquid glass's light.
+ */
+export function paneTheme(
+  preset: ThemePreset,
+  {accent, surface = 'solid'}: ThemeLook,
+  opacity: number | null,
+  photo?: PhotoBackdrop | null,
+): PaneTheme {
+  const fraction = opacity === null ? null : opacity / 100;
+  const glass = drawnSurfaceStyle(surface, Boolean(photo)) === 'glass';
+  const lit = glass ? GLASS_LIT : undefined;
+  let theme: PaneTheme;
+  if (photo) {
+    theme = photoTokens(photo, preset, accent, fraction, lit);
+  } else {
+    const drawn = accent ? visibleAccent(accent, preset).color : undefined;
+    const {scheme} = preset;
+    theme = glassTokens(
+      preset,
+      drawn ?? preset.tokens.accent,
+      fraction,
+      lit?.[scheme],
+    );
+  }
+  if (!glass) return theme;
+  const light = glassLightTokens(theme.scheme);
+  return {...theme, tokens: {...theme.tokens, ...light}};
+}
+
 /**
  * Sets the preset's tokens (none for the default) and accent on `root`. With
  * a background `photo`, its tokens replace the preset's and `data-photo` is
- * set to the pane scheme; without one, both are cleared again.
+ * set to the pane scheme; without one, both are cleared again. A surface
+ * style other than solid is set as `data-surface-style`, with translucent
+ * panes; solid panes over a photo are opaque.
  */
 export function applyTheme(
   root: HTMLElement,
   presetId: PresetId,
-  accent?: string,
+  look: ThemeLook = {},
   photo?: PhotoBackdrop | null,
 ): void {
+  const {accent, surfaceOpacity = null} = look;
+  const surface = drawnSurfaceStyle(look.surface ?? 'solid', Boolean(photo));
   const preset = presetById(presetId);
   const isDefault = preset.id === DEFAULT_PRESET_ID;
-  const photoTheme = photo ? photoTokens(photo, preset, accent) : null;
-  let tokens: Partial<Record<PhotoTokenName, string>> = {};
-  if (photoTheme) tokens = photoTheme.tokens;
+  const solid = surface === 'solid';
+  const panes =
+    photo || !solid
+      ? paneTheme(preset, look, solid ? 100 : surfaceOpacity, photo)
+      : null;
+  let tokens: Partial<Record<PaneTokenName, string>> = {};
+  if (panes) tokens = panes.tokens;
   else if (!isDefault) tokens = {...preset.tokens};
-  if (!photo && accent) tokens.accent = visibleAccent(accent, preset).color;
-  for (const token of [...TOKEN_NAMES, ...PHOTO_TOKEN_NAMES]) {
+  if (!panes && accent) tokens.accent = visibleAccent(accent, preset).color;
+  const names = [...TOKEN_NAMES, ...PHOTO_TOKEN_NAMES, ...GLASS_TOKEN_NAMES];
+  for (const token of names) {
     const value = tokens[token];
     if (value === undefined) root.style.removeProperty(`--color-${token}`);
     else root.style.setProperty(`--color-${token}`, value);
   }
-  if (photoTheme) root.dataset.photo = photoTheme.scheme;
+  if (photo && panes) root.dataset.photo = panes.scheme;
   else root.removeAttribute('data-photo');
-  if (photoTheme && !photoTheme.legible) root.dataset.photoLegible = 'false';
-  else root.removeAttribute('data-photo-legible');
+  if (panes && !panes.legible) root.dataset.surfaceLegible = 'false';
+  else root.removeAttribute('data-surface-legible');
+  if (solid) root.removeAttribute('data-surface-style');
+  else root.dataset.surfaceStyle = surface;
   if (isDefault) {
     root.removeAttribute('data-theme');
     root.style.removeProperty('color-scheme');
@@ -105,7 +161,7 @@ export function applyTheme(
     root.dataset.theme = preset.id;
     root.style.colorScheme = preset.scheme;
   }
-  if (photoTheme) root.style.colorScheme = photoTheme.scheme;
+  if (panes) root.style.colorScheme = panes.scheme;
   if (root.style.length === 0) root.removeAttribute('style');
 }
 
@@ -154,12 +210,8 @@ export function applyCachedTheme(
   const settings = readThemeCache(storage);
   const photo = readPhotoCache(storage);
   if (settings || photo) {
-    const {accent} = settings ?? DEFAULT_THEME_SETTINGS;
-    const presetId = resolvePresetId(
-      settings ?? DEFAULT_THEME_SETTINGS,
-      environment,
-    );
-    applyTheme(root, presetId, accent, photo);
+    const look = settings ?? DEFAULT_THEME_SETTINGS;
+    applyTheme(root, resolvePresetId(look, environment), look, photo);
   }
   return settings !== null;
 }

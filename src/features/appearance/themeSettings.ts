@@ -9,9 +9,34 @@ const THEME_MODES: readonly ThemeMode[] = ['fixed', 'system', 'scheduled'];
 const MINUTES_PER_DAY = 24 * 60;
 
 /**
- * Theme choice and accent. Later appearance options (such as the surface
- * style of #29) are meant to be added here as more fields.
+ * How cards, bars and the dialog are drawn: opaque (`solid`), as frosted
+ * panes that blur what lies behind them (`frosted`), or as frosted panes
+ * that also catch the light (`glass`). See src/ui/surfaces.css. `auto` is
+ * `glass` over a background photo, so the photo shows through, and `solid`
+ * without one.
  */
+export type SurfaceStyle = 'auto' | 'solid' | 'frosted' | 'glass';
+
+/** A surface style as drawn, with `auto` resolved. */
+export type DrawnSurfaceStyle = Exclude<SurfaceStyle, 'auto'>;
+
+const SURFACE_STYLES: readonly SurfaceStyle[] = [
+  'auto',
+  'solid',
+  'frosted',
+  'glass',
+];
+
+/** The style `style` draws, given whether a background photo is set. */
+export function drawnSurfaceStyle(
+  style: SurfaceStyle,
+  hasPhoto: boolean,
+): DrawnSurfaceStyle {
+  if (style !== 'auto') return style;
+  return hasPhoto ? 'glass' : 'solid';
+}
+
+/** Theme choice, accent and surface style. */
 export interface ThemeSettings {
   mode: ThemeMode;
   /** The theme in `fixed` mode. */
@@ -25,9 +50,15 @@ export interface ThemeSettings {
   lightUntil: number;
   /** Custom accent as `#rrggbb`; unset uses the theme's own accent. */
   accent?: string;
+  surface: SurfaceStyle;
+  /**
+   * Opacity of frosted and glass surfaces, 0 to 100 %; `null` (Auto) picks
+   * the most see-through panes whose text still reads.
+   */
+  surfaceOpacity: number | null;
 }
 
-/** The original look: Stone, theme accent. */
+/** The original look: Stone, theme accent, solid surfaces unless a photo is set. */
 export const DEFAULT_THEME_SETTINGS: ThemeSettings = {
   mode: 'fixed',
   preset: DEFAULT_PRESET_ID,
@@ -35,6 +66,8 @@ export const DEFAULT_THEME_SETTINGS: ThemeSettings = {
   darkPreset: DEFAULT_PRESET_ID,
   lightFrom: 7 * 60,
   lightUntil: 19 * 60,
+  surface: 'auto',
+  surfaceOpacity: null,
 };
 
 function isMinuteOfDay(value: unknown): value is number {
@@ -43,6 +76,10 @@ function isMinuteOfDay(value: unknown): value is number {
     Number(value) >= 0 &&
     Number(value) < MINUTES_PER_DAY
   );
+}
+
+function isPercent(value: unknown): value is number {
+  return Number.isInteger(value) && Number(value) >= 0 && Number(value) <= 100;
 }
 
 /** Whether `value` is a `#rrggbb` colour. */
@@ -65,12 +102,16 @@ export function parseThemeSettings(data: unknown): ThemeSettings | null {
     darkPreset: isPresetId(raw.darkPreset) ? raw.darkPreset : d.darkPreset,
     lightFrom: isMinuteOfDay(raw.lightFrom) ? raw.lightFrom : d.lightFrom,
     lightUntil: isMinuteOfDay(raw.lightUntil) ? raw.lightUntil : d.lightUntil,
+    surface: SURFACE_STYLES.find(style => style === raw.surface) ?? d.surface,
+    surfaceOpacity: isPercent(raw.surfaceOpacity)
+      ? raw.surfaceOpacity
+      : d.surfaceOpacity,
   };
   if (isHexColor(raw.accent)) settings.accent = raw.accent.toLowerCase();
   return settings;
 }
 
-/** Theme choice and accent, synced across devices. */
+/** Theme choice, accent and surface style, synced across devices. */
 export const themeSlice = defineSettingsSlice<ThemeSettings>({
   key: 'appearance.theme',
   area: 'sync',

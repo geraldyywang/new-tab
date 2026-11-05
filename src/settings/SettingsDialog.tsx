@@ -106,11 +106,17 @@ export function SettingsDialog({
       }}
       {...surfaceAttributes(
         'overlay',
-        'm-auto max-h-[calc(100vh-2rem)] w-[min(44rem,calc(100vw-2rem))] overflow-y-auto p-0 text-fg-muted shadow-2xl backdrop:bg-scrim [scrollbar-color:var(--color-border)_transparent]',
+        // The content scrolls, not the dialog, so a surface's rim and sheen
+        // stay at the dialog's edge and switching surface style mid-scroll
+        // can't strand the content out of view
+        'm-auto max-h-[calc(100vh-2rem)] w-[min(44rem,calc(100vw-2rem))] overflow-hidden p-0 text-fg-muted shadow-2xl backdrop:bg-scrim',
       )}
     >
       {open && (
-        <div className="p-6">
+        // `relative` keeps absolutely positioned descendants (sr-only inputs)
+        // inside the scroller; otherwise they stretch the dialog, and focusing
+        // one scrolls it
+        <div className="relative max-h-[calc(100vh-2rem)] overflow-y-auto p-6 [scrollbar-color:var(--color-border)_transparent]">
           <div className="flex items-center justify-between gap-4">
             <h2
               id="settings-title"

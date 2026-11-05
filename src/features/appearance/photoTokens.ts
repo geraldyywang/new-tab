@@ -6,7 +6,6 @@
  * for contrast against the panes over the photo's darkest and lightest
  * regions, after the dim overlay.
  */
-import type {PhotoPalette} from '../background/photoPalette';
 import {
   MIN_ACCENT_CONTRAST,
   minContrast,
@@ -17,19 +16,11 @@ import {
   toHexAlpha,
   towardsContrast,
   type Rgb,
-} from './color';
+} from '../../theme/color';
+import type {PhotoBackdrop} from '../../theme/photoBackdrop';
 import type {ThemePreset, TokenName} from './presets';
 
-/** The background photo, as far as theming is concerned. */
-export interface PhotoBackdrop {
-  palette: PhotoPalette;
-  /** Strength of the dim overlay, 0 to 1. */
-  dim: number;
-  /** Card opacity chosen by the user, 0 to 1; unset or `null` is Auto. */
-  paneOpacity?: number | null;
-}
-
-/** Tokens only a photo sets; tokens.css gives their photo-less defaults. */
+/** Tokens only see-through or photo panes set; tokens.css has defaults. */
 export const PHOTO_TOKEN_NAMES = [
   'surface-overlay',
   'pane-highlight',
@@ -40,7 +31,8 @@ export const PHOTO_TOKEN_NAMES = [
 /** A token a photo can set. */
 export type PhotoTokenName = TokenName | (typeof PHOTO_TOKEN_NAMES)[number];
 
-const TEXT_TOKENS = ['fg', 'fg-muted', 'fg-subtle', 'fg-faint'] as const;
+/** The text levels, strongest to faintest. */
+export const TEXT_TOKENS = ['fg', 'fg-muted', 'fg-subtle', 'fg-faint'] as const;
 type TextToken = (typeof TEXT_TOKENS)[number];
 type TextTokens = Record<TextToken, Rgb>;
 
@@ -49,19 +41,24 @@ type TextTokens = Record<TextToken, Rgb>;
  * 1.4.3) and `fg-faint` is for placeholders and decoration; `fg` aims higher
  * so the levels below it have room to fade.
  */
-const TEXT_CONTRAST = {fg: 6, 'fg-muted': 5, 'fg-subtle': 4.5, 'fg-faint': 3};
+export const TEXT_CONTRAST = {
+  fg: 6,
+  'fg-muted': 5,
+  'fg-subtle': 4.5,
+  'fg-faint': 3,
+};
 /** How far each text level may fade towards the pane, for hierarchy. */
 const TEXT_FADE = {fg: 0, 'fg-muted': 0.15, 'fg-subtle': 0.3, 'fg-faint': 0.5};
 /** How much more see-through the other scheme's panes must be to win. */
 const SCHEME_SWITCH = 0.1;
 /** Added to every target, for the browser rounding the drawn panes. */
-const MARGIN = 0.15;
+export const MARGIN = 0.15;
 
 const WHITE: Rgb = {r: 1, g: 1, b: 1};
 const BLACK: Rgb = {r: 0, g: 0, b: 0};
 
 /** Per scheme: the pane tint's contrast with ink, and overlay opacities. */
-const SCHEMES = {
+export const SCHEMES = {
   dark: {
     tintContrast: 12,
     paneAlpha: 0.35,
@@ -87,12 +84,12 @@ const SCHEMES = {
 } as const;
 
 /** `alpha` as `#rrggbbaa` stores it. */
-function roundAlpha(alpha: number) {
+export function roundAlpha(alpha: number) {
   return Math.round(Math.min(1, Math.max(0, alpha)) * 255) / 255;
 }
 
 /** Opacities from `from` up to 1, in 5% steps, as `#rrggbbaa` stores them. */
-function opacitySteps(from: number): number[] {
+export function opacitySteps(from: number): number[] {
   const steps: number[] = [];
   for (let step = Math.round(from * 20); step <= 20; step++) {
     steps.push(roundAlpha(step / 20));
@@ -145,15 +142,27 @@ function textOn(backgrounds: Backgrounds, fg: Rgb, pane: Rgb) {
 
 type SchemeName = keyof typeof SCHEMES;
 
-/** The panes over each of the `under` colours. */
+/** Per scheme, how far white light falls on the panes behind text, 0 to 1. */
+export type Lit = Readonly<Record<SchemeName, number>>;
+
+const UNLIT: Lit = {dark: 0, light: 0};
+
+/**
+ * The panes over each of the `under` colours, and the same panes lit by up
+ * to `lit` (0 to 1) of white: the glass sheen and inner highlight.
+ */
 function panesOver(
   under: readonly Rgb[],
   tint: Rgb,
   alpha: number,
   name: SchemeName,
+  lit: number,
 ): Backgrounds {
   const {ink, raised} = SCHEMES[name];
-  const bare = under.map(color => mixRgb(color, tint, alpha));
+  const panes = under.map(color => mixRgb(color, tint, alpha));
+  const bare = lit
+    ? [...panes, ...panes.map(p => mixRgb(p, WHITE, lit))]
+    : panes;
   return {bare, raised: bare.map(pane => mixRgb(pane, ink, raised[1]))};
 }
 /** Light or dark card panes over the photo, and their text. */
@@ -177,6 +186,7 @@ function cardPanes(
   scheme: SchemeName,
   photo: Rgb[],
   average: Rgb,
+  lit: Lit,
   fixed?: number,
 ): CardPanes {
   const {ink, shade, tintContrast, paneAlpha} = SCHEMES[scheme];
@@ -185,7 +195,7 @@ function cardPanes(
   const alphas =
     fixed === undefined ? opacitySteps(paneAlpha) : [roundAlpha(fixed)];
   for (const alpha of alphas) {
-    const backgrounds = panesOver(photo, tint, alpha, scheme);
+    const backgrounds = panesOver(photo, tint, alpha, scheme, lit[scheme]);
     const text =
       textOn(backgrounds, fgTinted, tint) ?? textOn(backgrounds, ink, tint);
     if (text) return {scheme, tint, alpha, text, legible: true};
@@ -205,42 +215,48 @@ export interface PhotoTheme {
 }
 /**
  * The tokens for `backdrop` with `preset`; `accent` is the user's custom
- * accent, which wins over the photo's own colour. Panes follow the theme's
- * scheme unless the other one lets clearly more of the photo through.
+ * accent, which wins over the photo's own colour, and `paneOpacity` (0 to 1)
+ * the card opacity chosen by the user; unset or `null` is Auto. Panes follow
+ * the theme's scheme unless the other one lets clearly more of the photo
+ * through. Text also reads where liquid glass lights the panes by `lit`.
  */
 export function photoTokens(
-  {palette, dim, paneOpacity}: PhotoBackdrop,
+  {palette, dim}: PhotoBackdrop,
   preset: ThemePreset,
   accent?: string,
+  paneOpacity?: number | null,
+  lit: Lit = UNLIT,
 ): PhotoTheme {
   function dimmed(hex: string) {
     return mixRgb(parseColor(hex) ?? BLACK, BLACK, dim);
   }
   const photo = [dimmed(palette.darkest), dimmed(palette.lightest)];
   const average = dimmed(palette.average);
-  const own = cardPanes(preset.scheme, photo, average);
+  const own = cardPanes(preset.scheme, photo, average, lit);
   const other = cardPanes(
     preset.scheme === 'dark' ? 'light' : 'dark',
     photo,
     average,
+    lit,
   );
   const auto = other.alpha < own.alpha - SCHEME_SWITCH ? other : own;
   const name = auto.scheme;
   const {tint, alpha, text, legible} =
-    paneOpacity == null ? auto : cardPanes(name, photo, average, paneOpacity);
+    paneOpacity == null
+      ? auto
+      : cardPanes(name, photo, average, lit, paneOpacity);
   const scheme = SCHEMES[name];
 
-  // The dialog sits over the page under the 60% scrim and ignores a chosen
-  // opacity: it is at least as opaque as Auto's cards, and their text must
-  // read on it too.
+  // The dialog sits over the page under the 60% scrim: it is at least as
+  // opaque as the cards and as Auto's, and their text must read on it too.
   const scrimmed = photo.map(color => mixRgb(color, BLACK, 0.6));
   const overlayAlpha =
-    opacitySteps(Math.max(auto.alpha, 0.8)).find(candidate =>
-      reads(text, panesOver(scrimmed, tint, candidate, name)),
+    opacitySteps(Math.max(auto.alpha, alpha, 0.8)).find(candidate =>
+      reads(text, panesOver(scrimmed, tint, candidate, name, lit[name])),
     ) ?? 1;
   const everyPane = [
-    panesOver(photo, tint, alpha, name),
-    panesOver(scrimmed, tint, overlayAlpha, name),
+    panesOver(photo, tint, alpha, name, lit[name]),
+    panesOver(scrimmed, tint, overlayAlpha, name, lit[name]),
   ].flatMap(({bare, raised}) => [...bare, ...raised]);
   function visible(color: string, ratio: number) {
     const base = parseColor(color) ?? scheme.ink;

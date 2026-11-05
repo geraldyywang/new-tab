@@ -1,5 +1,6 @@
 import {describe, expect, it} from 'vitest';
 import {
+  drawnSurfaceStyle,
   DEFAULT_THEME_SETTINGS,
   formatMinuteOfDay,
   isLightAt,
@@ -25,7 +26,11 @@ const SCHEDULED: ThemeSettings = {
 
 describe('parseThemeSettings', () => {
   it('round-trips valid settings', () => {
-    const settings = {...SCHEDULED, accent: '#a1b2c3'};
+    const settings = {
+      ...SCHEDULED,
+      surface: 'glass' as const,
+      accent: '#a1b2c3',
+    };
     expect(parseThemeSettings(JSON.parse(JSON.stringify(settings)))).toEqual(
       settings,
     );
@@ -40,6 +45,7 @@ describe('parseThemeSettings', () => {
         lightFrom: 1440,
         lightUntil: 1.5,
         accent: 'blue',
+        surface: 'chrome',
       }),
     ).toEqual({...DEFAULT_THEME_SETTINGS, preset: 'nord'});
   });
@@ -54,6 +60,25 @@ describe('parseThemeSettings', () => {
     expect(DEFAULT_THEME_SETTINGS.mode).toBe('fixed');
     expect(DEFAULT_THEME_SETTINGS.preset).toBe('stone');
     expect(DEFAULT_THEME_SETTINGS.accent).toBeUndefined();
+  });
+});
+
+describe('drawnSurfaceStyle', () => {
+  it('draws Auto as liquid glass over a photo and solid without one', () => {
+    expect(DEFAULT_THEME_SETTINGS.surface).toBe('auto');
+    expect(drawnSurfaceStyle('auto', true)).toBe('glass');
+    expect(drawnSurfaceStyle('auto', false)).toBe('solid');
+  });
+
+  it('keeps a chosen style either way', () => {
+    for (const style of ['solid', 'frosted', 'glass'] as const) {
+      expect(drawnSurfaceStyle(style, true)).toBe(style);
+      expect(drawnSurfaceStyle(style, false)).toBe(style);
+    }
+  });
+
+  it('parses a stored Auto', () => {
+    expect(parseThemeSettings({surface: 'auto'})?.surface).toBe('auto');
   });
 });
 

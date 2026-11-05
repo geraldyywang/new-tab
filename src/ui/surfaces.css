@@ -1,17 +1,124 @@
 /*
- * Surfaces over a background photo. While `<html data-photo>` is set, the
- * surface tokens are translucent tints of the photo (see
- * features/appearance/photoTokens.ts). Blurring what lies behind each surface
- * makes it read as a raised pane of the same image, lit along its top edge
- * and casting a soft shadow. Later surface styles, such as the liquid glass
- * of #29, hook in on `[data-surface]` here as well.
+ * Surface styles. `[data-surface]` marks every card, bar and dialog (see
+ * src/ui/styles.ts); `<html>` says how to draw them:
+ *
+ * - `data-photo`: a background photo is set, so the surface tokens are tints
+ *   of the photo (features/appearance/photoTokens.ts), lit along their top
+ *   edge and casting a soft shadow. Solid surfaces are opaque tints.
+ * - `data-surface-style` (`frosted` or `glass`; absent for solid): the
+ *   surfaces are translucent, and blurring what lies behind each one makes
+ *   it read as a raised pane. Without a photo they are the theme's own
+ *   surface colour (features/appearance/glassTokens.ts) over a soft glow of
+ *   the accent on the backdrop.
  */
-:root[data-photo] [data-surface] {
-  backdrop-filter: blur(24px) saturate(1.4);
+:root[data-photo] [data-surface],
+:root[data-surface-style] [data-surface] {
   box-shadow:
     inset 0 1px 0 0 var(--color-pane-highlight),
     inset 0 0 0 1px var(--color-border),
     0 12px 32px -12px var(--color-pane-shadow);
+}
+
+:root[data-surface-style] [data-surface] {
+  backdrop-filter: blur(24px) saturate(1.4);
+}
+
+/* The light and glow glassTokens checks the text against: light from the
+   top left, the accent glowing in the opposite corner */
+:root[data-surface-style]:not([data-photo]) body {
+  background-image:
+    radial-gradient(
+      70vmax 55vmax at 10% 0%,
+      var(--color-backdrop-light),
+      transparent
+    ),
+    radial-gradient(
+      60vmax 50vmax at 90% 100%,
+      var(--color-backdrop-glow),
+      transparent
+    );
+  background-attachment: fixed;
+}
+
+/*
+ * Liquid glass: frosted panes that catch the light. A rim brightest at the
+ * top left fades around the edge (a masked gradient ring), the inside of the
+ * edges glows softly, a sheen lies where the light falls (`--sheen-x/y`, set
+ * by src/ui/sheen.ts) and layered shadows lift the pane off the page. The
+ * sheen and inner glow sit under the text, which glassTokens and photoTokens
+ * keep readable on panes lit by both.
+ */
+@property --sheen-x {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 15%;
+}
+
+@property --sheen-y {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+:root[data-surface-style='glass'] [data-surface] {
+  backdrop-filter: blur(12px) saturate(1.8);
+  background-image: radial-gradient(
+    circle 16rem at var(--sheen-x) var(--sheen-y),
+    var(--color-glass-sheen),
+    transparent
+  );
+  /* Eases after the pointer, and back to the top left when it leaves */
+  transition:
+    --sheen-x 0.3s ease-out,
+    --sheen-y 0.3s ease-out;
+  box-shadow:
+    inset 0 1px 0 0 var(--color-pane-highlight),
+    inset 0 0 0 1px color-mix(in oklab, var(--color-border) 30%, transparent),
+    inset 0 0 16px 0 var(--color-glass-inner),
+    0 1px 2px color-mix(in oklab, var(--color-pane-shadow) 60%, transparent),
+    0 6px 16px -6px var(--color-pane-shadow),
+    0 24px 48px -18px var(--color-pane-shadow);
+}
+
+/* Refraction near the edges, where the browser takes SVG backdrop filters
+   (src/ui/refraction.ts); elsewhere the plain blur above */
+:root[data-surface-style='glass'][data-refraction] [data-surface] {
+  backdrop-filter: blur(12px) saturate(1.8) url(#glass-refraction);
+}
+
+:root[data-surface-style='glass'] [data-surface]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    var(--color-glass-rim),
+    color-mix(in oklab, var(--color-glass-rim) 30%, transparent) 22%,
+    transparent 45%,
+    transparent 65%,
+    color-mix(in oklab, var(--color-glass-rim) 40%, transparent)
+  );
+  /* An opaque image, whatever its colour: the ring is the border box minus
+     the content box */
+  mask:
+    linear-gradient(black, black) content-box exclude,
+    linear-gradient(black, black);
+  pointer-events: none;
+}
+
+/* The rim needs a positioned surface; layered, so a surface's own `fixed` or
+   `absolute` wins. The modal dialog is positioned by the browser. */
+@layer components {
+  :root[data-surface-style='glass'] [data-surface]:not(dialog) {
+    position: relative;
+  }
+}
+
+/* Backdrop filters are costly: only top-level surfaces get one */
+:root[data-surface-style] [data-surface] [data-surface] {
+  backdrop-filter: none;
 }
 
 /* Text drawn straight on the photo: light panes mean dark text, so give it a
@@ -21,8 +128,8 @@
 }
 
 /* The user chose cards too see-through for their text to reach its contrast
-   targets: the text is pure white or black, and a halo helps it further */
-:root[data-photo-legible='false'] [data-surface='solid'] {
+   targets, so a halo helps it */
+:root[data-surface-legible='false'] [data-surface='solid'] {
   text-shadow:
     0 0 2px var(--color-text-halo),
     0 0 8px var(--color-text-halo);

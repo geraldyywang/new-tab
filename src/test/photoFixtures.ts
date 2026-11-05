@@ -1,4 +1,4 @@
-import type {PhotoPalette} from '../features/background/photoPalette';
+import type {PhotoPalette} from '../theme/photoPalette';
 
 /** A plausible palette of a dusky blue photo, for stored-image fixtures. */
 export const TEST_PALETTE: PhotoPalette = {

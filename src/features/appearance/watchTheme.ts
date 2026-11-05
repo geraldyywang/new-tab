@@ -1,5 +1,5 @@
 import {applyTheme, currentThemeEnvironment} from './applyTheme';
-import type {PhotoBackdrop} from './photoTokens';
+import type {PhotoBackdrop} from '../../theme/photoBackdrop';
 import {
   msUntilNextSwitch,
   resolvePresetId,
@@ -21,7 +21,7 @@ export function watchTheme(
 ): () => void {
   function apply() {
     const presetId = resolvePresetId(settings, currentThemeEnvironment());
-    applyTheme(root, presetId, settings.accent, photo);
+    applyTheme(root, presetId, settings, photo);
   }
   apply();
 

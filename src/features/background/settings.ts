@@ -17,11 +17,6 @@ export interface BackgroundDisplay {
   dim: number;
   /** Blur radius, 0 to `MAX_BLUR` px. */
   blur: number;
-  /**
-   * Opacity of the cards over the photo, 0 to 100 %; `null` (Auto) picks the
-   * most see-through panes whose text still reads.
-   */
-  paneOpacity: number | null;
 }
 
 /** Strongest dim overlay, in %. */
@@ -36,7 +31,6 @@ export const DEFAULT_BACKGROUND_DISPLAY: BackgroundDisplay = Object.freeze({
   focusY: 50,
   dim: 20,
   blur: 0,
-  paneOpacity: null,
 });
 
 function inRange(value: unknown, max: number): number | null {
@@ -55,14 +49,12 @@ export function parseBackgroundDisplay(
   const focusY = inRange(record.focusY, 100);
   const dim = inRange(record.dim, MAX_DIM);
   const blur = inRange(record.blur, MAX_BLUR);
-  const paneOpacity =
-    record.paneOpacity == null ? null : inRange(record.paneOpacity, 100);
+
   if (fit !== 'cover' && fit !== 'contain') return null;
   if (focusX === null || focusY === null || dim === null || blur === null) {
     return null;
   }
-  if (paneOpacity === null && record.paneOpacity != null) return null;
-  return {fit, focusX, focusY, dim, blur, paneOpacity};
+  return {fit, focusX, focusY, dim, blur};
 }
 
 /** Whether two sets of display options look the same. */
@@ -72,12 +64,11 @@ export function displayEquals(a: BackgroundDisplay, b: BackgroundDisplay) {
     a.focusX === b.focusX &&
     a.focusY === b.focusY &&
     a.dim === b.dim &&
-    a.blur === b.blur &&
-    a.paneOpacity === b.paneOpacity
+    a.blur === b.blur
   );
 }
 
-/** Fit, focal point, dim, blur and pane opacity for the background photo. */
+/** Fit, focal point, dim and blur for the background photo. */
 export const backgroundDisplaySlice = defineSettingsSlice<BackgroundDisplay>({
   key: 'background.display',
   area: 'sync',
