@@ -30,10 +30,8 @@ describe('paneReadability', () => {
     const backdrop = {palette: TEST_PALETTE, dim: 0.2};
     const {autoOpacity} = photoTokens(backdrop, stone);
     function warns(percent: number) {
-      const theme = photoTokens(
-        {...backdrop, paneOpacity: percent / 100},
-        stone,
-      );
+      const theme = photoTokens(backdrop, stone, undefined, percent / 100);
+
       return paneReadability({...auto, paneOpacity: percent}, theme).warn;
     }
     expect(warns(0)).toBe(true);

@@ -32,6 +32,11 @@ export interface ThemeSettings {
   /** Custom accent as `#rrggbb`; unset uses the theme's own accent. */
   accent?: string;
   surface: SurfaceStyle;
+  /**
+   * Opacity of frosted and glass surfaces, 0 to 100 %; `null` (Auto) picks
+   * the most see-through panes whose text still reads.
+   */
+  surfaceOpacity: number | null;
 }
 
 /** The original look: Stone, theme accent, solid surfaces. */
@@ -43,6 +48,7 @@ export const DEFAULT_THEME_SETTINGS: ThemeSettings = {
   lightFrom: 7 * 60,
   lightUntil: 19 * 60,
   surface: 'solid',
+  surfaceOpacity: null,
 };
 
 function isMinuteOfDay(value: unknown): value is number {
@@ -51,6 +57,10 @@ function isMinuteOfDay(value: unknown): value is number {
     Number(value) >= 0 &&
     Number(value) < MINUTES_PER_DAY
   );
+}
+
+function isPercent(value: unknown): value is number {
+  return Number.isInteger(value) && Number(value) >= 0 && Number(value) <= 100;
 }
 
 /** Whether `value` is a `#rrggbb` colour. */
@@ -74,6 +84,9 @@ export function parseThemeSettings(data: unknown): ThemeSettings | null {
     lightFrom: isMinuteOfDay(raw.lightFrom) ? raw.lightFrom : d.lightFrom,
     lightUntil: isMinuteOfDay(raw.lightUntil) ? raw.lightUntil : d.lightUntil,
     surface: SURFACE_STYLES.find(style => style === raw.surface) ?? d.surface,
+    surfaceOpacity: isPercent(raw.surfaceOpacity)
+      ? raw.surfaceOpacity
+      : d.surfaceOpacity,
   };
   if (isHexColor(raw.accent)) settings.accent = raw.accent.toLowerCase();
   return settings;

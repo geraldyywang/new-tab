@@ -196,13 +196,16 @@ export interface PhotoTheme {
 }
 /**
  * The tokens for `backdrop` with `preset`; `accent` is the user's custom
- * accent, which wins over the photo's own colour. Panes follow the theme's
- * scheme unless the other one lets clearly more of the photo through.
+ * accent, which wins over the photo's own colour, and `paneOpacity` (0 to 1)
+ * the card opacity chosen by the user; unset or `null` is Auto. Panes follow
+ * the theme's scheme unless the other one lets clearly more of the photo
+ * through.
  */
 export function photoTokens(
-  {palette, dim, paneOpacity}: PhotoBackdrop,
+  {palette, dim}: PhotoBackdrop,
   preset: ThemePreset,
   accent?: string,
+  paneOpacity?: number | null,
 ): PhotoTheme {
   function dimmed(hex: string) {
     return mixRgb(parseColor(hex) ?? BLACK, BLACK, dim);

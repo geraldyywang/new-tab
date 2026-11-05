@@ -46,14 +46,10 @@ export function usePaneReadability(
       resolvePresetId(settings, currentThemeEnvironment()),
     );
     const theme = photoTokens(
-      {
-        palette,
-        dim: display.dim / 100,
-        paneOpacity:
-          display.paneOpacity === null ? null : display.paneOpacity / 100,
-      },
+      {palette, dim: display.dim / 100},
       preset,
       settings.accent,
+      display.paneOpacity === null ? null : display.paneOpacity / 100,
     );
     return paneReadability(display, theme);
   }, [palette, settings, display]);

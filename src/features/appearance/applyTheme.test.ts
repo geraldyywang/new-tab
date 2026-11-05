@@ -51,14 +51,14 @@ describe('applyTheme', () => {
   });
 
   it('clears every override when switching back to the default', () => {
-    applyTheme(root, 'dracula', '#ff0000');
+    applyTheme(root, 'dracula', {accent: '#ff0000'});
     applyTheme(root, 'stone');
     expect(root.hasAttribute('data-theme')).toBe(false);
     expect(root.hasAttribute('style')).toBe(false);
   });
 
   it('overrides only the accent on the default theme', () => {
-    applyTheme(root, 'stone', '#60a5fa');
+    applyTheme(root, 'stone', {accent: '#60a5fa'});
     expect(root.hasAttribute('data-theme')).toBe(false);
     expect(root.style.length).toBe(1);
     expect(root.style.getPropertyValue('--color-accent')).toBe('#60a5fa');
@@ -67,7 +67,7 @@ describe('applyTheme', () => {
 
 describe('applyTheme with a photo', () => {
   it('sets translucent photo tokens and data-photo, then clears them', () => {
-    applyTheme(root, 'stone', undefined, PHOTO, 'frosted');
+    applyTheme(root, 'stone', {surface: 'frosted'}, PHOTO);
     expect(root.dataset.photo).toBe('dark');
     expect(root.dataset.surfaceStyle).toBe('frosted');
     expect(root.hasAttribute('data-theme')).toBe(false);
@@ -86,17 +86,17 @@ describe('applyTheme with a photo', () => {
   });
 
   it('flags panes too see-through to read, and clears the flag', () => {
-    applyTheme(root, 'stone', undefined, {...PHOTO, paneOpacity: 0}, 'glass');
+    applyTheme(root, 'stone', {surface: 'glass', surfaceOpacity: 0}, PHOTO);
     expect(root.dataset.photoLegible).toBe('false');
     expect(root.style.getPropertyValue('--color-text-halo')).not.toBe('');
-    applyTheme(root, 'stone', undefined, PHOTO);
+    applyTheme(root, 'stone', {surface: 'glass'}, PHOTO);
     expect(root.hasAttribute('data-photo-legible')).toBe(false);
     applyTheme(root, 'stone');
     expect(root.hasAttribute('style')).toBe(false);
   });
 
   it('draws solid panes over a photo as opaque tints, even with a chosen opacity', () => {
-    applyTheme(root, 'stone', undefined, {...PHOTO, paneOpacity: 0.2});
+    applyTheme(root, 'stone', {surfaceOpacity: 20}, PHOTO);
     expect(root.dataset.photo).toBe('dark');
     expect(root.hasAttribute('data-surface-style')).toBe(false);
     expect(root.hasAttribute('data-photo-legible')).toBe(false);
@@ -108,24 +108,24 @@ describe('applyTheme with a photo', () => {
   });
 
   it('takes light or dark panes from the theme', () => {
-    applyTheme(root, 'light', undefined, PHOTO);
+    applyTheme(root, 'light', {}, PHOTO);
     expect(root.dataset.photo).toBe('light');
     expect(root.dataset.theme).toBe('light');
   });
 
   it("prefers the user's accent to the photo's", () => {
-    applyTheme(root, 'nord', '#2dd4bf', PHOTO);
+    applyTheme(root, 'nord', {accent: '#2dd4bf'}, PHOTO);
     // Teal, if darkened to show on the light panes this photo gets
     const custom = rgb(root.style.getPropertyValue('--color-accent'));
     expect(custom.g).toBeGreaterThan(custom.r);
-    applyTheme(root, 'nord', undefined, PHOTO);
+    applyTheme(root, 'nord', {}, PHOTO);
     // The photo's vivid orange
     const own = rgb(root.style.getPropertyValue('--color-accent'));
     expect(own.r).toBeGreaterThan(own.g);
   });
 
   it('switching theme keeps the photo tokens on top', () => {
-    applyTheme(root, 'dracula', undefined, PHOTO);
+    applyTheme(root, 'dracula', {}, PHOTO);
     const surface = root.style.getPropertyValue('--color-surface');
     expect(surface).not.toBe(presetById('dracula').tokens.surface);
     applyTheme(root, 'dracula');

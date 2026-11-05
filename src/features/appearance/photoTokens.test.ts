@@ -188,14 +188,14 @@ describe('photoTokens', () => {
     const busy = {palette: HIGH_RANGE, dim: 0};
 
     it('Auto (null) is the same as no choice', () => {
-      expect(photoTokens({...busy, paneOpacity: null}, stone)).toEqual(
+      expect(photoTokens(busy, stone, undefined, null)).toEqual(
         photoTokens(busy, stone),
       );
     });
 
     it('uses a low opacity anyway, with pure ink text, and says so', () => {
       const auto = photoTokens(busy, stone);
-      const low = photoTokens({...busy, paneOpacity: 0.3}, stone);
+      const low = photoTokens(busy, stone, undefined, 0.3);
       expect(auto.legible).toBe(true);
       expect(auto.autoOpacity).toBeGreaterThan(0.3);
       expect(low.legible).toBe(false);
@@ -207,7 +207,7 @@ describe('photoTokens', () => {
 
     it('keeps the dialog at its own readable tint', () => {
       const auto = photoTokens(busy, stone);
-      const clear = photoTokens({...busy, paneOpacity: 0}, stone);
+      const clear = photoTokens(busy, stone, undefined, 0);
       expect(clear.tokens['surface-overlay']).toBe(
         auto.tokens['surface-overlay'],
       );
@@ -217,7 +217,7 @@ describe('photoTokens', () => {
     it('reads at or above Auto, and fully opaque always', () => {
       const auto = photoTokens(busy, stone);
       for (const paneOpacity of [auto.autoOpacity, 0.9, 1]) {
-        const theme = photoTokens({...busy, paneOpacity}, stone);
+        const theme = photoTokens(busy, stone, undefined, paneOpacity);
         expect(theme.legible).toBe(true);
         expect(alphaOf(theme.tokens.surface)).toBeCloseTo(paneOpacity, 2);
       }
