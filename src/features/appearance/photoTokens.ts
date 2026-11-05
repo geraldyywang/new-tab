@@ -20,7 +20,7 @@ import {
 import type {PhotoBackdrop} from '../../theme/photoBackdrop';
 import type {ThemePreset, TokenName} from './presets';
 
-/** Tokens only a photo sets; tokens.css gives their photo-less defaults. */
+/** Tokens only see-through or photo panes set; tokens.css has defaults. */
 export const PHOTO_TOKEN_NAMES = [
   'surface-overlay',
   'pane-highlight',
@@ -31,7 +31,8 @@ export const PHOTO_TOKEN_NAMES = [
 /** A token a photo can set. */
 export type PhotoTokenName = TokenName | (typeof PHOTO_TOKEN_NAMES)[number];
 
-const TEXT_TOKENS = ['fg', 'fg-muted', 'fg-subtle', 'fg-faint'] as const;
+/** The text levels, strongest to faintest. */
+export const TEXT_TOKENS = ['fg', 'fg-muted', 'fg-subtle', 'fg-faint'] as const;
 type TextToken = (typeof TEXT_TOKENS)[number];
 type TextTokens = Record<TextToken, Rgb>;
 
@@ -40,19 +41,24 @@ type TextTokens = Record<TextToken, Rgb>;
  * 1.4.3) and `fg-faint` is for placeholders and decoration; `fg` aims higher
  * so the levels below it have room to fade.
  */
-const TEXT_CONTRAST = {fg: 6, 'fg-muted': 5, 'fg-subtle': 4.5, 'fg-faint': 3};
+export const TEXT_CONTRAST = {
+  fg: 6,
+  'fg-muted': 5,
+  'fg-subtle': 4.5,
+  'fg-faint': 3,
+};
 /** How far each text level may fade towards the pane, for hierarchy. */
 const TEXT_FADE = {fg: 0, 'fg-muted': 0.15, 'fg-subtle': 0.3, 'fg-faint': 0.5};
 /** How much more see-through the other scheme's panes must be to win. */
 const SCHEME_SWITCH = 0.1;
 /** Added to every target, for the browser rounding the drawn panes. */
-const MARGIN = 0.15;
+export const MARGIN = 0.15;
 
 const WHITE: Rgb = {r: 1, g: 1, b: 1};
 const BLACK: Rgb = {r: 0, g: 0, b: 0};
 
 /** Per scheme: the pane tint's contrast with ink, and overlay opacities. */
-const SCHEMES = {
+export const SCHEMES = {
   dark: {
     tintContrast: 12,
     paneAlpha: 0.35,
@@ -78,12 +84,12 @@ const SCHEMES = {
 } as const;
 
 /** `alpha` as `#rrggbbaa` stores it. */
-function roundAlpha(alpha: number) {
+export function roundAlpha(alpha: number) {
   return Math.round(Math.min(1, Math.max(0, alpha)) * 255) / 255;
 }
 
 /** Opacities from `from` up to 1, in 5% steps, as `#rrggbbaa` stores them. */
-function opacitySteps(from: number): number[] {
+export function opacitySteps(from: number): number[] {
   const steps: number[] = [];
   for (let step = Math.round(from * 20); step <= 20; step++) {
     steps.push(roundAlpha(step / 20));
