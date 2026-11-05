@@ -10,6 +10,7 @@ import {
   type ImageCodec,
   type Size,
 } from './imageProcessing';
+import {PALETTE_SAMPLE_SIZE, type Pixels} from './photoPalette';
 
 function fileInfo(name: string, type: string, size = 1000) {
   return {name, type, size};
@@ -106,8 +107,17 @@ class FakeImage implements DecodedImage {
   }
 }
 
+function flatPixels(size: Size, rgb: number[]): Pixels {
+  const data = Array.from({length: size.width * size.height}, () => [
+    ...rgb,
+    255,
+  ]).flat();
+  return {...size, data};
+}
+
 function fakeCodec(image: FakeImage | Error, encodeError?: Error) {
   const encoded: Size[] = [];
+  const sampled: Size[] = [];
   const codec: ImageCodec<FakeImage> = {
     decode: () =>
       image instanceof Error ? Promise.reject(image) : Promise.resolve(image),
@@ -116,8 +126,12 @@ function fakeCodec(image: FakeImage | Error, encodeError?: Error) {
       if (encodeError) return Promise.reject(encodeError);
       return Promise.resolve(new Blob(['webp'], {type: 'image/webp'}));
     },
+    sample: (_, size) => {
+      sampled.push(size);
+      return Promise.resolve(flatPixels(size, [51, 102, 153]));
+    },
   };
-  return {codec, encoded};
+  return {codec, encoded, sampled};
 }
 
 function jpeg(size = 1000) {
@@ -129,9 +143,10 @@ function jpeg(size = 1000) {
 describe('processImage', () => {
   it('downscales, encodes and describes the result', async () => {
     const image = new FakeImage(6000, 4000);
-    const {codec, encoded} = fakeCodec(image);
+    const {codec, encoded, sampled} = fakeCodec(image);
     const stored = await processImage(jpeg(), codec, () => 42);
     expect(encoded).toEqual([{width: 3840, height: 2560}]);
+    expect(sampled).toEqual([PALETTE_SAMPLE_SIZE]);
     expect(stored).toMatchObject({
       width: 3840,
       height: 2560,
@@ -139,12 +154,13 @@ describe('processImage', () => {
       byteSize: 4,
       updatedAt: 42,
     });
+    expect(stored.palette.average).toBe('#336699');
     expect(image.closed).toBe(true);
   });
 
   it('rejects an invalid file without decoding it', async () => {
     const decode = vi.fn();
-    const codec = {decode, encode: vi.fn()};
+    const codec = {decode, encode: vi.fn(), sample: vi.fn()};
     const svg = new File(['<svg/>'], 'a.svg', {type: 'image/svg+xml'});
     await expect(processImage(svg, codec)).rejects.toMatchObject({
       code: 'svg',

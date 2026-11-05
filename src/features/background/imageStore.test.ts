@@ -8,6 +8,7 @@ import {
   putImage,
   type StoredImage,
 } from './imageStore';
+import {TEST_PALETTE} from '../../test/photoFixtures';
 
 function makeImage(text = 'webp-bytes'): StoredImage {
   const blob = new Blob([text], {type: 'image/webp'});
@@ -18,6 +19,7 @@ function makeImage(text = 'webp-bytes'): StoredImage {
     type: 'image/webp',
     byteSize: blob.size,
     updatedAt: 1_700_000_000_000,
+    palette: TEST_PALETTE,
   };
 }
 
@@ -44,7 +46,7 @@ describe('imageStore', () => {
     expect(await getImage()).toBeNull();
   });
 
-  it('stores and reads back the photo and its metadata', async () => {
+  it('stores and reads back the photo, its metadata and palette', async () => {
     await putImage(makeImage());
     const image = await getImage();
     expect(image).toMatchObject({
@@ -53,6 +55,7 @@ describe('imageStore', () => {
       type: 'image/webp',
       byteSize: 10,
       updatedAt: 1_700_000_000_000,
+      palette: TEST_PALETTE,
     });
     expect(await image?.blob.text()).toBe('webp-bytes');
   });
@@ -88,6 +91,8 @@ describe('parseStoredImage', () => {
     ['zero width', {...makeImage(), width: 0}],
     ['a non-image type', {...makeImage(), type: 'text/plain'}],
     ['missing updatedAt', {...makeImage(), updatedAt: undefined}],
+    ['no palette', {...makeImage(), palette: undefined}],
+    ['a bad palette', {...makeImage(), palette: {average: 'blue'}}],
   ])('rejects %s', (_, data) => {
     expect(parseStoredImage(data)).toBeNull();
   });

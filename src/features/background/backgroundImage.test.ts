@@ -2,6 +2,7 @@ import {waitFor} from '@testing-library/react';
 import {beforeEach, describe, expect, it} from 'vitest';
 import {createBackgroundImageStore, type ImageBackend} from './backgroundImage';
 import type {StoredImage} from './imageStore';
+import {TEST_PALETTE} from '../../test/photoFixtures';
 
 let urlCount = 0;
 const revoked: string[] = [];
@@ -25,6 +26,7 @@ function makeImage(): StoredImage {
     type: 'image/webp',
     byteSize: blob.size,
     updatedAt: 1,
+    palette: TEST_PALETTE,
   };
 }
 
@@ -82,7 +84,12 @@ describe('createBackgroundImageStore', () => {
     await store.remove();
     reads[0]?.(makeImage());
     await Promise.resolve();
-    expect(store.getState()).toEqual({loaded: true, url: null, meta: null});
+    expect(store.getState()).toEqual({
+      loaded: true,
+      url: null,
+      meta: null,
+      palette: null,
+    });
   });
 
   it('re-reads when another tab changes the photo', async () => {
@@ -99,5 +106,6 @@ describe('createBackgroundImageStore', () => {
     channel.dispatchEvent(new Event('message'));
     await waitFor(() => expect(store.getState().url).toBe('blob:photo-1'));
     expect(store.getState().meta).toMatchObject({width: 100, height: 50});
+    expect(store.getState().palette).toEqual(TEST_PALETTE);
   });
 });

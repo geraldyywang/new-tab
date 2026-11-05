@@ -1,8 +1,9 @@
 /**
  * The background photo, kept in IndexedDB on this computer only (never in
  * `chrome.storage.sync`, whose items are limited to 8 KB). One record holds
- * the processed image and a little metadata about it.
+ * the processed image, its palette and a little metadata about it.
  */
+import {parsePhotoPalette, type PhotoPalette} from './photoPalette';
 
 /** What is known about the stored photo besides its bytes. */
 export interface StoredImageMeta {
@@ -16,9 +17,10 @@ export interface StoredImageMeta {
   updatedAt: number;
 }
 
-/** The stored photo and its metadata. */
+/** The stored photo, its metadata and its palette. */
 export interface StoredImage extends StoredImageMeta {
   blob: Blob;
+  palette: PhotoPalette;
 }
 
 const DB_NAME = 'new-tab';
@@ -35,13 +37,15 @@ export function parseStoredImage(data: unknown): StoredImage | null {
   if (typeof data !== 'object' || data === null) return null;
   const record: Partial<Record<keyof StoredImage, unknown>> = data;
   const {blob, width, height, type, byteSize, updatedAt} = record;
+  const palette = parsePhotoPalette(record.palette);
+  if (!palette) return null;
   if (!(blob instanceof Blob) || blob.size === 0) return null;
   if (!isPositiveNumber(width) || !isPositiveNumber(height)) return null;
   if (typeof type !== 'string' || !type.startsWith('image/')) return null;
   if (!isPositiveNumber(byteSize) || typeof updatedAt !== 'number') {
     return null;
   }
-  return {blob, width, height, type, byteSize, updatedAt};
+  return {blob, width, height, type, byteSize, updatedAt, palette};
 }
 
 function openDatabase(): Promise<IDBDatabase> {

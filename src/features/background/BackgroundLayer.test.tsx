@@ -8,6 +8,7 @@ import {
 import {BackgroundLayer, BackgroundPhoto} from './BackgroundLayer';
 import {setDisplayPreview} from './displayPreview';
 import type {StoredImage} from './imageStore';
+import {TEST_PALETTE} from '../../test/photoFixtures';
 import type {BackgroundDisplay} from './settings';
 
 let urlCount = 0;
@@ -35,6 +36,7 @@ function makeImage(): StoredImage {
     type: 'image/webp',
     byteSize: blob.size,
     updatedAt: 1,
+    palette: TEST_PALETTE,
   };
 }
 

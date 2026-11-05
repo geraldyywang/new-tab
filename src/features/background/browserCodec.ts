@@ -1,4 +1,5 @@
 import {WEBP_QUALITY, type ImageCodec, type Size} from './imageProcessing';
+import type {Pixels} from './photoPalette';
 
 function drawScaled(
   context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null,
@@ -29,12 +30,31 @@ async function encode(bitmap: ImageBitmap, size: Size): Promise<Blob> {
   });
 }
 
+function sample(bitmap: ImageBitmap, size: Size): Promise<Pixels> {
+  const {width, height} = size;
+  let context;
+  if (typeof OffscreenCanvas !== 'undefined') {
+    context = new OffscreenCanvas(width, height).getContext('2d', {
+      willReadFrequently: true,
+    });
+  } else {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    context = canvas.getContext('2d', {willReadFrequently: true});
+  }
+  if (!context) throw new Error('No 2D canvas context');
+  drawScaled(context, bitmap, size);
+  return Promise.resolve(context.getImageData(0, 0, width, height));
+}
+
 /**
  * Decodes with `createImageBitmap` (EXIF orientation applied; a GIF gives its
- * first frame) and encodes on an `OffscreenCanvas`, or a `<canvas>` where
- * that is missing.
+ * first frame) and draws on an `OffscreenCanvas`, or a `<canvas>` where that
+ * is missing.
  */
 export const BROWSER_CODEC: ImageCodec<ImageBitmap> = {
   decode: blob => createImageBitmap(blob, {imageOrientation: 'from-image'}),
   encode,
+  sample,
 };

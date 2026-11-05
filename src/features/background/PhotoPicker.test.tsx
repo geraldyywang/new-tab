@@ -44,6 +44,12 @@ function fakeCodec(broken = false) {
       Promise.resolve(
         new Blob([new Uint8Array(1_200_000)], {type: 'image/webp'}),
       ),
+    sample: (_, {width, height}) =>
+      Promise.resolve({
+        width,
+        height,
+        data: new Uint8ClampedArray(width * height * 4),
+      }),
   };
   return {codec, finish: () => resolvers.forEach(resolve => resolve())};
 }

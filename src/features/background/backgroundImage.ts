@@ -12,6 +12,7 @@ import {
   type StoredImageMeta,
 } from './imageStore';
 import {storageError} from './imageProcessing';
+import type {PhotoPalette} from './photoPalette';
 
 /** The current background photo. */
 export interface BackgroundImageState {
@@ -20,6 +21,8 @@ export interface BackgroundImageState {
   /** Object URL of the photo; `null` when there is none (theme backdrop). */
   url: string | null;
   meta: StoredImageMeta | null;
+  /** The photo's colours, which tint the page; `null` without a photo. */
+  palette: PhotoPalette | null;
 }
 
 /** Where photos are kept; IndexedDB in the app, fakes in tests. */
@@ -44,14 +47,19 @@ export interface BackgroundImageStore {
 }
 
 const CHANNEL_NAME = 'new-tab:background';
-const EMPTY: BackgroundImageState = {loaded: true, url: null, meta: null};
+const EMPTY: BackgroundImageState = {
+  loaded: true,
+  url: null,
+  meta: null,
+  palette: null,
+};
 
 /** Creates a store over `backend`; `channel` links it to other tabs. */
 export function createBackgroundImageStore(
   backend: ImageBackend,
   channel?: BroadcastChannel,
 ): BackgroundImageStore {
-  let state: BackgroundImageState = {loaded: false, url: null, meta: null};
+  let state: BackgroundImageState = {...EMPTY, loaded: false};
   // Bumped by every read and write, so a stale read can't win
   let seq = 0;
   let started = false;
@@ -71,6 +79,7 @@ export function createBackgroundImageStore(
       loaded: true,
       url: URL.createObjectURL(image.blob),
       meta: {width, height, type, byteSize, updatedAt},
+      palette: image.palette,
     });
   }
 

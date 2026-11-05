@@ -5,6 +5,7 @@
  * without a real canvas.
  */
 import type {StoredImage} from './imageStore';
+import {extractPalette, PALETTE_SAMPLE_SIZE, type Pixels} from './photoPalette';
 
 /** Largest file accepted, before processing. */
 export const MAX_INPUT_BYTES = 25 * 1024 * 1024;
@@ -103,11 +104,13 @@ export interface ImageCodec<T extends DecodedImage> {
   decode(blob: Blob): Promise<T>;
   /** Draws `image` at `size` and encodes it as WebP. */
   encode(image: T, size: Size): Promise<Blob>;
+  /** Draws `image` at `size` and reads its pixels back. */
+  sample(image: T, size: Size): Promise<Pixels>;
 }
 
 /**
- * Validates, decodes, downscales and re-encodes `file`. Rejects with a
- * `BackgroundImageError`.
+ * Validates, decodes, downscales and re-encodes `file`, and computes its
+ * palette. Rejects with a `BackgroundImageError`.
  */
 export async function processImage<T extends DecodedImage>(
   file: File,
@@ -134,8 +137,10 @@ export async function processImage<T extends DecodedImage>(
     }
     const size = scaledSize(image);
     const blob = await codec.encode(image, size);
+    const pixels = await codec.sample(image, PALETTE_SAMPLE_SIZE);
     return {
       blob,
+      palette: extractPalette(pixels),
       ...size,
       type: blob.type,
       byteSize: blob.size,
