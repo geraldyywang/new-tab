@@ -6,7 +6,7 @@ import {backgroundDisplaySlice} from './settings';
 export const backgroundSettingsSection: SettingsSection = {
   id: 'background',
   title: 'Background',
-  order: 40,
+  order: 50,
   slices: [backgroundDisplaySlice],
   Component: BackgroundSettings,
 };

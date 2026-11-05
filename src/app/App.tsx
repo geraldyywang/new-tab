@@ -5,6 +5,7 @@ import {Clock} from '../features/clock/Clock';
 import {HelpfulLinks} from '../features/links/HelpfulLinks';
 import {Weather} from '../features/weather/Weather';
 import {Socials} from '../features/links/Socials';
+import {ThemeSync} from '../features/appearance/ThemeSync';
 import {SettingsDialog} from '../settings/SettingsDialog';
 import {Card} from '../ui/Card';
 import {focusRingClass, surfaceAttributes} from '../ui/styles';
@@ -63,6 +64,8 @@ export function App() {
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
       />
+
+      <ThemeSync />
     </>
   );
 }
