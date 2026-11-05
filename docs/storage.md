@@ -36,7 +36,7 @@ Every key in use:
 | `weather.apiKey`     | sync | `features/weather`    | WeatherAPI key (string)                      | ~50 B                                      |
 | `links.sidebar`      | sync | `features/links`      | Sidebar link list                            | ~1 KB for 8 links; capped at 8 KB          |
 | `links.social`       | sync | `features/links`      | Social link list                             | ~0.6 KB for 5 links; capped at 8 KB        |
-| `appearance.theme`   | sync | `features/appearance` | Theme mode, presets, schedule, accent        | ~150 B                                     |
+| `appearance.theme`   | sync | `features/appearance` | Theme, schedule, accent, surface style       | ~190 B                                     |
 | `appearance.clock`   | sync | `features/clock`      | Clock font, hour cycle, seconds, date format | ~80 B                                      |
 | `background.display` | sync | `features/background` | Photo fit, focal point, dim, blur            | ~70 B                                      |
 | **Total**            |      |                       |                                              | ~2 KB typical, ~16 KB worst case of 100 KB |

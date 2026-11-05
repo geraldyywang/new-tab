@@ -127,6 +127,11 @@
   }
 }
 
+/* Backdrop filters are costly: only top-level surfaces get one */
+:root[data-surface-style] [data-surface] [data-surface] {
+  backdrop-filter: none;
+}
+
 /* Text drawn straight on the photo: light panes mean dark text, so give it a
    light halo instead of the dark shadow */
 :root[data-photo='light'] [data-on-photo] {

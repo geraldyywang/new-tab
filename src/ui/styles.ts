@@ -6,11 +6,10 @@ export function joinClasses(...classes: Array<string | false | undefined>) {
 }
 
 /**
- * How a surface is drawn: `solid` for cards and bars, `overlay` for modal
- * dialogs, which get a stronger tint over a photo. Both are opaque token
- * colours until a background photo turns every surface into a frosted pane
- * of it (src/ui/surfaces.css). The liquid-glass styles (#29) are meant to be
- * added here.
+ * What a surface is: `solid` for cards and bars, `overlay` for modal
+ * dialogs, which get a stronger tint when see-through. How every surface is
+ * drawn (solid, frosted or liquid glass, over a photo or not) is chosen for
+ * the whole page on `<html>`; src/ui/surfaces.css draws it.
  */
 export type Surface = 'solid' | 'overlay';
 
@@ -21,7 +20,7 @@ const SURFACE_CLASS: Record<Surface, string> = {
 
 /** Props that draw an element as a card surface. */
 export interface SurfaceAttributes {
-  /** Styling hook for the surface style, e.g. `[data-surface=glass]`. */
+  /** Styling hook for surfaces, e.g. `[data-surface=overlay]`. */
   'data-surface': Surface;
   className: string;
 }
