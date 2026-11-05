@@ -125,6 +125,7 @@ describe('BackgroundLayer', () => {
         focusY: 100,
         dim: 40,
         blur: 10,
+        paneOpacity: null,
       }),
     );
     expect(photo()?.style.objectFit).toBe('contain');
@@ -146,6 +147,7 @@ describe('BackgroundPhoto', () => {
     focusY: 50,
     dim: 0,
     blur: 10,
+    paneOpacity: null,
   };
 
   it('bleeds a blurred, cropped photo past the edges', () => {

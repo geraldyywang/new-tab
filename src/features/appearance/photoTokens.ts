@@ -25,6 +25,8 @@ export interface PhotoBackdrop {
   palette: PhotoPalette;
   /** Strength of the dim overlay, 0 to 1. */
   dim: number;
+  /** Card opacity chosen by the user, 0 to 1; unset or `null` is Auto. */
+  paneOpacity?: number | null;
 }
 
 /** Tokens only a photo sets; tokens.css gives their photo-less defaults. */
@@ -32,6 +34,7 @@ export const PHOTO_TOKEN_NAMES = [
   'surface-overlay',
   'pane-highlight',
   'pane-shadow',
+  'text-halo',
 ] as const;
 
 /** A token a photo can set. */
@@ -83,11 +86,16 @@ const SCHEMES = {
   },
 } as const;
 
+/** `alpha` as `#rrggbbaa` stores it. */
+function roundAlpha(alpha: number) {
+  return Math.round(Math.min(1, Math.max(0, alpha)) * 255) / 255;
+}
+
 /** Opacities from `from` up to 1, in 5% steps, as `#rrggbbaa` stores them. */
 function opacitySteps(from: number): number[] {
   const steps: number[] = [];
   for (let step = Math.round(from * 20); step <= 20; step++) {
-    steps.push(Math.round((step / 20) * 255) / 255);
+    steps.push(roundAlpha(step / 20));
   }
   return steps;
 }
@@ -154,40 +162,54 @@ interface CardPanes {
   tint: Rgb;
   alpha: number;
   text: TextTokens;
+  /** Whether the text reaches its targets; only a fixed `alpha` can fail. */
+  legible: boolean;
 }
 
 /**
  * The most see-through `scheme` panes over `photo` whose text reads, trying
- * tinted text first and then pure ink. The tint is the photo's `average`
- * darkened (or lightened) until opaque panes read with ink text by far.
+ * tinted text first and then pure ink; or, with `fixed`, panes of that
+ * opacity, whose text falls back to pure ink when nothing reads. The tint is
+ * the photo's `average` darkened (or lightened) until opaque panes read with
+ * ink text by far.
  */
-function cardPanes(scheme: SchemeName, photo: Rgb[], average: Rgb): CardPanes {
+function cardPanes(
+  scheme: SchemeName,
+  photo: Rgb[],
+  average: Rgb,
+  fixed?: number,
+): CardPanes {
   const {ink, shade, tintContrast, paneAlpha} = SCHEMES[scheme];
   const tint = towardsContrast(average, [ink], shade, tintContrast).color;
   const fgTinted = roundRgb(mixRgb(tint, ink, 0.92));
-  for (const alpha of opacitySteps(paneAlpha)) {
+  const alphas =
+    fixed === undefined ? opacitySteps(paneAlpha) : [roundAlpha(fixed)];
+  for (const alpha of alphas) {
     const backgrounds = panesOver(photo, tint, alpha, scheme);
     const text =
       textOn(backgrounds, fgTinted, tint) ?? textOn(backgrounds, ink, tint);
-    if (text) return {scheme, tint, alpha, text};
+    if (text) return {scheme, tint, alpha, text, legible: true};
   }
   const text = {fg: ink, 'fg-muted': ink, 'fg-subtle': ink, 'fg-faint': ink};
-  return {scheme, tint, alpha: 1, text};
+  return {scheme, tint, alpha: alphas[0], text, legible: fixed === undefined};
 }
 
-/** Tokens for a photo, and whether its panes are light or dark. */
+/** Tokens for a photo, and how its panes came out. */
 export interface PhotoTheme {
   scheme: SchemeName;
   tokens: Record<PhotoTokenName, string>;
+  /** The opacity Auto picks, 0 to 1. */
+  autoOpacity: number;
+  /** False when a chosen opacity is too low for text to reach its targets. */
+  legible: boolean;
 }
-
 /**
  * The tokens for `backdrop` with `preset`; `accent` is the user's custom
  * accent, which wins over the photo's own colour. Panes follow the theme's
  * scheme unless the other one lets clearly more of the photo through.
  */
 export function photoTokens(
-  {palette, dim}: PhotoBackdrop,
+  {palette, dim, paneOpacity}: PhotoBackdrop,
   preset: ThemePreset,
   accent?: string,
 ): PhotoTheme {
@@ -202,19 +224,18 @@ export function photoTokens(
     photo,
     average,
   );
-  const {
-    scheme: name,
-    tint,
-    alpha,
-    text,
-  } = other.alpha < own.alpha - SCHEME_SWITCH ? other : own;
+  const auto = other.alpha < own.alpha - SCHEME_SWITCH ? other : own;
+  const name = auto.scheme;
+  const {tint, alpha, text, legible} =
+    paneOpacity == null ? auto : cardPanes(name, photo, average, paneOpacity);
   const scheme = SCHEMES[name];
 
-  // The dialog sits over the page under the 60% scrim. It is at least as
-  // opaque as the cards, and their text must read on it too.
+  // The dialog sits over the page under the 60% scrim and ignores a chosen
+  // opacity: it is at least as opaque as Auto's cards, and their text must
+  // read on it too.
   const scrimmed = photo.map(color => mixRgb(color, BLACK, 0.6));
   const overlayAlpha =
-    opacitySteps(Math.max(alpha, 0.8)).find(candidate =>
+    opacitySteps(Math.max(auto.alpha, 0.8)).find(candidate =>
       reads(text, panesOver(scrimmed, tint, candidate, name)),
     ) ?? 1;
   const everyPane = [
@@ -246,6 +267,7 @@ export function photoTokens(
     'warning-fg': visible(preset.tokens['warning-fg'], 4.5 + MARGIN),
     'pane-highlight': toHexAlpha(WHITE, scheme.highlight),
     'pane-shadow': toHexAlpha(BLACK, scheme.shadow),
+    'text-halo': toHexAlpha(scheme.shade, 0.75),
   };
-  return {scheme: name, tokens};
+  return {scheme: name, tokens, autoOpacity: auto.alpha, legible};
 }

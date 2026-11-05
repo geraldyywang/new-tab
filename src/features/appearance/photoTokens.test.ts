@@ -181,4 +181,45 @@ describe('photoTokens', () => {
       expect(toHex(rgb(value))).toBe(value.slice(0, 7));
     }
   });
+
+  describe('with a chosen pane opacity', () => {
+    const stone = presetById('stone');
+    const busy = {palette: HIGH_RANGE, dim: 0};
+
+    it('Auto (null) is the same as no choice', () => {
+      expect(photoTokens({...busy, paneOpacity: null}, stone)).toEqual(
+        photoTokens(busy, stone),
+      );
+    });
+
+    it('uses a low opacity anyway, with pure ink text, and says so', () => {
+      const auto = photoTokens(busy, stone);
+      const low = photoTokens({...busy, paneOpacity: 0.3}, stone);
+      expect(auto.legible).toBe(true);
+      expect(auto.autoOpacity).toBeGreaterThan(0.3);
+      expect(low.legible).toBe(false);
+      expect(alphaOf(low.tokens.surface)).toBeCloseTo(0.3, 2);
+      expect(low.tokens.fg).toBe(low.scheme === 'dark' ? '#ffffff' : '#000000');
+      expect(low.tokens['fg-subtle']).toBe(low.tokens.fg);
+      expect(alphaOf(low.tokens['text-halo'])).toBeGreaterThan(0.5);
+    });
+
+    it('keeps the dialog at its own readable tint', () => {
+      const auto = photoTokens(busy, stone);
+      const clear = photoTokens({...busy, paneOpacity: 0}, stone);
+      expect(clear.tokens['surface-overlay']).toBe(
+        auto.tokens['surface-overlay'],
+      );
+      expect(alphaOf(clear.tokens.surface)).toBe(0);
+    });
+
+    it('reads at or above Auto, and fully opaque always', () => {
+      const auto = photoTokens(busy, stone);
+      for (const paneOpacity of [auto.autoOpacity, 0.9, 1]) {
+        const theme = photoTokens({...busy, paneOpacity}, stone);
+        expect(theme.legible).toBe(true);
+        expect(alphaOf(theme.tokens.surface)).toBeCloseTo(paneOpacity, 2);
+      }
+    });
+  });
 });

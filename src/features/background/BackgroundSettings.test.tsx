@@ -65,7 +65,14 @@ describe('BackgroundSettings', () => {
     await screen.findByText('Saved.');
     expect(
       JSON.parse(localStorage.getItem('new-tab:background.display') ?? ''),
-    ).toEqual({fit: 'cover', focusX: 50, focusY: 30, dim: 20, blur: 10});
+    ).toEqual({
+      fit: 'cover',
+      focusX: 50,
+      focusY: 30,
+      dim: 20,
+      blur: 10,
+      paneOpacity: null,
+    });
     expect(shown()).toMatchObject({blur: 10, focusY: 30});
   });
 
