@@ -29,6 +29,7 @@ import {
   DEFAULT_THEME_SETTINGS,
   parseThemeSettings,
   resolvePresetId,
+  type SurfaceStyle,
   type ThemeEnvironment,
   type ThemeSettings,
 } from './themeSettings';
@@ -73,17 +74,22 @@ export function visibleAccent(
 /**
  * Sets the preset's tokens (none for the default) and accent on `root`. With
  * a background `photo`, its tokens replace the preset's and `data-photo` is
- * set to the pane scheme; without one, both are cleared again.
+ * set to the pane scheme; without one, both are cleared again. A `surface`
+ * style other than solid is set as `data-surface-style`; solid panes over a
+ * photo are opaque.
  */
 export function applyTheme(
   root: HTMLElement,
   presetId: PresetId,
   accent?: string,
   photo?: PhotoBackdrop | null,
+  surface: SurfaceStyle = 'solid',
 ): void {
   const preset = presetById(presetId);
   const isDefault = preset.id === DEFAULT_PRESET_ID;
-  const photoTheme = photo ? photoTokens(photo, preset, accent) : null;
+  const panes =
+    surface === 'solid' && photo ? {...photo, paneOpacity: 1} : photo;
+  const photoTheme = panes ? photoTokens(panes, preset, accent) : null;
   let tokens: Partial<Record<PhotoTokenName, string>> = {};
   if (photoTheme) tokens = photoTheme.tokens;
   else if (!isDefault) tokens = {...preset.tokens};
@@ -97,6 +103,8 @@ export function applyTheme(
   else root.removeAttribute('data-photo');
   if (photoTheme && !photoTheme.legible) root.dataset.photoLegible = 'false';
   else root.removeAttribute('data-photo-legible');
+  if (surface === 'solid') root.removeAttribute('data-surface-style');
+  else root.dataset.surfaceStyle = surface;
   if (isDefault) {
     root.removeAttribute('data-theme');
     root.style.removeProperty('color-scheme');
@@ -153,12 +161,12 @@ export function applyCachedTheme(
   const settings = readThemeCache(storage);
   const photo = readPhotoCache(storage);
   if (settings || photo) {
-    const {accent} = settings ?? DEFAULT_THEME_SETTINGS;
+    const {accent, surface} = settings ?? DEFAULT_THEME_SETTINGS;
     const presetId = resolvePresetId(
       settings ?? DEFAULT_THEME_SETTINGS,
       environment,
     );
-    applyTheme(root, presetId, accent, photo);
+    applyTheme(root, presetId, accent, photo, surface);
   }
   return settings !== null;
 }

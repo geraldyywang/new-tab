@@ -1,17 +1,23 @@
 /*
- * Surfaces over a background photo. While `<html data-photo>` is set, the
- * surface tokens are translucent tints of the photo (see
- * features/appearance/photoTokens.ts). Blurring what lies behind each surface
- * makes it read as a raised pane of the same image, lit along its top edge
- * and casting a soft shadow. Later surface styles, such as the liquid glass
- * of #29, hook in on `[data-surface]` here as well.
+ * Surface styles. `[data-surface]` marks every card, bar and dialog (see
+ * src/ui/styles.ts); `<html>` says how to draw them:
+ *
+ * - `data-photo`: a background photo is set, so the surface tokens are tints
+ *   of the photo (features/appearance/photoTokens.ts), lit along their top
+ *   edge and casting a soft shadow. Solid surfaces are opaque tints.
+ * - `data-surface-style` (`frosted` or `glass`; absent for solid): the tints
+ *   are translucent, and blurring what lies behind each surface makes it
+ *   read as a raised pane of the same image.
  */
 :root[data-photo] [data-surface] {
-  backdrop-filter: blur(24px) saturate(1.4);
   box-shadow:
     inset 0 1px 0 0 var(--color-pane-highlight),
     inset 0 0 0 1px var(--color-border),
     0 12px 32px -12px var(--color-pane-shadow);
+}
+
+:root[data-photo][data-surface-style] [data-surface] {
+  backdrop-filter: blur(24px) saturate(1.4);
 }
 
 /* Text drawn straight on the photo: light panes mean dark text, so give it a

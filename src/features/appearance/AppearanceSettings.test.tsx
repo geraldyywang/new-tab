@@ -57,6 +57,7 @@ afterEach(async () => {
   window.localStorage.clear();
   root.removeAttribute('style');
   root.removeAttribute('data-theme');
+  root.removeAttribute('data-surface-style');
 });
 
 describe('AppearanceSettings', () => {
@@ -82,6 +83,23 @@ describe('AppearanceSettings', () => {
     expect(getSliceState(themeSlice).value.preset).toBe('nord');
     expect(getSliceState(clockSlice).value.hour12).toBe(false);
     expect(root.dataset.theme).toBe('nord');
+  });
+
+  it('previews and saves the surface style', async () => {
+    await openPage();
+    expect(
+      screen.getByText('Opaque cards in the theme’s colours.'),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole('radio', {name: 'Liquid glass'}));
+    expect(root.dataset.surfaceStyle).toBe('glass');
+    expect(
+      screen.getByText('Frosted cards whose edges catch the light.'),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', {name: 'Save'}));
+    await screen.findByText('Saved.');
+    expect(getSliceState(themeSlice).value.surface).toBe('glass');
+    fireEvent.click(screen.getByRole('radio', {name: 'Solid'}));
+    expect(root.hasAttribute('data-surface-style')).toBe(false);
   });
 
   it('reverts the preview when unsaved changes are discarded', async () => {

@@ -25,7 +25,11 @@ const SCHEDULED: ThemeSettings = {
 
 describe('parseThemeSettings', () => {
   it('round-trips valid settings', () => {
-    const settings = {...SCHEDULED, accent: '#a1b2c3'};
+    const settings = {
+      ...SCHEDULED,
+      surface: 'glass' as const,
+      accent: '#a1b2c3',
+    };
     expect(parseThemeSettings(JSON.parse(JSON.stringify(settings)))).toEqual(
       settings,
     );
@@ -40,6 +44,7 @@ describe('parseThemeSettings', () => {
         lightFrom: 1440,
         lightUntil: 1.5,
         accent: 'blue',
+        surface: 'chrome',
       }),
     ).toEqual({...DEFAULT_THEME_SETTINGS, preset: 'nord'});
   });

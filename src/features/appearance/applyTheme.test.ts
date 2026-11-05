@@ -28,6 +28,7 @@ afterEach(() => {
   root.removeAttribute('data-theme');
   root.removeAttribute('data-photo');
   root.removeAttribute('data-photo-legible');
+  root.removeAttribute('data-surface-style');
   window.localStorage.clear();
 });
 
@@ -66,8 +67,9 @@ describe('applyTheme', () => {
 
 describe('applyTheme with a photo', () => {
   it('sets translucent photo tokens and data-photo, then clears them', () => {
-    applyTheme(root, 'stone', undefined, PHOTO);
+    applyTheme(root, 'stone', undefined, PHOTO, 'frosted');
     expect(root.dataset.photo).toBe('dark');
+    expect(root.dataset.surfaceStyle).toBe('frosted');
     expect(root.hasAttribute('data-theme')).toBe(false);
     expect(root.style.getPropertyValue('--color-surface')).toMatch(
       /^#[\da-f]{8}$/,
@@ -79,17 +81,30 @@ describe('applyTheme with a photo', () => {
 
     applyTheme(root, 'stone');
     expect(root.hasAttribute('data-photo')).toBe(false);
+    expect(root.hasAttribute('data-surface-style')).toBe(false);
     expect(root.hasAttribute('style')).toBe(false);
   });
 
   it('flags panes too see-through to read, and clears the flag', () => {
-    applyTheme(root, 'stone', undefined, {...PHOTO, paneOpacity: 0});
+    applyTheme(root, 'stone', undefined, {...PHOTO, paneOpacity: 0}, 'glass');
     expect(root.dataset.photoLegible).toBe('false');
     expect(root.style.getPropertyValue('--color-text-halo')).not.toBe('');
     applyTheme(root, 'stone', undefined, PHOTO);
     expect(root.hasAttribute('data-photo-legible')).toBe(false);
     applyTheme(root, 'stone');
     expect(root.hasAttribute('style')).toBe(false);
+  });
+
+  it('draws solid panes over a photo as opaque tints, even with a chosen opacity', () => {
+    applyTheme(root, 'stone', undefined, {...PHOTO, paneOpacity: 0.2});
+    expect(root.dataset.photo).toBe('dark');
+    expect(root.hasAttribute('data-surface-style')).toBe(false);
+    expect(root.hasAttribute('data-photo-legible')).toBe(false);
+    for (const token of ['surface', 'surface-overlay']) {
+      expect(root.style.getPropertyValue(`--color-${token}`)).toMatch(
+        /^#[\da-f]{6}ff$/,
+      );
+    }
   });
 
   it('takes light or dark panes from the theme', () => {
@@ -168,10 +183,12 @@ describe('theme cache', () => {
       mode: 'scheduled',
       darkPreset: 'nord',
       accent: '#2dd4bf',
+      surface: 'glass',
     };
     writeThemeCache(settings);
     expect(applyCachedTheme(root, night)).toBe(true);
     expect(root.dataset.theme).toBe('nord');
+    expect(root.dataset.surfaceStyle).toBe('glass');
     expect(root.style.getPropertyValue('--color-accent')).toBe('#2dd4bf');
   });
 

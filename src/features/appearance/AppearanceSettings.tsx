@@ -10,6 +10,7 @@ import {clockSlice, type ClockSettings} from '../clock/settings';
 import {AccentOptions} from './AccentOptions';
 import {ClockOptions} from './ClockOptions';
 import {presetById} from './presets';
+import {SurfaceOptions} from './SurfaceOptions';
 import {ThemeOptions} from './ThemeOptions';
 import {themeSlice, type ThemeSettings} from './themeSettings';
 
@@ -49,7 +50,7 @@ function useLivePreview({theme, clock}: AppearanceDraft, dirty: boolean) {
   );
 }
 
-/** The Appearance section: theme, accent and clock, previewed live. */
+/** The Appearance section: theme, accent, surfaces and clock, previewed live. */
 export function AppearanceSettings({
   title,
   onDirtyChange,
@@ -121,6 +122,11 @@ export function AppearanceSettings({
           value={draft.theme.accent}
           onChange={accent => edit({theme: {...draft.theme, accent}})}
           presets={shownPresets}
+        />
+        <SurfaceOptions
+          idPrefix={`${baseId}-surface`}
+          value={draft.theme}
+          onChange={next => edit({theme: next})}
         />
         <ClockOptions
           idPrefix={`${baseId}-clock`}

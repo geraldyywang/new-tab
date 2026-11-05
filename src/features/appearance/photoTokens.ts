@@ -221,12 +221,11 @@ export function photoTokens(
     paneOpacity == null ? auto : cardPanes(name, photo, average, paneOpacity);
   const scheme = SCHEMES[name];
 
-  // The dialog sits over the page under the 60% scrim and ignores a chosen
-  // opacity: it is at least as opaque as Auto's cards, and their text must
-  // read on it too.
+  // The dialog sits over the page under the 60% scrim: it is at least as
+  // opaque as the cards and as Auto's, and their text must read on it too.
   const scrimmed = photo.map(color => mixRgb(color, BLACK, 0.6));
   const overlayAlpha =
-    opacitySteps(Math.max(auto.alpha, 0.8)).find(candidate =>
+    opacitySteps(Math.max(auto.alpha, alpha, 0.8)).find(candidate =>
       reads(text, panesOver(scrimmed, tint, candidate, name)),
     ) ?? 1;
   const everyPane = [

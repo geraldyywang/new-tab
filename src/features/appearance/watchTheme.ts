@@ -21,7 +21,7 @@ export function watchTheme(
 ): () => void {
   function apply() {
     const presetId = resolvePresetId(settings, currentThemeEnvironment());
-    applyTheme(root, presetId, settings.accent, photo);
+    applyTheme(root, presetId, settings.accent, photo, settings.surface);
   }
   apply();
 

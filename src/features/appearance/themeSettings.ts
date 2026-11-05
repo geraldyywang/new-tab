@@ -9,9 +9,15 @@ const THEME_MODES: readonly ThemeMode[] = ['fixed', 'system', 'scheduled'];
 const MINUTES_PER_DAY = 24 * 60;
 
 /**
- * Theme choice and accent. Later appearance options (such as the surface
- * style of #29) are meant to be added here as more fields.
+ * How cards, bars and the dialog are drawn: opaque (`solid`), as frosted
+ * panes that blur what lies behind them (`frosted`), or as frosted panes
+ * that also catch the light (`glass`). See src/ui/surfaces.css.
  */
+export type SurfaceStyle = 'solid' | 'frosted' | 'glass';
+
+const SURFACE_STYLES: readonly SurfaceStyle[] = ['solid', 'frosted', 'glass'];
+
+/** Theme choice, accent and surface style. */
 export interface ThemeSettings {
   mode: ThemeMode;
   /** The theme in `fixed` mode. */
@@ -25,9 +31,10 @@ export interface ThemeSettings {
   lightUntil: number;
   /** Custom accent as `#rrggbb`; unset uses the theme's own accent. */
   accent?: string;
+  surface: SurfaceStyle;
 }
 
-/** The original look: Stone, theme accent. */
+/** The original look: Stone, theme accent, solid surfaces. */
 export const DEFAULT_THEME_SETTINGS: ThemeSettings = {
   mode: 'fixed',
   preset: DEFAULT_PRESET_ID,
@@ -35,6 +42,7 @@ export const DEFAULT_THEME_SETTINGS: ThemeSettings = {
   darkPreset: DEFAULT_PRESET_ID,
   lightFrom: 7 * 60,
   lightUntil: 19 * 60,
+  surface: 'solid',
 };
 
 function isMinuteOfDay(value: unknown): value is number {
@@ -65,12 +73,13 @@ export function parseThemeSettings(data: unknown): ThemeSettings | null {
     darkPreset: isPresetId(raw.darkPreset) ? raw.darkPreset : d.darkPreset,
     lightFrom: isMinuteOfDay(raw.lightFrom) ? raw.lightFrom : d.lightFrom,
     lightUntil: isMinuteOfDay(raw.lightUntil) ? raw.lightUntil : d.lightUntil,
+    surface: SURFACE_STYLES.find(style => style === raw.surface) ?? d.surface,
   };
   if (isHexColor(raw.accent)) settings.accent = raw.accent.toLowerCase();
   return settings;
 }
 
-/** Theme choice and accent, synced across devices. */
+/** Theme choice, accent and surface style, synced across devices. */
 export const themeSlice = defineSettingsSlice<ThemeSettings>({
   key: 'appearance.theme',
   area: 'sync',
