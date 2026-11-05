@@ -38,16 +38,19 @@ export const PHOTO_TOKEN_NAMES = [
 export type PhotoTokenName = TokenName | (typeof PHOTO_TOKEN_NAMES)[number];
 
 const TEXT_TOKENS = ['fg', 'fg-muted', 'fg-subtle', 'fg-faint'] as const;
-type TextTokens = Record<(typeof TEXT_TOKENS)[number], Rgb>;
+type TextToken = (typeof TEXT_TOKENS)[number];
+type TextTokens = Record<TextToken, Rgb>;
 
 /**
- * Contrast each text level needs against every pane. Body text needs 4.5:1
- * (WCAG 1.4.3), `fg-faint` is for placeholders and decoration; `fg` aims
- * higher so the levels below it have room to fade.
+ * Contrast each text level needs on the panes. Body text needs 4.5:1 (WCAG
+ * 1.4.3) and `fg-faint` is for placeholders and decoration; `fg` aims higher
+ * so the levels below it have room to fade.
  */
-const TEXT_CONTRAST = {fg: 7, 'fg-muted': 5.5, 'fg-subtle': 4.5, 'fg-faint': 3};
+const TEXT_CONTRAST = {fg: 6, 'fg-muted': 5, 'fg-subtle': 4.5, 'fg-faint': 3};
 /** How far each text level may fade towards the pane, for hierarchy. */
 const TEXT_FADE = {fg: 0, 'fg-muted': 0.15, 'fg-subtle': 0.3, 'fg-faint': 0.5};
+/** How much more see-through the other scheme's panes must be to win. */
+const SCHEME_SWITCH = 0.1;
 /** Added to every target, for the browser rounding the drawn panes. */
 const MARGIN = 0.15;
 
@@ -61,7 +64,7 @@ const SCHEMES = {
     paneAlpha: 0.35,
     ink: WHITE,
     shade: BLACK,
-    raised: [0.08, 0.16],
+    raised: [0.06, 0.12],
     inset: 0.25,
     border: 0.14,
     highlight: 0.16,
@@ -89,22 +92,39 @@ function opacitySteps(from: number): number[] {
   return steps;
 }
 
-/** Whether every text level reaches its contrast on `backgrounds`. */
-function reads(text: TextTokens, backgrounds: readonly Rgb[]) {
-  return TEXT_TOKENS.every(
-    token =>
-      minContrast(text[token], backgrounds) >= TEXT_CONTRAST[token] + MARGIN,
+/** Pane colours behind text: bare, and under the strongest raised control. */
+interface Backgrounds {
+  bare: Rgb[];
+  raised: Rgb[];
+}
+
+/**
+ * Whether `color` reads as `token` text: its full target on bare panes, and
+ * at most body-text contrast on raised controls (buttons, hovers, badges).
+ */
+function meets(color: Rgb, token: TextToken, {bare, raised}: Backgrounds) {
+  const target = TEXT_CONTRAST[token];
+  return (
+    minContrast(color, bare) >= target + MARGIN &&
+    minContrast(color, raised) >= Math.min(target, 4.5) + MARGIN
   );
 }
 
-/** Text levels for the panes, or `null` if `fg` can't reach its target. */
-function textOn(backgrounds: readonly Rgb[], fg: Rgb, pane: Rgb) {
-  if (minContrast(fg, backgrounds) < TEXT_CONTRAST.fg + MARGIN) return null;
-  // Each level is the palest step from `fg` towards the pane that still reads
-  function level(token: (typeof TEXT_TOKENS)[number]) {
-    const faded = mixRgb(fg, pane, TEXT_FADE[token]);
-    const ratio = TEXT_CONTRAST[token] + MARGIN;
-    return towardsContrast(faded, backgrounds, fg, ratio).color;
+/** Whether every text level reads on `backgrounds`. */
+function reads(text: TextTokens, backgrounds: Backgrounds) {
+  return TEXT_TOKENS.every(token => meets(text[token], token, backgrounds));
+}
+
+/** Text levels for the panes, or `null` if `fg` itself doesn't read. */
+function textOn(backgrounds: Backgrounds, fg: Rgb, pane: Rgb) {
+  if (!meets(fg, 'fg', backgrounds)) return null;
+  // Each level is the palest step from `fg` towards the pane that reads
+  function level(token: TextToken) {
+    for (let step = Math.round(TEXT_FADE[token] * 20); step > 0; step--) {
+      const candidate = roundRgb(mixRgb(fg, pane, step / 20));
+      if (meets(candidate, token, backgrounds)) return candidate;
+    }
+    return fg;
   }
   const text: TextTokens = {
     fg,
@@ -115,68 +135,99 @@ function textOn(backgrounds: readonly Rgb[], fg: Rgb, pane: Rgb) {
   return text;
 }
 
+type SchemeName = keyof typeof SCHEMES;
+
+/** The panes over each of the `under` colours. */
+function panesOver(
+  under: readonly Rgb[],
+  tint: Rgb,
+  alpha: number,
+  name: SchemeName,
+): Backgrounds {
+  const {ink, raised} = SCHEMES[name];
+  const bare = under.map(color => mixRgb(color, tint, alpha));
+  return {bare, raised: bare.map(pane => mixRgb(pane, ink, raised[1]))};
+}
+/** Light or dark card panes over the photo, and their text. */
+interface CardPanes {
+  scheme: SchemeName;
+  tint: Rgb;
+  alpha: number;
+  text: TextTokens;
+}
+
+/**
+ * The most see-through `scheme` panes over `photo` whose text reads, trying
+ * tinted text first and then pure ink. The tint is the photo's `average`
+ * darkened (or lightened) until opaque panes read with ink text by far.
+ */
+function cardPanes(scheme: SchemeName, photo: Rgb[], average: Rgb): CardPanes {
+  const {ink, shade, tintContrast, paneAlpha} = SCHEMES[scheme];
+  const tint = towardsContrast(average, [ink], shade, tintContrast).color;
+  const fgTinted = roundRgb(mixRgb(tint, ink, 0.92));
+  for (const alpha of opacitySteps(paneAlpha)) {
+    const backgrounds = panesOver(photo, tint, alpha, scheme);
+    const text =
+      textOn(backgrounds, fgTinted, tint) ?? textOn(backgrounds, ink, tint);
+    if (text) return {scheme, tint, alpha, text};
+  }
+  const text = {fg: ink, 'fg-muted': ink, 'fg-subtle': ink, 'fg-faint': ink};
+  return {scheme, tint, alpha: 1, text};
+}
+
+/** Tokens for a photo, and whether its panes are light or dark. */
+export interface PhotoTheme {
+  scheme: SchemeName;
+  tokens: Record<PhotoTokenName, string>;
+}
+
 /**
  * The tokens for `backdrop` with `preset`; `accent` is the user's custom
- * accent, which wins over the photo's own colour.
+ * accent, which wins over the photo's own colour. Panes follow the theme's
+ * scheme unless the other one lets clearly more of the photo through.
  */
 export function photoTokens(
   {palette, dim}: PhotoBackdrop,
   preset: ThemePreset,
   accent?: string,
-): Record<PhotoTokenName, string> {
-  const scheme = SCHEMES[preset.scheme];
+): PhotoTheme {
   function dimmed(hex: string) {
     return mixRgb(parseColor(hex) ?? BLACK, BLACK, dim);
   }
   const photo = [dimmed(palette.darkest), dimmed(palette.lightest)];
-  // The dialog's backdrop is the page under the 60% scrim
+  const average = dimmed(palette.average);
+  const own = cardPanes(preset.scheme, photo, average);
+  const other = cardPanes(
+    preset.scheme === 'dark' ? 'light' : 'dark',
+    photo,
+    average,
+  );
+  const {
+    scheme: name,
+    tint,
+    alpha,
+    text,
+  } = other.alpha < own.alpha - SCHEME_SWITCH ? other : own;
+  const scheme = SCHEMES[name];
+
+  // The dialog sits over the page under the 60% scrim. It is at least as
+  // opaque as the cards, and their text must read on it too.
   const scrimmed = photo.map(color => mixRgb(color, BLACK, 0.6));
-  // The photo's average colour, darkened (or lightened) for a calm pane;
-  // opaque, it alone gives ink text well over 7:1
-  const tint = towardsContrast(
-    dimmed(palette.average),
-    [scheme.ink],
-    scheme.shade,
-    scheme.tintContrast,
-  ).color;
-  const fgTinted = roundRgb(mixRgb(tint, scheme.ink, 0.92));
-
-  /** Pane colours over `under`, bare and under the strongest raised control. */
-  function panes(under: readonly Rgb[], alpha: number) {
-    return under.flatMap(color => {
-      const pane = mixRgb(color, tint, alpha);
-      return [pane, mixRgb(pane, scheme.ink, scheme.raised[1])];
-    });
-  }
-  // The most see-through pane whose text reads, trying tinted text first
-  // and then pure ink; an opaque pane always reads, given the tint
-  const ink = Object.fromEntries(TEXT_TOKENS.map(t => [t, scheme.ink]));
-  let alpha = 1;
-  let text = ink as TextTokens; // every level mapped
-  for (const candidate of opacitySteps(scheme.paneAlpha)) {
-    const backgrounds = panes(photo, candidate);
-    const found =
-      textOn(backgrounds, fgTinted, tint) ??
-      textOn(backgrounds, scheme.ink, tint);
-    if (found) {
-      [alpha, text] = [candidate, found];
-      break;
-    }
-  }
-
-  // The dialog: at least as opaque as the cards, and its text must read too
   const overlayAlpha =
     opacitySteps(Math.max(alpha, 0.8)).find(candidate =>
-      reads(text, panes(scrimmed, candidate)),
+      reads(text, panesOver(scrimmed, tint, candidate, name)),
     ) ?? 1;
-  const everyPane = [...panes(photo, alpha), ...panes(scrimmed, overlayAlpha)];
+  const everyPane = [
+    panesOver(photo, tint, alpha, name),
+    panesOver(scrimmed, tint, overlayAlpha, name),
+  ].flatMap(({bare, raised}) => [...bare, ...raised]);
   function visible(color: string, ratio: number) {
     const base = parseColor(color) ?? scheme.ink;
     const {color: seen} = towardsContrast(base, everyPane, scheme.ink, ratio);
     return toHex(seen);
   }
 
-  return {
+  const tokens = {
     backdrop: palette.average,
     surface: toHexAlpha(tint, alpha),
     'surface-overlay': toHexAlpha(tint, overlayAlpha),
@@ -196,4 +247,5 @@ export function photoTokens(
     'pane-highlight': toHexAlpha(WHITE, scheme.highlight),
     'pane-shadow': toHexAlpha(BLACK, scheme.shadow),
   };
+  return {scheme: name, tokens};
 }
