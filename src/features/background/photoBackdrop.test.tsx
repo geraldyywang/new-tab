@@ -51,7 +51,6 @@ describe('useCurrentPhotoBackdrop', () => {
     expect(result.current.backdrop).toEqual({
       palette: TEST_PALETTE,
       dim: savedDim,
-      paneOpacity: null,
     });
     expect(readPhotoCache()?.dim).toBe(savedDim);
 
@@ -59,12 +58,9 @@ describe('useCurrentPhotoBackdrop', () => {
       setDisplayPreview({
         ...DEFAULT_BACKGROUND_DISPLAY,
         dim: 60,
-        paneOpacity: 30,
       }),
     );
     expect(result.current.backdrop?.dim).toBe(0.6);
-    expect(result.current.backdrop?.paneOpacity).toBe(0.3);
-    expect(readPhotoCache()?.paneOpacity).toBeNull();
     // Only saved options are cached
     expect(readPhotoCache()?.dim).toBe(savedDim);
   });

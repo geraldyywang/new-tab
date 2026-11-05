@@ -12,8 +12,6 @@ export interface PhotoBackdrop {
   palette: PhotoPalette;
   /** Strength of the dim overlay, 0 to 1. */
   dim: number;
-  /** Card opacity chosen by the user, 0 to 1; unset or `null` is Auto. */
-  paneOpacity?: number | null;
 }
 
 /** `localStorage` key of the saved photo backdrop, read before render. */
@@ -44,13 +42,12 @@ export function readPhotoCache(storage?: Storage): PhotoBackdrop | null {
     if (raw === null) return null;
     const data: unknown = JSON.parse(raw);
     if (typeof data !== 'object' || data === null) return null;
-    const {palette, dim, paneOpacity} = data as Partial<
+    const {palette, dim} = data as Partial<
       Record<keyof PhotoBackdrop, unknown>
     >;
     const parsed = parsePhotoPalette(palette);
     if (!parsed || !isFraction(dim)) return null;
-    if (paneOpacity != null && !isFraction(paneOpacity)) return null;
-    return {palette: parsed, dim, paneOpacity: paneOpacity ?? null};
+    return {palette: parsed, dim};
   } catch {
     return null;
   }

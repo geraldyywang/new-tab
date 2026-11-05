@@ -71,7 +71,6 @@ describe('BackgroundSettings', () => {
       focusY: 30,
       dim: 20,
       blur: 10,
-      paneOpacity: null,
     });
     expect(shown()).toMatchObject({blur: 10, focusY: 30});
   });

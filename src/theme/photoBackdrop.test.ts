@@ -16,13 +16,7 @@ afterEach(() => {
 describe('photo cache', () => {
   it('round-trips a backdrop and forgets it when cleared', () => {
     writePhotoCache({palette: TEST_PALETTE, dim: 0.3});
-    expect(readPhotoCache()).toEqual({
-      palette: TEST_PALETTE,
-      dim: 0.3,
-      paneOpacity: null,
-    });
-    writePhotoCache({palette: TEST_PALETTE, dim: 0, paneOpacity: 0.4});
-    expect(readPhotoCache()?.paneOpacity).toBe(0.4);
+    expect(readPhotoCache()).toEqual({palette: TEST_PALETTE, dim: 0.3});
     writePhotoCache(null);
     expect(readPhotoCache()).toBeNull();
   });
@@ -31,10 +25,6 @@ describe('photo cache', () => {
     ['corrupt JSON', '{nope'],
     ['a bad palette', JSON.stringify({palette: {}, dim: 0})],
     ['a dim out of range', JSON.stringify({palette: TEST_PALETTE, dim: 2})],
-    [
-      'a pane opacity out of range',
-      JSON.stringify({palette: TEST_PALETTE, dim: 0, paneOpacity: -1}),
-    ],
   ])('ignores %s', (_, raw) => {
     window.localStorage.setItem(PHOTO_CACHE_KEY, raw);
     expect(readPhotoCache()).toBeNull();

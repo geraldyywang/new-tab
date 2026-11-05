@@ -5,7 +5,6 @@ import {
   DEFAULT_BACKGROUND_DISPLAY,
   displayEquals,
   parseBackgroundDisplay,
-  type BackgroundDisplay,
 } from './settings';
 
 describe('parseBackgroundDisplay', () => {
@@ -16,18 +15,8 @@ describe('parseBackgroundDisplay', () => {
       focusY: 90,
       dim: 40,
       blur: 8,
-      paneOpacity: 30,
     };
     expect(parseBackgroundDisplay(value)).toEqual(value);
-  });
-
-  it('reads a missing or null pane opacity as Auto', () => {
-    const rest: Partial<BackgroundDisplay> = {...DEFAULT_BACKGROUND_DISPLAY};
-    delete rest.paneOpacity;
-    expect(parseBackgroundDisplay(rest)?.paneOpacity).toBeNull();
-    expect(
-      parseBackgroundDisplay({...rest, paneOpacity: null})?.paneOpacity,
-    ).toBeNull();
   });
 
   it('clamps and rounds numbers into range', () => {
@@ -38,7 +27,6 @@ describe('parseBackgroundDisplay', () => {
         focusY: 150,
         dim: 95,
         blur: 4.6,
-        paneOpacity: 140,
       }),
     ).toEqual({
       fit: 'cover',
@@ -46,7 +34,6 @@ describe('parseBackgroundDisplay', () => {
       focusY: 100,
       dim: 80,
       blur: 5,
-      paneOpacity: 100,
     });
   });
 
@@ -57,7 +44,6 @@ describe('parseBackgroundDisplay', () => {
     ['a missing number', {...DEFAULT_BACKGROUND_DISPLAY, dim: undefined}],
     ['a non-finite number', {...DEFAULT_BACKGROUND_DISPLAY, blur: NaN}],
     ['a string number', {...DEFAULT_BACKGROUND_DISPLAY, focusX: '50'}],
-    ['a string opacity', {...DEFAULT_BACKGROUND_DISPLAY, paneOpacity: '50'}],
   ])('rejects %s', (_, data) => {
     expect(parseBackgroundDisplay(data)).toBeNull();
   });
@@ -69,7 +55,7 @@ describe('displayEquals', () => {
     expect(displayEquals(base, {...base})).toBe(true);
     expect(displayEquals(base, {...base, blur: 1})).toBe(false);
     expect(displayEquals(base, {...base, fit: 'contain'})).toBe(false);
-    expect(displayEquals(base, {...base, paneOpacity: 0})).toBe(false);
+    expect(displayEquals(base, {...base, dim: 0})).toBe(false);
   });
 });
 

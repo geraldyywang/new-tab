@@ -17,42 +17,29 @@ import {
   type BackgroundImageStore,
 } from './backgroundImage';
 import {useBackgroundDisplay} from './displayPreview';
-import {backgroundDisplaySlice, type BackgroundDisplay} from './settings';
-
-/** Dim and pane opacity of `display` as fractions, as theming takes them. */
-function fractions({dim, paneOpacity}: BackgroundDisplay) {
-  return {
-    dim: dim / 100,
-    paneOpacity: paneOpacity === null ? null : paneOpacity / 100,
-  };
-}
+import {backgroundDisplaySlice} from './settings';
 
 /**
- * The current photo backdrop, with the dim and pane opacity of the display
- * options being edited, if any; caches the saved one.
+ * The current photo backdrop, with the dim of the display options being
+ * edited, if any; caches the saved one.
  */
 export function useCurrentPhotoBackdrop(
   store = BACKGROUND_IMAGE,
 ): PhotoBackdropState {
   const {loaded: imageLoaded, palette} = useBackgroundImage(store);
   const saved = useSlice(backgroundDisplaySlice);
-  const {dim, paneOpacity} = fractions(useBackgroundDisplay());
+  const dim = useBackgroundDisplay().dim / 100;
   const loaded = imageLoaded && saved.loaded;
-  const savedDisplay = fractions(saved.value);
-  const [savedDim, savedOpacity] = [savedDisplay.dim, savedDisplay.paneOpacity];
+  const savedDim = saved.value.dim / 100;
 
   useEffect(() => {
     if (!loaded) return;
-    const dim = savedDim;
-    writePhotoCache(palette ? {palette, dim, paneOpacity: savedOpacity} : null);
-  }, [loaded, palette, savedDim, savedOpacity]);
+    writePhotoCache(palette ? {palette, dim: savedDim} : null);
+  }, [loaded, palette, savedDim]);
 
   return useMemo(
-    () => ({
-      loaded,
-      backdrop: palette ? {palette, dim, paneOpacity} : null,
-    }),
-    [loaded, palette, dim, paneOpacity],
+    () => ({loaded, backdrop: palette ? {palette, dim} : null}),
+    [loaded, palette, dim],
   );
 }
 
