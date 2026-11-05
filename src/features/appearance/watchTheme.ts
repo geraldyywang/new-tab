@@ -1,5 +1,5 @@
 import {applyTheme, currentThemeEnvironment} from './applyTheme';
-import type {PhotoBackdrop} from './photoTokens';
+import type {PhotoBackdrop} from '../../theme/photoBackdrop';
 import {
   msUntilNextSwitch,
   resolvePresetId,

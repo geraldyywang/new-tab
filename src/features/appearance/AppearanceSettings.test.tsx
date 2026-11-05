@@ -3,6 +3,7 @@ import {useState} from 'react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {SettingsDialog} from '../../settings/SettingsDialog';
 import {getSliceState, resetSlice} from '../../settings/slices';
+import {publishPhotoBackdrop} from '../../theme/photoBackdrop';
 import {Clock} from '../clock/Clock';
 import {clockSlice} from '../clock/settings';
 import {appearanceSettingsSection} from './settingsSection';
@@ -43,6 +44,7 @@ function clockText() {
 }
 
 beforeEach(() => {
+  publishPhotoBackdrop({loaded: true, backdrop: null});
   confirmSpy = vi.fn();
   vi.stubGlobal('confirm', confirmSpy);
 });

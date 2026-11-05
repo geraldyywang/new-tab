@@ -10,7 +10,7 @@ import {
 import {contrastRatio, parseColor, type Rgb} from '../../theme/color';
 import {presetById, THEME_PRESETS, TOKEN_NAMES} from './presets';
 import {DEFAULT_THEME_SETTINGS, type ThemeSettings} from './themeSettings';
-import {writePhotoCache} from '../background/photoBackdrop';
+import {writePhotoCache} from '../../theme/photoBackdrop';
 import {TEST_PALETTE} from '../../test/photoFixtures';
 
 const PHOTO = {palette: TEST_PALETTE, dim: 0.2};

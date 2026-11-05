@@ -17,17 +17,8 @@ import {
   towardsContrast,
   type Rgb,
 } from '../../theme/color';
-import type {PhotoPalette} from '../../theme/photoPalette';
+import type {PhotoBackdrop} from '../../theme/photoBackdrop';
 import type {ThemePreset, TokenName} from './presets';
-
-/** The background photo, as far as theming is concerned. */
-export interface PhotoBackdrop {
-  palette: PhotoPalette;
-  /** Strength of the dim overlay, 0 to 1. */
-  dim: number;
-  /** Card opacity chosen by the user, 0 to 1; unset or `null` is Auto. */
-  paneOpacity?: number | null;
-}
 
 /** Tokens only a photo sets; tokens.css gives their photo-less defaults. */
 export const PHOTO_TOKEN_NAMES = [

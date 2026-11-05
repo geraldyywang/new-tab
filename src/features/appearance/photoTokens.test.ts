@@ -1,4 +1,5 @@
 import {describe, expect, it} from 'vitest';
+import type {PhotoBackdrop} from '../../theme/photoBackdrop';
 import type {PhotoPalette} from '../../theme/photoPalette';
 import {
   contrastRatio,
@@ -8,7 +9,7 @@ import {
   toHex,
   type Rgb,
 } from '../../theme/color';
-import {photoTokens, type PhotoBackdrop} from './photoTokens';
+import {photoTokens} from './photoTokens';
 import {presetById, THEME_PRESETS} from './presets';
 
 const BLACK: Rgb = {r: 0, g: 0, b: 0};

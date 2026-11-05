@@ -5,7 +5,7 @@
  * needs an inline value anyway. `data-theme` is set too, as a styling hook.
  * The default theme (Stone) sets nothing, so the page is exactly as before.
  */
-import {readPhotoCache} from '../background/photoBackdrop';
+import {readPhotoCache, type PhotoBackdrop} from '../../theme/photoBackdrop';
 import {
   MIN_ACCENT_CONTRAST,
   parseColor,
@@ -16,7 +16,6 @@ import {
 import {
   photoTokens,
   PHOTO_TOKEN_NAMES,
-  type PhotoBackdrop,
   type PhotoTokenName,
 } from './photoTokens';
 import {

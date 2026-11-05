@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {FiSettings} from 'react-icons/fi';
 import {BackgroundLayer} from '../features/background/BackgroundLayer';
+import {PhotoBackdropSync} from '../features/background/photoBackdrop';
 import {Clock} from '../features/clock/Clock';
 import {HelpfulLinks} from '../features/links/HelpfulLinks';
 import {Weather} from '../features/weather/Weather';
@@ -68,6 +69,7 @@ export function App() {
         onClose={() => setSettingsOpen(false)}
       />
 
+      <PhotoBackdropSync />
       <ThemeSync />
     </>
   );
