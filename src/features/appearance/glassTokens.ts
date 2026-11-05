@@ -49,7 +49,7 @@ export type PaneTokenName = PhotoTokenName | (typeof GLASS_TOKEN_NAMES)[number];
  */
 export const GLASS_LIGHT = {
   dark: {rim: 0.75, sheen: 0.07, inner: 0.05},
-  light: {rim: 0.95, sheen: 0.5, inner: 0.4},
+  light: {rim: 0.95, sheen: 0.3, inner: 0.25},
 };
 
 /** How far liquid glass lights the panes behind text, per scheme. */

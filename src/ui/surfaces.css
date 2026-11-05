@@ -61,7 +61,7 @@
 }
 
 :root[data-surface-style='glass'] [data-surface] {
-  backdrop-filter: blur(20px) saturate(1.8);
+  backdrop-filter: blur(12px) saturate(1.8);
   background-image: radial-gradient(
     circle 16rem at var(--sheen-x) var(--sheen-y),
     var(--color-glass-sheen),
@@ -78,6 +78,12 @@
     0 1px 2px color-mix(in oklab, var(--color-pane-shadow) 60%, transparent),
     0 6px 16px -6px var(--color-pane-shadow),
     0 24px 48px -18px var(--color-pane-shadow);
+}
+
+/* Refraction near the edges, where the browser takes SVG backdrop filters
+   (src/ui/refraction.ts); elsewhere the plain blur above */
+:root[data-surface-style='glass'][data-refraction] [data-surface] {
+  backdrop-filter: blur(12px) saturate(1.8) url(#glass-refraction);
 }
 
 :root[data-surface-style='glass'] [data-surface]::before {
