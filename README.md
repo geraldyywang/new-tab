@@ -117,6 +117,10 @@ New features go in `src/features/<name>/`.
 
 ## Contributing
 
+See [AGENTS.md](AGENTS.md) for the full workflow and rules, and the agent
+roles (implementer, reviewer, tester, style-checker, simplifier) for coding
+agents.
+
 - **Style**: the [Google TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html),
   enforced by ESLint and Prettier (gts settings). See
   [docs/STYLE.md](docs/STYLE.md) for the summary and the rules tooling can't
