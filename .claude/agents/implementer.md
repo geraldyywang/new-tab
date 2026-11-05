@@ -39,6 +39,8 @@ read `docs/STYLE.md` and `docs/storage.md` before writing code.
    - Push them to `screenshots/issue-<N>` and embed them in the PR, as
      `AGENTS.md` describes.
    - Look at them critically and iterate until the result looks right.
+   - Also click through the feature as a user would (change it in the open,
+     scrolled settings dialog, Save, reload). Seeded state alone isn't enough.
 7. **Ship.**
    - Push, then open the PR with `--body-file`, using the milestone and
      label from the issue.

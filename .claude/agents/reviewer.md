@@ -43,6 +43,8 @@ Verify everything yourself; the implementer's report is a claim.
      PR claims?
    - Is text readable in light, dark and photo backgrounds?
    - Where looks should be unchanged, was that proven with a pixel diff?
+   - Was the feature driven through the UI (clicks, Save, reload), not only
+     shown with seeded state? If not, do it, or ask the tester to.
 8. **Conflicts.** Check with
    `git merge-tree --write-tree origin/master <head>`. List the files that
    will clash with other open PRs.

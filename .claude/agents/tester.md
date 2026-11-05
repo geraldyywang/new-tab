@@ -26,7 +26,9 @@ holds the rules.
    behaviour broke.
 3. **Browser.** Use Playwright and Chromium from a folder outside the repo,
    against `npm run preview` (or `dist/` loaded as an unpacked extension
-   when extension APIs matter). Exercise the feature as a user would:
+   when extension APIs matter). Exercise the feature as a user would, by
+   clicking through the UI rather than only seeding storage: change it from
+   the settings dialog while scrolled, press Save, then:
    - resize the window
    - reload
    - open a second tab

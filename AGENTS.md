@@ -112,6 +112,12 @@ src/
 - Components get React Testing Library tests of behaviour, not snapshots.
 - Tests must not print errors or warnings. Mock what jsdom lacks, e.g.
   `fake-indexeddb/auto` for IndexedDB.
+- **Test through the UI the way a user would**, in a real browser, as well
+  as with preloaded state. Click the controls, change settings while the
+  page or dialog is already open and scrolled, press **Save**, then reload
+  and check the result stuck. Screenshots of seeded state alone don't prove
+  a feature works: liquid glass (#39) passed every seeded screenshot but
+  blanked the settings dialog when picked from the dialog itself.
 
 ### Screenshots for UI changes
 
