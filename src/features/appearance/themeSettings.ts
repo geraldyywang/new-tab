@@ -11,11 +11,30 @@ const MINUTES_PER_DAY = 24 * 60;
 /**
  * How cards, bars and the dialog are drawn: opaque (`solid`), as frosted
  * panes that blur what lies behind them (`frosted`), or as frosted panes
- * that also catch the light (`glass`). See src/ui/surfaces.css.
+ * that also catch the light (`glass`). See src/ui/surfaces.css. `auto` is
+ * `glass` over a background photo, so the photo shows through, and `solid`
+ * without one.
  */
-export type SurfaceStyle = 'solid' | 'frosted' | 'glass';
+export type SurfaceStyle = 'auto' | 'solid' | 'frosted' | 'glass';
 
-const SURFACE_STYLES: readonly SurfaceStyle[] = ['solid', 'frosted', 'glass'];
+/** A surface style as drawn, with `auto` resolved. */
+export type DrawnSurfaceStyle = Exclude<SurfaceStyle, 'auto'>;
+
+const SURFACE_STYLES: readonly SurfaceStyle[] = [
+  'auto',
+  'solid',
+  'frosted',
+  'glass',
+];
+
+/** The style `style` draws, given whether a background photo is set. */
+export function drawnSurfaceStyle(
+  style: SurfaceStyle,
+  hasPhoto: boolean,
+): DrawnSurfaceStyle {
+  if (style !== 'auto') return style;
+  return hasPhoto ? 'glass' : 'solid';
+}
 
 /** Theme choice, accent and surface style. */
 export interface ThemeSettings {
@@ -39,7 +58,7 @@ export interface ThemeSettings {
   surfaceOpacity: number | null;
 }
 
-/** The original look: Stone, theme accent, solid surfaces. */
+/** The original look: Stone, theme accent, solid surfaces unless a photo is set. */
 export const DEFAULT_THEME_SETTINGS: ThemeSettings = {
   mode: 'fixed',
   preset: DEFAULT_PRESET_ID,
@@ -47,7 +66,7 @@ export const DEFAULT_THEME_SETTINGS: ThemeSettings = {
   darkPreset: DEFAULT_PRESET_ID,
   lightFrom: 7 * 60,
   lightUntil: 19 * 60,
-  surface: 'solid',
+  surface: 'auto',
   surfaceOpacity: null,
 };
 

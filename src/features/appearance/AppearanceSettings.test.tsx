@@ -88,7 +88,9 @@ describe('AppearanceSettings', () => {
   it('previews and saves the surface style', async () => {
     await openPage();
     expect(
-      screen.getByText('Opaque cards in the theme’s colours.'),
+      screen.getByText(
+        'Liquid glass over a background photo, solid cards without one.',
+      ),
     ).toBeTruthy();
     fireEvent.click(screen.getByRole('radio', {name: 'Liquid glass'}));
     expect(root.dataset.surfaceStyle).toBe('glass');

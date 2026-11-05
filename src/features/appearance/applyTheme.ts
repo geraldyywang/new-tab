@@ -30,6 +30,7 @@ import {
 } from './presets';
 import {
   DEFAULT_THEME_SETTINGS,
+  drawnSurfaceStyle,
   parseThemeSettings,
   resolvePresetId,
   type ThemeEnvironment,
@@ -95,7 +96,7 @@ export function paneTheme(
   photo?: PhotoBackdrop | null,
 ): PaneTheme {
   const fraction = opacity === null ? null : opacity / 100;
-  const glass = surface === 'glass';
+  const glass = drawnSurfaceStyle(surface, Boolean(photo)) === 'glass';
   const lit = glass ? GLASS_LIT : undefined;
   let theme: PaneTheme;
   if (photo) {
@@ -128,7 +129,8 @@ export function applyTheme(
   look: ThemeLook = {},
   photo?: PhotoBackdrop | null,
 ): void {
-  const {accent, surface = 'solid', surfaceOpacity = null} = look;
+  const {accent, surfaceOpacity = null} = look;
+  const surface = drawnSurfaceStyle(look.surface ?? 'solid', Boolean(photo));
   const preset = presetById(presetId);
   const isDefault = preset.id === DEFAULT_PRESET_ID;
   const solid = surface === 'solid';

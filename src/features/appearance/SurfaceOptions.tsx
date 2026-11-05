@@ -3,15 +3,22 @@ import {FiAlertTriangle} from 'react-icons/fi';
 import {Slider} from '../../ui/Slider';
 import {Segmented} from './controls';
 import {usePaneReadability, type PaneReadability} from './surfaceOpacity';
-import type {SurfaceStyle, ThemeSettings} from './themeSettings';
+import {usePhotoBackdrop} from '../../theme/photoBackdrop';
+import {
+  drawnSurfaceStyle,
+  type SurfaceStyle,
+  type ThemeSettings,
+} from './themeSettings';
 
 const STYLES: ReadonlyArray<[SurfaceStyle, string]> = [
+  ['auto', 'Auto'],
   ['solid', 'Solid'],
   ['frosted', 'Frosted'],
   ['glass', 'Liquid glass'],
 ];
 
 const HINTS: Record<SurfaceStyle, string> = {
+  auto: 'Liquid glass over a background photo, solid cards without one.',
   solid: 'Opaque cards in the theme’s colours.',
   frosted: 'See-through cards that blur what lies behind them.',
   glass: 'Frosted cards whose edges catch the light.',
@@ -76,6 +83,8 @@ export function SurfaceOptions({
   onChange,
 }: SurfaceOptionsProps) {
   const panes = usePaneReadability(value);
+  const {backdrop} = usePhotoBackdrop();
+  const drawn = drawnSurfaceStyle(value.surface, Boolean(backdrop));
   return (
     <div>
       <Segmented
@@ -86,7 +95,7 @@ export function SurfaceOptions({
         onChange={surface => onChange({...value, surface})}
       />
       <p className="mt-1 text-sm text-fg-subtle">{HINTS[value.surface]}</p>
-      {value.surface !== 'solid' && (
+      {drawn !== 'solid' && (
         <PaneOpacity
           value={value.surfaceOpacity}
           panes={panes}

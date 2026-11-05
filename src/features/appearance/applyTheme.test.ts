@@ -213,7 +213,9 @@ describe('theme cache', () => {
   it('applies a cached photo backdrop, even without a theme cache', () => {
     writePhotoCache(PHOTO);
     expect(applyCachedTheme(root, night)).toBe(false);
-    expect(root.dataset.photo).toBe('dark');
+    expect(root.hasAttribute('data-photo')).toBe(true);
+    // The default Auto style is liquid glass over a photo
+    expect(root.dataset.surfaceStyle).toBe('glass');
   });
 
   it('ignores a corrupt cache', () => {

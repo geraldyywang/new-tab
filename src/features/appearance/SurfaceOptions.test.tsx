@@ -37,8 +37,23 @@ describe('SurfaceOptions', () => {
 
   it('has no card opacity for solid surfaces', () => {
     withPhoto();
-    renderOptions(DEFAULT_THEME_SETTINGS);
+    renderOptions({...DEFAULT_THEME_SETTINGS, surface: 'solid'});
     expect(screen.queryByLabelText('Card opacity')).toBeNull();
+  });
+
+  it('shows card opacity for Auto only over a photo', () => {
+    const {unmount} = render(
+      <SurfaceOptions
+        idPrefix="s"
+        value={DEFAULT_THEME_SETTINGS}
+        onChange={vi.fn()}
+      />,
+    );
+    expect(screen.queryByLabelText('Card opacity')).toBeNull();
+    unmount();
+    withPhoto();
+    renderOptions(DEFAULT_THEME_SETTINGS);
+    expect(screen.getByLabelText('Card opacity')).toBeTruthy();
   });
 
   it("shows Auto's opacity and leaves Auto when moved", () => {
