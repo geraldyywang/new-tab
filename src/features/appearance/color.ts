@@ -5,6 +5,9 @@
  * colour library.
  */
 
+/** Focus rings need 3:1 against what they are drawn on (WCAG 1.4.11). */
+export const MIN_ACCENT_CONTRAST = 3;
+
 /** A colour as gamma-encoded sRGB channels in [0, 1]. */
 export interface Rgb {
   r: number;
@@ -115,4 +118,50 @@ export function contrastRatio(a: Rgb, b: Rgb): number {
     (x, y) => y - x,
   );
   return (light + 0.05) / (dark + 0.05);
+}
+
+/** `color` with an alpha (0 to 1), as `#rrggbbaa`. */
+export function toHexAlpha(color: Rgb, alpha: number): string {
+  return toHex(color) + hexPair(alpha);
+}
+
+/** The lowest contrast ratio of `color` against any of `backgrounds`. */
+export function minContrast(color: Rgb, backgrounds: readonly Rgb[]): number {
+  return Math.min(
+    ...backgrounds.map(background => contrastRatio(color, background)),
+  );
+}
+
+/** A colour moved towards a target to reach a contrast ratio. */
+export interface ContrastAdjustment {
+  /** Rounded to `#rrggbb` precision, so the colour drawn is the one checked. */
+  color: Rgb;
+  /** How far it moved: 0 (unchanged) to 1 (the target). */
+  amount: number;
+}
+
+/**
+ * `color` mixed towards `target` in 5% steps until its contrast against every
+ * background reaches `ratio`; `target` itself if no step does.
+ */
+export function towardsContrast(
+  color: Rgb,
+  backgrounds: readonly Rgb[],
+  target: Rgb,
+  ratio: number,
+): ContrastAdjustment {
+  const steps = 20;
+  for (let step = 0; step <= steps; step++) {
+    const amount = step / steps;
+    const candidate = roundRgb(mixRgb(color, target, amount));
+    if (minContrast(candidate, backgrounds) >= ratio) {
+      return {color: candidate, amount};
+    }
+  }
+  return {color: target, amount: 1};
+}
+
+/** `color` at `#rrggbb` precision. */
+export function roundRgb(color: Rgb): Rgb {
+  return parseColor(toHex(color)) ?? color;
 }

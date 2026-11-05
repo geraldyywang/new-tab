@@ -5,7 +5,13 @@
  * needs an inline value anyway. `data-theme` is set too, as a styling hook.
  * The default theme (Stone) sets nothing, so the page is exactly as before.
  */
-import {contrastRatio, mixRgb, parseColor, toHex, type Rgb} from './color';
+import {
+  MIN_ACCENT_CONTRAST,
+  parseColor,
+  toHex,
+  towardsContrast,
+  type Rgb,
+} from './color';
 import {
   DEFAULT_PRESET_ID,
   presetById,
@@ -20,8 +26,7 @@ import {
   type ThemeSettings,
 } from './themeSettings';
 
-/** Focus rings need 3:1 against what they are drawn on (WCAG 1.4.11). */
-export const MIN_ACCENT_CONTRAST = 3;
+export {MIN_ACCENT_CONTRAST} from './color';
 
 const WHITE: Rgb = {r: 1, g: 1, b: 1};
 const BLACK: Rgb = {r: 0, g: 0, b: 0};
@@ -47,24 +52,15 @@ export function visibleAccent(
     .map(parseColor)
     .filter(color => color !== null);
   const target = preset.scheme === 'dark' ? WHITE : BLACK;
-  const steps = 20;
-  for (let step = 0; step <= steps; step++) {
-    // Rounded to hex first, so the colour drawn is the colour checked
-    const candidate = rgbOfHex(mixRgb(base, target, step / steps));
-    const visible = backgrounds.every(
-      background => contrastRatio(candidate, background) >= MIN_ACCENT_CONTRAST,
-    );
-    if (visible) {
-      return step === 0
-        ? {color: accent, adjusted: false}
-        : {color: toHex(candidate), adjusted: true};
-    }
-  }
-  return {color: toHex(target), adjusted: true};
-}
-
-function rgbOfHex(color: Rgb): Rgb {
-  return parseColor(toHex(color)) ?? color;
+  const {color, amount} = towardsContrast(
+    base,
+    backgrounds,
+    target,
+    MIN_ACCENT_CONTRAST,
+  );
+  return amount === 0
+    ? {color: accent, adjusted: false}
+    : {color: toHex(color), adjusted: true};
 }
 
 /** Sets the preset's tokens (none for the default) and accent on `root`. */

@@ -1,10 +1,13 @@
 import {describe, expect, it} from 'vitest';
 import {
   contrastRatio,
+  minContrast,
   mixRgb,
   parseColor,
   relativeLuminance,
   toHex,
+  toHexAlpha,
+  towardsContrast,
   type Rgb,
 } from './color';
 
@@ -61,5 +64,50 @@ describe('mixRgb', () => {
     expect(mixRgb(color('#123456'), color('#ffffff'), 0)).toEqual(
       color('#123456'),
     );
+  });
+});
+
+describe('toHexAlpha', () => {
+  it('appends the alpha as a hex pair', () => {
+    expect(toHexAlpha(color('#336699'), 0.5)).toBe('#33669980');
+    expect(toHexAlpha(color('#000000'), 1)).toBe('#000000ff');
+  });
+});
+
+describe('minContrast', () => {
+  it('is the contrast against the closest background', () => {
+    const white = color('#ffffff');
+    expect(minContrast(white, [color('#000000'), white])).toBeCloseTo(1);
+  });
+});
+
+describe('towardsContrast', () => {
+  const white = color('#ffffff');
+  const dark = [color('#202020')];
+
+  it('leaves a colour that already reaches the ratio', () => {
+    expect(towardsContrast(color('#a0c0ff'), dark, white, 3)).toEqual({
+      color: color('#a0c0ff'),
+      amount: 0,
+    });
+  });
+
+  it('moves a colour just far enough', () => {
+    const {color: adjusted, amount} = towardsContrast(
+      color('#404040'),
+      dark,
+      white,
+      4.5,
+    );
+    expect(amount).toBeGreaterThan(0);
+    expect(amount).toBeLessThan(1);
+    expect(minContrast(adjusted, dark)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('ends at the target when nothing reaches the ratio', () => {
+    expect(towardsContrast(color('#404040'), dark, white, 30)).toEqual({
+      color: white,
+      amount: 1,
+    });
   });
 });
