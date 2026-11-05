@@ -1,6 +1,7 @@
 import {useId} from 'react';
 import {FiAlertTriangle} from 'react-icons/fi';
-import {joinClasses, focusRingClass} from '../../ui/styles';
+import {Slider} from '../../ui/Slider';
+import {joinClasses} from '../../ui/styles';
 import {
   MAX_BLUR,
   MAX_DIM,
@@ -21,43 +22,6 @@ const FITS: ReadonlyArray<[BackgroundFit, string]> = [
   ['cover', 'Fill (crop)'],
   ['contain', 'Fit (letterbox)'],
 ];
-
-interface SliderProps {
-  label: string;
-  value: number;
-  max: number;
-  unit: string;
-  disabled?: boolean;
-  onChange: (value: number) => void;
-}
-
-function Slider({label, value, max, unit, disabled, onChange}: SliderProps) {
-  const id = useId();
-  return (
-    <div>
-      <div className="flex justify-between text-sm">
-        <label htmlFor={id}>{label}</label>
-        <span className="text-fg-subtle tabular-nums">
-          {value}
-          {unit}
-        </span>
-      </div>
-      <input
-        id={id}
-        type="range"
-        min={0}
-        max={max}
-        value={value}
-        disabled={disabled}
-        onChange={e => onChange(Number(e.target.value))}
-        className={joinClasses(
-          'mt-1 w-full accent-accent disabled:opacity-40',
-          focusRingClass,
-        )}
-      />
-    </div>
-  );
-}
 
 interface PaneOpacityProps {
   value: number | null;
